@@ -1,0 +1,193 @@
+{
+    "SkillLevelAssessment": {
+      "ProgrammingExperience": {
+        "scale": {
+          "1": "very inexperienced",
+          "2": "inexperienced",
+          "3": "comparable",
+          "4": "experienced",
+          "5": "very experienced"
+        }
+      },
+      "ProgrammingCourses": {
+        "scale": {
+        "1": "GPT (Grundlegende Programmiertechniken)",
+        "2": "FPT (Fortgeschrittene Programmiertechniken)"
+        }
+      },
+      "PrimaryLanguage": [
+        "Python",
+        "Java",
+        "JavaScript",
+        "C++",
+        "C#",
+        "Ruby",
+        "HTML/CSS"
+      ],
+      "PythonProficiency": {
+        "scale": {
+          "1": "beginner", 
+          "2": "intermediate", 
+          "3": "advanced"
+          }
+        },
+      "PythonExperienceYears": {
+        "scale": {
+          "1": "1-3 months",
+          "2": "4-6 months",
+          "3": "7-12 months",
+          "4": "1-2 years",
+          "5": "2-3 years",
+          "6": "3-5 years",
+          "7": "5-10 years",
+          "8": "more than 10 years"
+          }
+        },
+      "ProgrammingContinuity": {
+        "scale": {
+          "3": "Yes: have been programming all this time",
+          "2": "Somewhat: have been programming every couple of weeks/months",
+          "1": "No: have had long spans of time where I didn't code at all"
+        }
+      },
+      "ProgrammingContext": {
+        "scale": {
+          "4": "Work/Professional",
+          "3": "Hobby/Personal Projects",
+          "2": "Learning/Academic Tasks",
+          "1": "Exploring/Beginners"
+        }
+      },
+      "PracticedConcepts": {
+        "scale": {
+          "1": ["variables", "conditions (if-else)", "loops (for, while)"],
+          "2": ["functions", "saving/reading data", "recursion", "OOP (Object Oriented Programming)"]
+        }
+      },
+      "GitFamiliarity": {
+        "scale": {
+          "1": "not at all",
+          "2": "to some extent",
+          "3": "to a moderate extent",
+          "4": "to a large extent",
+          "5": "completely"
+        }
+      }
+    },
+    "MotivationLevel": {
+      "Motivations": {
+      "scale": {
+        "1": "not at all",
+        "2": "to some extent",
+        "3": "to a moderate extent",
+        "4": "to a large extent",
+        "5": "completely"
+      },
+      "intrinsic": [
+        "Making something cool/working on an interesting project",
+        "Learning about python",
+        "Sharing my experience and expertise"
+      ],
+      "extrinsic": [
+        "Having fun",
+        "Meeting new people",
+        "Joining friends that participate"
+      ]
+    },
+      "PreferredLearning": [
+        "variables",
+        "conditions (if-else)",
+        "loops (for, while)",
+        "functions",
+        "saving/reading data",
+        "recursion",
+        "OOP"
+      ]
+    },
+    "BackgroundInformation": {
+      "EducationalLevel": [
+        "high school diploma (GED/Abitur)",
+        "some college (no degree yet)",
+        "Bachelor’s degree",
+        "Professional degree",
+        "Master’s degree",
+        "Doctorate",
+        "Prefer not to say"
+      ],
+      "StudyField": [
+        "Applied Computer Science (Media or Engineering Focus)",
+        "Applied Cognitive and Media Science (KOMEDIA)",
+        "Computer Engineering (ISE Program)"
+      ],
+      "Semester": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6+",
+        "Prefer not to say"
+      ],
+      "Gender": [
+        "female",
+        "male",
+        "non-binary",
+        "Prefer not to say",
+        "other"
+      ],
+      "NativeLanguage": [
+        "English",
+        "German",
+        "Spanish",
+        "French",
+        "Mandarin",
+        "Arabic",
+        "other"
+      ],
+      "Age": "number field",
+      "CulturalBackground": {
+        "America": ["North America", "South America"],
+        "Europe": ["Western", "Eastern"],
+        "Africa": ["North", "South"],
+        "MiddleEast": [],
+        "Asia": ["South Asia", "East Asia"],
+        "Australia": [],
+        "other": []
+      }
+    },
+    "ProjectPreferences": {
+      "PreferredChallenge": [
+        "Easy", 
+        "Medium", 
+        "Hard"
+      ],
+      "PreferredGames": [
+        "Snake (easy to medium)",
+        "Pong (easy)",
+        "Pacman (easy to hard)",
+        "Space Invaders (hard)",
+        "Racing Game (hard)",
+        "Pinball (medium)"
+      ]
+    },
+    "Familiarity": {
+      "GroupImportance": {
+        "scale": {
+          "1": "not at all",
+          "2": "to some extent",
+          "3": "to a moderate extent",
+          "4": "to a large extent",
+          "5": "completely"
+        }
+      },
+      "FamiliarityWithOthers": {
+        "scale": {
+          "1": "not familiar at all",
+          "2": "familiar to some extent",
+          "3": "familiar to a moderate extent",
+          "4": "familiar to a large extent",
+          "5": "completely familiar"
+        }
+      }
+    }
+  }
