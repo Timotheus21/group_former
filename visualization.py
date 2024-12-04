@@ -9,10 +9,10 @@ class Visualization:
         # Add nodes to the graph with additional attributes
         for member in team:
             name = df.loc[member, 'Name']
-            python_proficiency = df.loc[member, 'PythonProficiency']
+            programming_proficiency = df.loc[member, 'ProgrammingExperience']
             python_experience_years = df.loc[member, 'PythonExperienceYears']
             study_field = df.loc[member, 'StudyField']
-            label = f"{python_proficiency}, {python_experience_years}\n{study_field}"
+            label = f"{programming_proficiency}, {python_experience_years}\n{study_field}"
             G.add_node(name, label=label)
         
         # Add edges based on similar answers
