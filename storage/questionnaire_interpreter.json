@@ -34,11 +34,12 @@
         },
       "PythonExperienceYears": {
         "scale": {
-          "1": "less than 1 year",
-          "2": "1-2 years",
-          "3": "2-5 years",
-          "4": "5-10 years",
-          "5": "more than 10 years"
+          "1": "1 - 6 months",
+          "2": "6 - 12 months",
+          "3": "1 - 2 years",
+          "4": "2 - 3 years",
+          "5": "3 - 5 years",
+          "6": "more than 5 years"
           }
         },
       "ProgrammingContinuity": {
@@ -50,10 +51,10 @@
       },
       "ProgrammingContext": {
         "scale": {
-          "4": "Work/Professional",
-          "3": "Hobby/Personal Projects",
-          "2": "Learning/Academic Tasks",
-          "1": "Exploring/Beginners"
+          "4": "Work/Professional – As part of my job or for professional projects.",
+          "3": "Hobby/Personal Projects – For fun, personal interest.",
+          "2": "Learning/Academic Tasks – To complete tasks for educational purposes, such as passing tests or assignments.",
+          "1": "Exploring/Beginners – Just exploring programming or experimenting."
         }
       },
       "PracticedConcepts": {
