@@ -10,9 +10,9 @@ class Visualization:
         for member in team:
             name = df.loc[member, 'Name']
             programming_proficiency = df.loc[member, 'ProgrammingExperience']
-            python_experience_years = df.loc[member, 'PythonExperienceYears']
+            programming_experience_years = df.loc[member, 'ProgrammingExperienceYears']
             study_field = df.loc[member, 'StudyField']
-            label = f"{programming_proficiency}, {python_experience_years}\n{study_field}"
+            label = f"{programming_proficiency}, {programming_experience_years}\n{study_field}"
             G.add_node(name, label=label)
         
         # Add edges based on similar answers
