@@ -42,13 +42,6 @@
           "6": "more than 5 years"
           }
         },
-      "ProgrammingContinuity": {
-        "scale": {
-          "3": "Yes: have been programming all this time",
-          "2": "Somewhat: have been programming every couple of weeks/months",
-          "1": "No: have had long spans of time where I didn't code at all"
-        }
-      },
       "ProgrammingContext": {
         "scale": {
           "4": "Work/Professional – As part of my job or for professional projects.",
