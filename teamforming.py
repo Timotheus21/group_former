@@ -5,7 +5,7 @@ class TeamFormation:
         self.normalized_current_weights = data_processor.get_normalized_current_weights()
         self.skill_attributes = [
             'ProgrammingExperience', 'ProgrammingCourses', 
-            'PythonProficiency', 'PythonExperienceYears', 'ProgrammingContinuity',
+            'PythonProficiency', 'ProgrammingExperienceYears',
             'ProgrammingContext', 'PracticedConcepts', 'GitFamiliarity'
         ]
         self.questionnaire_interpreter = data_processor.get_questionnaire_interpreter()
