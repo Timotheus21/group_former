@@ -159,6 +159,8 @@ class GUI:
         try:
             current_weight = self.weight_vars[attribute].get()
             new_weight = current_weight + delta
+            if new_weight < 0:
+                new_weight = 0
             self.weight_vars[attribute].set(new_weight)
             self.weight_labels[attribute].config(text=new_weight)
             self.data_processor.custom_weights[attribute] = new_weight
@@ -197,7 +199,7 @@ class GUI:
 
             self.teams = self.teamforming.generate_teams()
             self.teamforming.set_teams(self.teams)  # Set teams attribute
-            #self.teamforming.print_teams()  # Print teams with names
+            self.teamforming.print_teams()  # Print teams with names
             for idx, (team, score) in enumerate(self.teams):
                 button = ttk.Button(
                     self.team_buttons_frame,
@@ -213,3 +215,4 @@ class GUI:
             self.visualization.visualize(team, self.data_processor.get_data())
         except Exception as e:
             print(f"Error visualizing teams: {e}")
+            

@@ -9,6 +9,7 @@ class TeamForming:
             'ProgrammingContext', 'PracticedConcepts', 'GitFamiliarity'
         ]
         self.questionnaire_interpreter = data_processor.get_questionnaire_interpreter()
+        self.teams = []
 
     def calculate_individual_scores(self):
         self.normalized_current_weights = self.data_processor.get_normalized_current_weights()
@@ -41,7 +42,7 @@ class TeamForming:
                 except KeyError as e:
                     print(f"Error processing attribute {attribute} for member {member}: {e}")
             scores[member] = score
-            print(f"Member: {member}, Total Score: {score} \n")
+            print(f"Index: {member}, Total Score: {score} \n")
         return scores
 
     def calculate_team_score(self, team, individual_scores):
@@ -93,22 +94,22 @@ class TeamForming:
             teams.append((team, self.calculate_team_score(team, individual_scores)))
         
         teams.sort(key=lambda x: x[1], reverse=True)
+        self.set_teams(teams)
         return teams
 
     def set_teams(self, teams):
         # Set the teams attribute with the generated teams
         self.teams = teams
 
-    # def print_teams(self):
-    #     # Print the teams and their scores
-    #     for idx, (team, score) in enumerate(self.teams):
-    #         print(f"Generating team {idx + 1}...")
-    #         print(f"Team {idx + 1}:")
-    #         for member in team:
-    #             try:
-    #                 name = self.df.loc[member, 'Name']
-    #                 individual_score = self.calculate_individual_scores()[member]
-    #                 print(f"  - {name} (Score: {individual_score:.4f})")
-    #             except KeyError as e:
-    #                 print(f"Error retrieving name for member {member}: {e}")
-    #         print(f"Team Score: {score:.4f}\n")
+    def print_teams(self):
+        # Print the teams and their scores
+        for idx, (team, score) in enumerate(self.teams):
+            print(f"Generating team {idx + 1}...")
+            print(f"Team {idx + 1}:")
+            for member in team:
+                try:
+                    name = self.df.loc[member, 'Name']
+                    print(f"  - {name}")
+                except KeyError as e:
+                    print(f"Error retrieving name for member {member}: {e}")
+            print(f"Team Score: {score:.4f}\n")
