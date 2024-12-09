@@ -15,22 +15,33 @@ class TeamForming:
         # Calculate individual scores for each member based on their skill attributes
         scores = {}
         for member in self.df.index:
+            print(f"Calculating score for index {member}, name: {self.df.loc[member, 'Name']}...")
             score = 0
             for attribute in self.skill_attributes:
                 try:
-                    value = self.df.loc[member, attribute]
-                    scale_info = self.questionnaire_interpreter['SkillLevelAssessment'].get(attribute, {})
-                    scale = scale_info.get('scale', {}) if isinstance(scale_info, dict) else {}
-                    if isinstance(scale, dict):
-                        for key, val in scale.items():
-                            if val == value:
-                                score += int(key) * self.normalized_current_weights.get(attribute, 1)
-                                break
-                    elif isinstance(scale, list) and value in scale:
-                        score += (scale.index(value) + 1) * self.normalized_current_weights.get(attribute, 1)
+                    values = self.df.loc[member, attribute].split(', ')
+                    for value in values:
+                        print(f"Processing attribute: {attribute}, entry: {value}")
+                        scale_info = self.questionnaire_interpreter['SkillLevelAssessment'].get(attribute, {})
+                        scale = scale_info.get('scale', {}) if isinstance(scale_info, dict) else {}
+                        if isinstance(scale, dict):
+                            for key, val in scale.items():
+                                if isinstance(val, list) and value in val:
+                                    print(f"Value {key} x Weight {self.normalized_current_weights.get(attribute, 1)}")
+                                    score += int(key) * self.normalized_current_weights.get(attribute, 1)
+                                    print(f"Score: {score}")
+                                    break
+                                if val == value:
+                                    print(f"Value {key} x Weight {self.normalized_current_weights.get(attribute, 1)}")
+                                    score += int(key) * self.normalized_current_weights.get(attribute, 1)
+                                    print(f"Score: {score}")
+                                    break
+                        elif isinstance(scale, list) and value in scale:
+                            score += (scale.index(value) + 1) * self.normalized_current_weights.get(attribute, 1)
                 except KeyError as e:
                     print(f"Error processing attribute {attribute} for member {member}: {e}")
             scores[member] = score
+            print(f"Member: {member}, Total Score: {score} \n")
         return scores
 
     def calculate_team_score(self, team, individual_scores):
@@ -88,16 +99,16 @@ class TeamForming:
         # Set the teams attribute with the generated teams
         self.teams = teams
 
-    def print_teams(self):
-        # Print the teams and their scores
-        for idx, (team, score) in enumerate(self.teams):
-            print(f"Generating team {idx + 1}...")
-            print(f"Team {idx + 1}:")
-            for member in team:
-                try:
-                    name = self.df.loc[member, 'Name']
-                    individual_score = self.calculate_individual_scores()[member]
-                    print(f"  - {name} (Score: {individual_score:.4f})")
-                except KeyError as e:
-                    print(f"Error retrieving name for member {member}: {e}")
-            print(f"Team Score: {score:.4f}\n")
+    # def print_teams(self):
+    #     # Print the teams and their scores
+    #     for idx, (team, score) in enumerate(self.teams):
+    #         print(f"Generating team {idx + 1}...")
+    #         print(f"Team {idx + 1}:")
+    #         for member in team:
+    #             try:
+    #                 name = self.df.loc[member, 'Name']
+    #                 individual_score = self.calculate_individual_scores()[member]
+    #                 print(f"  - {name} (Score: {individual_score:.4f})")
+    #             except KeyError as e:
+    #                 print(f"Error retrieving name for member {member}: {e}")
+    #         print(f"Team Score: {score:.4f}\n")

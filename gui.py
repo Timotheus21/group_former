@@ -197,7 +197,7 @@ class GUI:
 
             self.teams = self.teamforming.generate_teams()
             self.teamforming.set_teams(self.teams)  # Set teams attribute
-            self.teamforming.print_teams()  # Print teams with names
+            #self.teamforming.print_teams()  # Print teams with names
             for idx, (team, score) in enumerate(self.teams):
                 button = ttk.Button(
                     self.team_buttons_frame,

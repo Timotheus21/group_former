@@ -11,19 +11,10 @@
       },
       "ProgrammingCourses": {
         "scale": {
-        "1": "GPT (Grundlegende Programmiertechniken)",
-        "2": "FPT (Fortgeschrittene Programmiertechniken)"
+        "1": "GPT",
+        "2": "FPT"
         }
       },
-      "PrimaryLanguage": [
-        "Python",
-        "Java",
-        "JavaScript",
-        "C++",
-        "C#",
-        "Ruby",
-        "HTML/CSS"
-      ],
       "PythonProficiency": {
         "scale": {
           "1": "beginner", 
@@ -44,15 +35,15 @@
         },
       "ProgrammingContext": {
         "scale": {
-          "4": "Work/Professional – As part of my job or for professional projects.",
-          "3": "Hobby/Personal Projects – For fun, personal interest.",
-          "2": "Learning/Academic Tasks – To complete tasks for educational purposes, such as passing tests or assignments.",
-          "1": "Exploring/Beginners – Just exploring programming or experimenting."
+          "1": "Exploring/Beginners. Just exploring programming or experimenting.",
+          "2": "Learning/Academic Tasks. To complete tasks for educational purposes. Such as passing tests or assignments.",
+          "3": "Hobby/Personal Projects. For fun or personal interest.",
+          "4": "Work/Professional. As part of my job or for professional projects."
         }
       },
       "PracticedConcepts": {
         "scale": {
-          "1": ["variables", "conditions (if-else)", "loops (for, while)"],
+          "1": ["variables", "conditions (if-else)", "loops (for or while)"],
           "2": ["functions", "saving/reading data", "recursion", "OOP (Object Oriented Programming)"]
         }
       },
