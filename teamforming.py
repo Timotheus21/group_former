@@ -1,8 +1,8 @@
-class TeamFormation:
+class TeamForming:
     def __init__(self, data_processor):
         # Initialize the TeamFormation class with data from the data_processor
+        self.data_processor = data_processor
         self.df = data_processor.get_data()
-        self.normalized_current_weights = data_processor.get_normalized_current_weights()
         self.skill_attributes = [
             'ProgrammingExperience', 'ProgrammingCourses', 
             'PythonProficiency', 'ProgrammingExperienceYears',
@@ -11,6 +11,7 @@ class TeamFormation:
         self.questionnaire_interpreter = data_processor.get_questionnaire_interpreter()
 
     def calculate_individual_scores(self):
+        self.normalized_current_weights = self.data_processor.get_normalized_current_weights()
         # Calculate individual scores for each member based on their skill attributes
         scores = {}
         for member in self.df.index:

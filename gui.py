@@ -3,12 +3,12 @@ from tkinter import ttk
 from pygame import mixer
 
 class GUI:
-    def __init__(self, root, data_processor, team_formation, visualization, tooltip):
+    def __init__(self, root, data_processor, teamforming, visualization, tooltip):
         self.root = root
         self.root.configure(bg='#5d33bd')
         self.root.geometry("650x650")  # Set initial size with max width and specific height
         self.data_processor = data_processor
-        self.team_formation = team_formation
+        self.teamforming = teamforming
         self.visualization = visualization
         self.tooltip = tooltip
         mixer.init()
@@ -85,7 +85,7 @@ class GUI:
         self.generate_button = ttk.Button(
             self.buttons_frame,
             text="Generate Teams",
-            command=lambda: [self.load_weights("current"), self.generate_teams(), self.play_sound()])
+            command=lambda: [self.generate_teams(), self.play_sound()])
         self.generate_button.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
 
         # Button to save current weights
@@ -176,9 +176,6 @@ class GUI:
             elif weight_type == 'custom':
                 # Load custom weights from the DataProcessor
                 self.data_processor.custom_weights = self.data_processor.load_weights(self.data_processor.CUSTOM_WEIGHT_FILE)
-            elif weight_type == 'current':
-                # Update the custom weights to match the current weights
-                self.data_processor.custom_weights = self.data_processor.current_weights.copy()
         
             # Update the weight variables and labels in the GUI
             for attribute, weight in self.data_processor.custom_weights.items():
@@ -189,8 +186,8 @@ class GUI:
             print(f"Error loading {weight_type} weights: {e}")
 
     def update_current_weights(self):
-        current_weights = {attribute: var.get() for attribute, var in self.weight_vars.items()}
-        self.data_processor.current_weights = current_weights
+        self.data_processor.current_weights = {attribute: var.get() for attribute, var in self.weight_vars.items()}
+        print(f"Current weights: {self.data_processor.current_weights}")
 
     # Method to generate teams
     def generate_teams(self):
@@ -198,10 +195,9 @@ class GUI:
             for widget in self.team_buttons_frame.winfo_children():
                 widget.destroy()
 
-            # self.update_weights()
-            self.teams = self.team_formation.generate_teams()
-            self.team_formation.set_teams(self.teams)  # Set teams attribute
-            self.team_formation.print_teams()  # Print teams with names
+            self.teams = self.teamforming.generate_teams()
+            self.teamforming.set_teams(self.teams)  # Set teams attribute
+            self.teamforming.print_teams()  # Print teams with names
             for idx, (team, score) in enumerate(self.teams):
                 button = ttk.Button(
                     self.team_buttons_frame,
@@ -217,47 +213,3 @@ class GUI:
             self.visualization.visualize(team, self.data_processor.get_data())
         except Exception as e:
             print(f"Error visualizing teams: {e}")
-
-    # Method to save weights
-    # def save_weights(self):
-    #     self.update_weights()  # Ensure weights are updated before saving
-    #     try:
-    #         self.data_processor.save_weights()
-    #     except Exception as e:
-    #         print(f"Error saving weights: {e}")
-
-    # Method to load weights from a file
-    # def load_weights(self, filename):
-    #     try:
-    #         self.data_processor.weights = self.data_processor.load_weights(filename)
-    #         self.update_weights_vars()
-    #         self.update_weight_labels()  # Ensure labels are updated after loading weights
-    #     except Exception as e:
-    #         print(f"Error loading weights from {filename}: {e}")
-
-    # Method to update weight variables in the GUI
-    # def update_weights_vars(self):
-    #     try:
-    #         for attribute, weight in self.data_processor.get_weights().items():
-    #             self.weight_vars[attribute].set(weight)
-    #         self.update_weight_labels()  # Ensure labels are updated when variables are updated
-    #     except Exception as e:
-    #         print(f"Error updating weight variables: {e}")
-
-    # Method to update weight labels in the GUI
-    # def update_weight_labels(self):
-    #     try:
-    #         for attribute, weight in self.data_processor.get_weights().items():
-    #             self.weight_vars[attribute].set(weight)
-    #     except Exception as e:
-    #         print(f"Error updating weight labels: {e}")
-
-    # Method to update weights in data processor
-    # def update_weights(self):
-    #     try:
-    #         new_weights = {k: v.get() for k, v in self.weight_vars.items()}
-    #         self.data_processor.weights = self.data_processor.normalize_weights(new_weights)
-    #         self.team_formation.weights = self.data_processor.get_weights()
-    #         #self.update_weight_labels()  # Update the weight labels
-    #     except Exception as e:
-    #         print(f"Error updating weights: {e}")

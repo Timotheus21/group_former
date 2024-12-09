@@ -7,7 +7,7 @@ from tkinter.filedialog import askopenfilename
 class DataProcessor:
     # File paths for standard weights, custom weights, and questionnaire interpreter
     STD_WEIGHT_FILE = 'storage/std_weights.csv'
-    CUSTOM_WEIGHT_FILE = 'storage/new_weights.csv'
+    CUSTOM_WEIGHT_FILE = 'storage/custom_weights.csv'
     QUESTIONNAIRE_FILE = 'storage/questionnaire_interpreter.json'
 
     def __init__(self):
