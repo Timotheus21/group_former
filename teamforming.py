@@ -44,6 +44,21 @@ class TeamForming:
             scores[member] = score
             print(f"Index: {member}, Total Score: {score} \n")
         return scores
+    
+    def calculate_compatability_score(self, member1, member2):
+        self.homogenous_attributes = self.data_processor.get_homogenous_attributes()
+        self.heterogenous_attributes = self.data_processor.get_heterogenous_attributes()
+        compatibility_score = 0
+        try:
+            for attribute in self.homogenous_attributes:
+                if self.df.loc[member1, attribute] == self.df.loc[member2, attribute]:
+                    compatibility_score += 1
+            for attribute in self.heterogenous_attributes:
+                if self.df.loc[member1, attribute] != self.df.loc[member2, attribute]:
+                    compatibility_score += 1
+        except KeyError as e:
+            print(f"No homogenous or heterogenous attributes found: {e}")
+        return compatibility_score
 
     def calculate_team_score(self, team, individual_scores):
         # Calculate the total score for a team by summing individual scores

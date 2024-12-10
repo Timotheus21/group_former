@@ -18,7 +18,7 @@ class GUI:
 
         # Initialize weight variables from data processor
         self.weight_vars = {attribute: tk.DoubleVar(value=weight) for attribute, weight in self.data_processor.get_weights().items()}
-        self.weight_labels = {}
+        self.weight_labels = {} # Store the labels for later updates
 
         # Configure grid weights for the root window
         self.root.grid_rowconfigure(0, weight=1)
@@ -54,7 +54,7 @@ class GUI:
                 text="+",
                 command=lambda a=attribute: self.adjust_weight(a, 1), style='TButton')
             increase_button.grid(row=i, column=2, padx=5, pady=5)
-            self.tooltip(increase_button, "Increase the weight of this attribute")
+            self.tooltip(increase_button, "Increase the weight of this attribute.")
 
             # Button to decrease weight
             decrease_button = ttk.Button(
@@ -62,8 +62,23 @@ class GUI:
                 text="-",
                 command=lambda a=attribute: self.adjust_weight(a, -1), style='TButton')
             decrease_button.grid(row=i, column=3, padx=5, pady=5)
-            self.tooltip(decrease_button, "Decrease the weight of this attribute")
+            self.tooltip(decrease_button, "Decrease the weight of this attribute.")
+            
+            is_matched = tk.BooleanVar()
 
+            self.match_differentiate_checkbutton = ttk.Checkbutton(
+                self.weights_frame,
+                variable=is_matched,
+                onvalue=True,
+                offvalue=False,
+                command=lambda a=attribute: self.handle_checkbox_toggle(a, is_matched),
+                style='TCheckbutton',
+                text="Matched"
+            )
+            self.match_differentiate_checkbutton.grid(row=i, column=4, padx=5, pady=5)
+            self.tooltip(self.match_differentiate_checkbutton, "Toggle between matching and differentiating this attribute.")
+
+            self.root.update_idletasks()  # Ensure the window updates correctly
 
         # Frame to hold team buttons on the right
         self.team_buttons_frame = ttk.Frame(self.root)
@@ -87,6 +102,7 @@ class GUI:
             text="Generate Teams",
             command=lambda: [self.generate_teams(), self.play_sound()])
         self.generate_button.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
+        self.tooltip(self.generate_button, "Generate teams based on the current weights.")
 
         # Button to save current weights
         self.save_weights_button = ttk.Button(
@@ -94,6 +110,7 @@ class GUI:
             text="Save Current Weights",
             command=lambda: [self.data_processor.save_weights(), self.play_sound()])
         self.save_weights_button.grid(row=1, column=0, padx=10, pady=10, sticky=tk.W)
+        self.tooltip(self.save_weights_button, "Save the current weights to a file.")
 
         # Button to load custom weights
         self.load_custom_weights_button = ttk.Button(
@@ -102,6 +119,7 @@ class GUI:
             command=lambda: [self.load_weights("custom"), self.play_sound()]
         )
         self.load_custom_weights_button.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
+        self.tooltip(self.load_custom_weights_button, "Load custom weights from a file.")
 
         # Button to load standard weights
         self.load_std_weights_button = ttk.Button(
@@ -110,6 +128,15 @@ class GUI:
             command=lambda: [self.load_weights("standard"), self.play_sound()]
         )
         self.load_std_weights_button.grid(row=4, column=0, padx=10, pady=10, sticky=tk.W)
+        self.tooltip(self.load_std_weights_button, "Load standard weights from a file.")
+
+        self.show_configuration_button = ttk.Button(
+            self.buttons_frame,
+            text="Show Current Configuration",
+            command=lambda: self.data_processor.show_configuration()
+        )
+        self.show_configuration_button.grid(row=5, column=0, padx=10, pady=10, sticky=tk.W)
+        self.tooltip(self.show_configuration_button, "Show the current configuration of the data processor.")
 
     def create_weights_frame(self):
         self.weights_canvas = tk.Canvas(self.root, bg='#5d33bd', height=500)  # Set a fixed height for the canvas
@@ -153,6 +180,19 @@ class GUI:
             mixer.music.play()
         except Exception as e:
             print(f"Error playing sound: {e}")
+
+    def handle_checkbox_toggle(self, attribute, current_var):
+        is_homogeneous = current_var.get()
+        
+        # Update the text of the checkbutton based on the state
+        if is_homogeneous:
+            self.match_differentiate_checkbutton.config(text="Matched")
+            print(f"Attribute {attribute} added to homogeneous list.")
+            self.data_processor.add_homogenous_attribute(attribute)
+        else:
+            self.match_differentiate_checkbutton.config(text="Differentiate")
+            print(f"Attribute {attribute} added to heterogeneous list.")
+            self.data_processor.add_heterogenous_attribute(attribute)
 
     # Method to adjust weight
     def adjust_weight(self, attribute, delta=0):
@@ -215,4 +255,3 @@ class GUI:
             self.visualization.visualize(team, self.data_processor.get_data())
         except Exception as e:
             print(f"Error visualizing teams: {e}")
-            

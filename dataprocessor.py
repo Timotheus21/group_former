@@ -17,6 +17,8 @@ class DataProcessor:
         self.custom_weights = self.load_weights(self.CUSTOM_WEIGHT_FILE)
         self.current_weights = self.weights.copy()
         self.questionnaire_interpreter = self.load_questionnaire_interpreter()
+        self.homogenous_attributes = []
+        self.heterogenous_attributes = []
 
     def load_csv_file(self):
         # Open file dialog to select a CSV file
@@ -76,6 +78,22 @@ class DataProcessor:
         except Exception as e:
             print(f"Error loading questionnaire interpreter: {e}")
             return {}
+        
+    def add_homogenous_attribute(self, attribute):
+        # Add a homogenous attribute to the list and remove it from the heterogenous list
+        if attribute not in self.homogenous_attributes:
+            self.homogenous_attributes.append(attribute)
+            print(f"{self.homogenous_attributes}")
+        if attribute in self.heterogenous_attributes:
+            self.heterogenous_attributes.remove(attribute)
+
+    def add_heterogenous_attribute(self, attribute):
+        # Add a heterogenous attribute to the list and remove it from the homogenous list
+        if attribute not in self.heterogenous_attributes:
+            self.heterogenous_attributes.append(attribute)
+            print(f"{self.heterogenous_attributes}")
+        if attribute in self.homogenous_attributes:
+            self.homogenous_attributes.remove(attribute)
 
     def get_data(self):
         # Return the loaded data
@@ -108,3 +126,11 @@ class DataProcessor:
     def get_questionnaire_interpreter(self):
         # Return the loaded questionnaire interpreter
         return self.questionnaire_interpreter
+    
+    def get_homogenous_attributes(self):
+        # Return the homogenous attributes
+        return self.homogenous_attributes
+    
+    def get_heterogenous_attributes(self):
+        # Return the heterogenous attributes
+        return self.heterogenous_attributes
