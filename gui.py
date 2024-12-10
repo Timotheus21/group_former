@@ -39,6 +39,9 @@ class GUI:
         # Create a frame for adjusting weights in the middle
         self.create_weights_frame()
 
+        self.checkbox_vars = {} # Store the checkbox variables for later updates
+        self.checkbuttons = {} # Store the checkbuttons for later updates
+
         # Add labels and buttons for each weight attribute
         for i, (attribute, weight) in enumerate(self.data_processor.weights.items()):
             label = ttk.Label(self.weights_frame, text=attribute)
@@ -63,22 +66,23 @@ class GUI:
                 command=lambda a=attribute: self.adjust_weight(a, -1), style='TButton')
             decrease_button.grid(row=i, column=3, padx=5, pady=5)
             self.tooltip(decrease_button, "Decrease the weight of this attribute.")
-            
-            is_matched = tk.BooleanVar()
 
-            self.match_differentiate_checkbutton = ttk.Checkbutton(
+            self.checkbox_vars[attribute] = tk.BooleanVar(value=True) # Set the default state to True
+            print(f"Direct state check for {attribute}: {self.checkbox_vars[attribute].get()}")
+
+            match_differentiate_checkbutton = ttk.Checkbutton(
                 self.weights_frame,
-                variable=is_matched,
+                variable=self.checkbox_vars[attribute],
                 onvalue=True,
                 offvalue=False,
-                command=lambda a=attribute: self.handle_checkbox_toggle(a, is_matched),
+                command=lambda a=attribute: self.handle_checkbox_toggle(a),
                 style='TCheckbutton',
                 text="Matched"
             )
-            self.match_differentiate_checkbutton.grid(row=i, column=4, padx=5, pady=5)
-            self.tooltip(self.match_differentiate_checkbutton, "Toggle between matching and differentiating this attribute.")
+            match_differentiate_checkbutton.grid(row=i, column=4, padx=5, pady=5)
+            self.tooltip(match_differentiate_checkbutton, "Toggle between matching and differentiating this attribute.")
 
-            self.root.update_idletasks()  # Ensure the window updates correctly
+            self.checkbuttons[attribute] = match_differentiate_checkbutton
 
         # Frame to hold team buttons on the right
         self.team_buttons_frame = ttk.Frame(self.root)
@@ -141,6 +145,7 @@ class GUI:
     def create_weights_frame(self):
         self.weights_canvas = tk.Canvas(self.root, bg='#5d33bd', height=500)  # Set a fixed height for the canvas
         self.weights_frame = ttk.Frame(self.weights_canvas, style='TLabel')
+        self.weights_frame.pack()
         self.weights_scrollbar = ttk.Scrollbar(self.root, orient="vertical", command=self.weights_canvas.yview)
 
         # Configure the scroll region of the canvas
@@ -181,16 +186,16 @@ class GUI:
         except Exception as e:
             print(f"Error playing sound: {e}")
 
-    def handle_checkbox_toggle(self, attribute, current_var):
-        is_homogeneous = current_var.get()
-        
+    def handle_checkbox_toggle(self, attribute):
+        is_homogeneous = self.checkbox_vars[attribute].get()
+        print(f"Checkbox toggled for {attribute}: {is_homogeneous}")        
         # Update the text of the checkbutton based on the state
         if is_homogeneous:
-            self.match_differentiate_checkbutton.config(text="Matched")
+            self.checkbuttons[attribute].config(text="Matched")
             print(f"Attribute {attribute} added to homogeneous list.")
             self.data_processor.add_homogenous_attribute(attribute)
         else:
-            self.match_differentiate_checkbutton.config(text="Differentiate")
+            self.checkbuttons[attribute].config(text="Differentiate")
             print(f"Attribute {attribute} added to heterogeneous list.")
             self.data_processor.add_heterogenous_attribute(attribute)
 
