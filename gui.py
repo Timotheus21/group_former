@@ -30,9 +30,6 @@ class GUI:
         self.resize_id = None  # Add a variable to store the resize event ID
 
     def create_widgets(self):
-        # Configure styles for the widgets
-        self.configure_styles()
-
         # Create a frame for the buttons on the left
         self.create_buttons_frame()
 
@@ -43,12 +40,12 @@ class GUI:
         self.checkbuttons = {} # Store the checkbuttons for later updates
 
         # Add labels and buttons for each weight attribute
-        for i, (attribute, weight) in enumerate(self.data_processor.weights.items()):
+        for index, (attribute, weight) in enumerate(self.data_processor.weights.items()):
             label = ttk.Label(self.weights_frame, text=attribute)
-            label.grid(row=i, column=0, sticky=tk.W)
+            label.grid(row=index, column=0, sticky=tk.W)
     
             label_weight = ttk.Label(self.weights_frame, text=weight)
-            label_weight.grid(row=i, column=1, sticky=tk.W)
+            label_weight.grid(row=index, column=1, sticky=tk.W)
             self.weight_labels[attribute] = label_weight # Store the label for later updates
 
             # Button to increase weight
@@ -56,7 +53,7 @@ class GUI:
                 self.weights_frame,
                 text="+",
                 command=lambda a=attribute: self.adjust_weight(a, 1), style='TButton')
-            increase_button.grid(row=i, column=2, padx=5, pady=5)
+            increase_button.grid(row=index, column=2, padx=5, pady=5)
             self.tooltip(increase_button, "Increase the weight of this attribute.")
 
             # Button to decrease weight
@@ -64,37 +61,14 @@ class GUI:
                 self.weights_frame,
                 text="-",
                 command=lambda a=attribute: self.adjust_weight(a, -1), style='TButton')
-            decrease_button.grid(row=i, column=3, padx=5, pady=5)
+            decrease_button.grid(row=index, column=3, padx=5, pady=5)
             self.tooltip(decrease_button, "Decrease the weight of this attribute.")
 
-            self.checkbox_vars[attribute] = tk.BooleanVar(value=True) # Set the default state to True
-            print(f"Direct state check for {attribute}: {self.checkbox_vars[attribute].get()}")
-
-            match_differentiate_checkbutton = ttk.Checkbutton(
-                self.weights_frame,
-                variable=self.checkbox_vars[attribute],
-                onvalue=True,
-                offvalue=False,
-                command=lambda a=attribute: self.handle_checkbox_toggle(a),
-                style='TCheckbutton',
-                text="Matched"
-            )
-            match_differentiate_checkbutton.grid(row=i, column=4, padx=5, pady=5)
-            self.tooltip(match_differentiate_checkbutton, "Toggle between matching and differentiating this attribute.")
-
-            self.checkbuttons[attribute] = match_differentiate_checkbutton
+            self.create_checkbutton(index, attribute)
 
         # Frame to hold team buttons on the right
         self.team_buttons_frame = ttk.Frame(self.root)
         self.team_buttons_frame.grid(row=0, column=3, padx=10, pady=10, sticky=tk.NW)
-
-    def configure_styles(self):
-        style = ttk.Style()
-        style.configure("TLabel", background='#5d33bd', foreground='white')  # Ensure text is visible
-        style.configure("TButton", background='#7a5dc7', font=("Helvetica", 10, "bold"), padding=5)
-        style.map("TButton", 
-                  background=[('active', '#45a049'), ('!active', '#4CAF50')],
-                  foreground=[('active', 'white'), ('!active', 'black')])
 
     def create_buttons_frame(self):
         self.buttons_frame = ttk.Frame(self.root)
@@ -120,8 +94,7 @@ class GUI:
         self.load_custom_weights_button = ttk.Button(
             self.buttons_frame, 
             text="Load Custom Weights", 
-            command=lambda: [self.load_weights("custom"), self.play_sound()]
-        )
+            command=lambda: [self.load_weights("custom"), self.play_sound()])
         self.load_custom_weights_button.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
         self.tooltip(self.load_custom_weights_button, "Load custom weights from a file.")
 
@@ -129,16 +102,14 @@ class GUI:
         self.load_std_weights_button = ttk.Button(
             self.buttons_frame, 
             text="Load Standard Weights", 
-            command=lambda: [self.load_weights("standard"), self.play_sound()]
-        )
+            command=lambda: [self.load_weights("standard"), self.play_sound()])
         self.load_std_weights_button.grid(row=4, column=0, padx=10, pady=10, sticky=tk.W)
         self.tooltip(self.load_std_weights_button, "Load standard weights from a file.")
 
         self.show_configuration_button = ttk.Button(
             self.buttons_frame,
             text="Show Current Configuration",
-            command=lambda: self.data_processor.show_configuration()
-        )
+            command=lambda: self.data_processor.show_configuration())
         self.show_configuration_button.grid(row=5, column=0, padx=10, pady=10, sticky=tk.W)
         self.tooltip(self.show_configuration_button, "Show the current configuration of the data processor.")
 
@@ -161,6 +132,24 @@ class GUI:
         # Place the canvas and scrollbar in the grid
         self.weights_canvas.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
         self.weights_scrollbar.grid(row=0, column=2, padx=(0, 10), pady=10, sticky="ns")
+
+    def create_checkbutton(self, row, attribute):
+        # Create BooleanVar for the Checkbutton
+        self.checkbox_vars[attribute] = tk.BooleanVar(value=True)
+
+        # Create and configure the Checkbutton
+        checkbutton = ttk.Checkbutton(
+            self.weights_frame,
+            variable=self.checkbox_vars[attribute],
+            onvalue=True,
+            offvalue=False,
+            command=lambda: self.handle_checkbox_toggle(attribute),
+            )
+        checkbutton.grid(row=row, column=4, padx=5, pady=5)
+        self.tooltip(checkbutton, "Toggle between matching and differentiating this attribute.")
+
+        # Store Checkbutton for reference
+        self.checkbuttons[attribute] = checkbutton
 
     def on_weights_frame_configure(self, event):
         self.weights_canvas.config(scrollregion=self.weights_canvas.bbox("all"))
@@ -188,15 +177,10 @@ class GUI:
 
     def handle_checkbox_toggle(self, attribute):
         is_homogeneous = self.checkbox_vars[attribute].get()
-        print(f"Checkbox toggled for {attribute}: {is_homogeneous}")        
         # Update the text of the checkbutton based on the state
         if is_homogeneous:
-            self.checkbuttons[attribute].config(text="Matched")
-            print(f"Attribute {attribute} added to homogeneous list.")
             self.data_processor.add_homogenous_attribute(attribute)
         else:
-            self.checkbuttons[attribute].config(text="Differentiate")
-            print(f"Attribute {attribute} added to heterogeneous list.")
             self.data_processor.add_heterogenous_attribute(attribute)
 
     # Method to adjust weight

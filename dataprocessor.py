@@ -52,6 +52,7 @@ class DataProcessor:
             return {}
 
     def normalize_weights(self, weights):
+        print(f"Normalizing weights: {weights}")
         # Normalize weights so that their sum equals 1 and they fall within the range 0 to 1
         total_weight = sum(weights.values())
         if total_weight == 0:
@@ -65,6 +66,7 @@ class DataProcessor:
             print("Weights out of range, adjusting to fit within 0 to 1.")
             range_weight = max_weight - min_weight
             normalized_weights = {k: (v - min_weight) / range_weight for k, v in normalized_weights.items()}
+        print(f"Normalized weights: {normalized_weights}")
         return normalized_weights
 
     def load_questionnaire_interpreter(self):
@@ -83,7 +85,7 @@ class DataProcessor:
         # Add a homogenous attribute to the list and remove it from the heterogenous list
         if attribute not in self.homogenous_attributes:
             self.homogenous_attributes.append(attribute)
-            print(f"{self.homogenous_attributes}")
+            print(f"Homogenous: {self.homogenous_attributes}")
         if attribute in self.heterogenous_attributes:
             self.heterogenous_attributes.remove(attribute)
 
@@ -91,7 +93,7 @@ class DataProcessor:
         # Add a heterogenous attribute to the list and remove it from the homogenous list
         if attribute not in self.heterogenous_attributes:
             self.heterogenous_attributes.append(attribute)
-            print(f"{self.heterogenous_attributes}")
+            print(f"Heterogenous: {self.heterogenous_attributes}")
         if attribute in self.homogenous_attributes:
             self.homogenous_attributes.remove(attribute)
 
