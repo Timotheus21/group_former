@@ -3,11 +3,7 @@ class TeamForming:
         # Initialize the TeamFormation class with data from the data_processor
         self.data_processor = data_processor
         self.df = data_processor.get_data()
-        self.skill_attributes = [
-            'ProgrammingExperience', 'ProgrammingCourses', 
-            'PythonProficiency', 'ProgrammingExperienceYears',
-            'ProgrammingContext', 'PracticedConcepts', 'GitFamiliarity'
-        ]
+        self.skill_attributes = data_processor.get_skill_attributes()
         self.questionnaire_interpreter = data_processor.get_questionnaire_interpreter()
         self.teams = []
 

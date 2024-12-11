@@ -17,8 +17,26 @@ class DataProcessor:
         self.custom_weights = self.load_weights(self.CUSTOM_WEIGHT_FILE)
         self.current_weights = self.weights.copy()
         self.questionnaire_interpreter = self.load_questionnaire_interpreter()
-        self.homogenous_attributes = []
-        self.heterogenous_attributes = []
+
+        self.skill_attributes = [
+            'ProgrammingExperience', 'ProgrammingCourses', 
+            'PythonProficiency', 'ProgrammingExperienceYears',
+            'ProgrammingContext', 'PracticedConcepts', 'GitFamiliarity'
+        ]
+        self.motivation_attributes = [
+            'Motivations', 'PreferredLearning'
+        ]
+        self.project_attributes = [
+            'PreferredChallenge', 'PreferredGames'
+        ]
+        self.familiarity_attributes = [
+            'GroupImportance', 'KnownParticipants'
+        ]
+        self.background_attributes = [
+            'EducationLevel', 'StudyField', 'Gender', 'NativeLanguage', 'CulturalBackground'
+        ]
+        self.homogenous_attributes = self.flatten_lists([self.motivation_attributes, self.project_attributes, 'GroupImportance'])
+        self.heterogenous_attributes = self.flatten_lists([self.skill_attributes, self.background_attributes, 'KnownParticipants'])
 
     def load_csv_file(self):
         # Open file dialog to select a CSV file
@@ -81,20 +99,28 @@ class DataProcessor:
             print(f"Error loading questionnaire interpreter: {e}")
             return {}
         
+    def flatten_lists(self, lists):
+        # Flatten a list of lists
+        return [item for sublist in lists for item in (sublist if isinstance(sublist, list) else [sublist])]
+        
     def add_homogenous_attribute(self, attribute):
         # Add a homogenous attribute to the list and remove it from the heterogenous list
         if attribute not in self.homogenous_attributes:
+            print(f"Adding homogenous attribute: {attribute}")
             self.homogenous_attributes.append(attribute)
             print(f"Homogenous: {self.homogenous_attributes}")
         if attribute in self.heterogenous_attributes:
+            print(f"Removing heterogenous attribute: {attribute}")
             self.heterogenous_attributes.remove(attribute)
 
     def add_heterogenous_attribute(self, attribute):
         # Add a heterogenous attribute to the list and remove it from the homogenous list
         if attribute not in self.heterogenous_attributes:
+            print(f"Adding heterogenous attribute: {attribute}")
             self.heterogenous_attributes.append(attribute)
             print(f"Heterogenous: {self.heterogenous_attributes}")
         if attribute in self.homogenous_attributes:
+            print(f"Removing homogenous attribute: {attribute}")
             self.homogenous_attributes.remove(attribute)
 
     def get_data(self):
@@ -112,15 +138,7 @@ class DataProcessor:
     def get_current_weights(self):
         # Return the current weights
         return self.current_weights
-    
-    def get_normalized_weights(self):
-        # Return the normalized weights
-        return self.normalize_weights(self.weights)
-    
-    def get_normalized_custom_weights(self):
-        # Return the normalized custom weights
-        return self.normalize_weights(self.custom_weights)
-    
+
     def get_normalized_current_weights(self):
         # Return the normalized current weights
         return self.normalize_weights(self.current_weights)
@@ -129,10 +147,34 @@ class DataProcessor:
         # Return the loaded questionnaire interpreter
         return self.questionnaire_interpreter
     
+    def get_skill_attributes(self):
+        # Return the skill attributes
+        return self.skill_attributes
+    
+    def get_motivation_attributes(self):
+        # Return the motivation attributes
+        return self.motivation_attributes
+    
+    def get_project_attributes(self):
+        # Return the project attributes
+        return self.project_attributes
+    
+    def get_familiarity_attributes(self):
+        # Return the familiarity attributes
+        return self.familiarity_attributes
+    
+    def get_background_attributes(self):
+        # Return the background attributes
+        return self.background_attributes
+    
+    def get_other_attributes(self):
+        # Return all the attributes except the skill attributes
+        return self.motivation_attributes + self.project_attributes + self.familiarity_attributes + self.background_attributes
+    
     def get_homogenous_attributes(self):
-        # Return the homogenous attributes
+        # Return the flattened homogenous attributes
         return self.homogenous_attributes
     
     def get_heterogenous_attributes(self):
-        # Return the heterogenous attributes
+        # Return the flattened heterogenous attributes
         return self.heterogenous_attributes
