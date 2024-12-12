@@ -20,31 +20,61 @@ class GUI:
         self.weight_labels = {} # Store the labels for later updates
 
         # Configure grid weights for the root window
-        self.root.grid_rowconfigure(0, weight=1)
-        self.root.grid_columnconfigure(1, weight=1)
+        self.root.grid_rowconfigure(1, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
 
         # Create the GUI widgets
         self.create_widgets()
 
-        self.resize_id = None  # Add a variable to store the resize event ID
-
     def create_widgets(self):
-        # Add explanatory texts to the GUI
-        self.add_explanatory_texts()
-        # Create a frame for the buttons on the left
-        self.create_buttons_frame()
-
-        # Create a frame for adjusting weights in the middle
-        self.create_weights_frame()
-
         self.checkbox_vars = {} # Store the checkbox variables for later updates
         self.checkbuttons = {} # Store the checkbuttons for later updates
+
+        # Add explanatory texts to the GUI
+        self.create_top_frame()
+        # Create a frame for the buttons on the left
+        self.create_scrollable_area()
+
+        # Create a frame for adjusting weights in the middle
+        self.create_button_frame()
+
+    def create_top_frame(self):
+        self.top_frame = ttk.Frame(self.root)
+        self.top_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+
+        # Add a label for the overall program explanation
+        program_explanation = ttk.Label(
+            self.top_frame,
+            text=("Welcome to the Hackathon Group Former! This program helps you form teams based on various attributes. "
+                 "Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
+                 "Select whether the following attributes should be homogenous or heterogenous within teams."),
+            background='#5d33bd',
+            foreground='white',
+            wraplength=800
+        )
+        program_explanation.pack(fill="x")
+
+    def create_scrollable_area(self):
+        # Create a frame to hold the weights and checkboxes
+        self.scrollable_frame = ttk.Frame(self.root)
+        self.scrollable_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+
+        self.canvas = tk.Canvas(self.scrollable_frame, bg='#5d33bd')
+        scrollbar = ttk.Scrollbar(self.scrollable_frame, orient="vertical", command=self.canvas.yview)
+        self.weights_frame = ttk.Frame(self.canvas)
+
+        # Create a window in the canvas to hold the weights frame
+        self.canvas.create_window((0, 0), window=self.weights_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Bind the mousewheel to the canvas
+        self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
 
         # Add labels and buttons for each weight attribute
         for index, (attribute, weight) in enumerate(self.data_processor.weights.items()):
             label = ttk.Label(self.weights_frame, text=attribute)
             label.grid(row=index, column=0, sticky=tk.W)
-    
+
             label_weight = ttk.Label(self.weights_frame, text=weight)
             label_weight.grid(row=index, column=1, sticky=tk.W)
             self.weight_labels[attribute] = label_weight # Store the label for later updates
@@ -53,7 +83,7 @@ class GUI:
             increase_button = ttk.Button(
                 self.weights_frame,
                 text="+",
-                command=lambda a=attribute: self.adjust_weight(a, 1), style='TButton')
+                command=lambda a=attribute: self.adjust_weight(a, 1))
             increase_button.grid(row=index, column=2, padx=5, pady=5)
             self.tooltip(increase_button, "Increase the weight of this attribute.")
 
@@ -61,93 +91,93 @@ class GUI:
             decrease_button = ttk.Button(
                 self.weights_frame,
                 text="-",
-                command=lambda a=attribute: self.adjust_weight(a, -1), style='TButton')
+                command=lambda a=attribute: self.adjust_weight(a, -1))
             decrease_button.grid(row=index, column=3, padx=5, pady=5)
             self.tooltip(decrease_button, "Decrease the weight of this attribute.")
 
             self.create_checkbutton(index, attribute)
 
-        self.create_other_attributes_frame()
+        start_row = len(self.data_processor.weights.items())
+
+        for index, attribute in enumerate(self.data_processor.get_other_attributes()):
+            row = start_row + index
+            label = ttk.Label(self.weights_frame, text=attribute)
+            label.grid(row=row, column=0, padx=5, pady=5, sticky=tk.W)
+
+            # Create BooleanVars for the homogenous and heterogenous attributes
+            is_homogeneous = attribute in self.data_processor.get_homogenous_attributes()
+            checkbox_var = tk.BooleanVar(value=is_homogeneous)
+
+            self.checkbox_vars[attribute] = checkbox_var
+
+            # Create Checkbuttons for the homogenous and heterogenous attributes
+            checkbutton = ttk.Checkbutton(
+                self.weights_frame,
+                variable=checkbox_var,
+                onvalue=True,
+                offvalue=False,
+                command=lambda a=attribute: self.handle_checkbox_toggle(a))
+            checkbutton.grid(row=row, column=1, padx=5, pady=5, sticky=tk.W)
+            self.tooltip(checkbutton, "Toggle between matching and differentiating this attribute.")
+
+            self.checkbuttons[attribute] = checkbutton
+
+        # Bind the canvas to the scrollbar
+        self.weights_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+        self.canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
 
         # Frame to hold team buttons on the right
         self.team_buttons_frame = ttk.Frame(self.root)
-        self.team_buttons_frame.grid(row=0, column=4, padx=10, pady=10, sticky=tk.NW)
+        self.team_buttons_frame.grid(row=1, column=4, padx=10, pady=10, sticky=tk.NW)
 
-    def add_explanatory_texts(self):
-        # Add a label for the overall program explanation
-        program_explanation = ttk.Label(
-            self.root,
-            text="Welcome to the Hackathon Group Former! This program helps you form teams based on various attributes. "
-                 "Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
-                 "Select whether the following attributes should be homogenous or heterogenous within teams.",
-            background='#5d33bd',
-            foreground='white',
-            wraplength=400
-        )
-        program_explanation.grid(row=0, column=0, columnspan=1, padx=10, pady=10, sticky=tk.W)
+    def create_button_frame(self):
+        self.bottom_frame = ttk.Frame(self.root)
+        self.bottom_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky='ew')
 
-    def create_buttons_frame(self):
-        self.buttons_frame = ttk.Frame(self.root)
-        self.buttons_frame.grid(row=1, column=0, padx=10, pady=10, sticky=tk.NW)
+        self.bottom_frame.columnconfigure(0, weight=1)
+
+        buttons_frame = ttk.Frame(self.bottom_frame)
+        buttons_frame.grid(row=0, column=0)
 
         # Button to generate teams
-        self.generate_button = ttk.Button(
-            self.buttons_frame,
+        generate_button = ttk.Button(
+            buttons_frame,
             text="Generate Teams",
             command=lambda: [self.generate_teams(), self.play_sound()])
-        self.generate_button.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
-        self.tooltip(self.generate_button, "Generate teams based on the current weights.")
+        generate_button.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
+        self.tooltip(generate_button, "Generate teams based on the current weights.")
 
         # Button to save current weights
-        self.save_weights_button = ttk.Button(
-            self.buttons_frame,
+        save_weights_button = ttk.Button(
+            buttons_frame,
             text="Save Current Weights",
             command=lambda: [self.data_processor.save_weights(), self.play_sound()])
-        self.save_weights_button.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
-        self.tooltip(self.save_weights_button, "Save the current weights to a file.")
+        save_weights_button.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
+        self.tooltip(save_weights_button, "Save the current weights to a file.")
 
         # Button to load custom weights
-        self.load_custom_weights_button = ttk.Button(
-            self.buttons_frame, 
+        load_custom_weights_button = ttk.Button(
+            buttons_frame, 
             text="Load Custom Weights", 
             command=lambda: [self.load_weights("custom"), self.play_sound()])
-        self.load_custom_weights_button.grid(row=0, column=2, padx=10, pady=10, sticky=tk.W)
-        self.tooltip(self.load_custom_weights_button, "Load custom weights from a file.")
+        load_custom_weights_button.grid(row=0, column=2, padx=10, pady=10, sticky=tk.W)
+        self.tooltip(load_custom_weights_button, "Load custom weights from a file.")
 
         # Button to load standard weights
-        self.load_std_weights_button = ttk.Button(
-            self.buttons_frame, 
+        load_std_weights_button = ttk.Button(
+            buttons_frame, 
             text="Load Standard Weights", 
             command=lambda: [self.load_weights("standard"), self.play_sound()])
-        self.load_std_weights_button.grid(row=0, column=3, padx=10, pady=10, sticky=tk.W)
-        self.tooltip(self.load_std_weights_button, "Load standard weights from a file.")
+        load_std_weights_button.grid(row=0, column=3, padx=10, pady=10, sticky=tk.W)
+        self.tooltip(load_std_weights_button, "Load standard weights from a file.")
 
-        self.show_configuration_button = ttk.Button(
-            self.buttons_frame,
+        show_config_button = ttk.Button(
+            buttons_frame,
             text="Show Current Configuration",
             command=lambda: self.data_processor.show_configuration())
-        self.show_configuration_button.grid(row=0, column=4, padx=10, pady=10, sticky=tk.W)
-        self.tooltip(self.show_configuration_button, "Show the current configuration of the data processor.")
-
-    def create_weights_frame(self):
-        self.weights_canvas = tk.Canvas(self.root, bg='#5d33bd', height=500)  # Set a fixed height for the canvas
-        self.weights_frame = ttk.LabelFrame(self.weights_canvas, text='Programming Skill', style='TLabel')
-        self.weights_frame.pack()
-        self.weights_scrollbar = ttk.Scrollbar(self.root, orient="vertical", command=self.weights_canvas.yview)
-
-        # Configure the scroll region of the canvas
-        self.weights_frame.bind("<Configure>", self.on_weights_frame_configure)
-
-        # Create a window in the canvas to hold the weights frame
-        self.weights_canvas.create_window((0, 0), window=self.weights_frame, anchor="nw")
-        self.weights_canvas.configure(yscrollcommand=self.weights_scrollbar.set)
-
-        # Bind mouse wheel to scroll the canvas
-        self.weights_canvas.bind_all("<MouseWheel>", self.on_mouse_wheel)
-
-        # Place the canvas and scrollbar in the grid
-        self.weights_canvas.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
-        self.weights_scrollbar.grid(row=0, column=2, padx=(0, 10), pady=10, sticky="ns")
+        show_config_button.grid(row=0, column=4, padx=10, pady=10, sticky=tk.W)
+        self.tooltip(show_config_button, "Show the current configuration of the data processor.")
 
     def create_checkbutton(self, row, attribute):
         # Create BooleanVar for the Checkbutton
@@ -159,57 +189,15 @@ class GUI:
             variable=self.checkbox_vars[attribute],
             onvalue=True,
             offvalue=False,
-            command=lambda: self.handle_checkbox_toggle(attribute)
-            )
+            command=lambda: self.handle_checkbox_toggle(attribute))
         checkbutton.grid(row=row, column=4, padx=5, pady=5)
         self.tooltip(checkbutton, "Toggle between matching and differentiating this attribute.")
 
         # Store Checkbutton for reference
         self.checkbuttons[attribute] = checkbutton
 
-    def create_other_attributes_frame(self):
-        self.other_attributes_frame = ttk.LabelFrame(self.root, text="Other Attributes", style='TLabel')
-        self.other_attributes_frame.grid(row=0, column=3, padx=10, pady=10, sticky=tk.NW)
-
-        all_other_attributes = self.data_processor.get_other_attributes()
-        for index, attribute in enumerate(all_other_attributes):
-            ttk.Label(self.other_attributes_frame, text=attribute).grid(row=index, column=0, padx=5, pady=5, sticky=tk.W)
-
-            # Create BooleanVars for the homogenous and heterogenous attributes
-            is_homogeneous = attribute in self.data_processor.get_homogenous_attributes()
-            checkbox_var = tk.BooleanVar(value=is_homogeneous)
-
-            self.checkbox_vars[attribute] = checkbox_var
-
-            # Create Checkbuttons for the homogenous and heterogenous attributes
-            checkbutton = ttk.Checkbutton(
-                self.other_attributes_frame,
-                variable=checkbox_var,
-                onvalue=True,
-                offvalue=False,
-                command=lambda a=attribute: self.handle_checkbox_toggle(a)
-                )
-            checkbutton.grid(row=index, column=1, padx=5, pady=5, sticky=tk.W)
-            self.tooltip(checkbutton, "Toggle between matching and differentiating this attribute.")
-
-            self.checkbuttons[attribute] = checkbutton
-
-    def on_weights_frame_configure(self, event):
-        self.weights_canvas.config(scrollregion=self.weights_canvas.bbox("all"))
-
-    def on_resize(self, event):
-        if self.resize_id is not None:
-            self.root.after_cancel(self.resize_id)
-        self.resize_id = self.root.after(100, self._resize_canvas, event)
-
-    def _resize_canvas(self, event):
-        max_width = 305  # Set a maximum width for the canvas
-        canvas_width = min(event.width - 50, max_width)
-        self.weights_canvas.config(width=canvas_width)
-        self.root.update_idletasks()  # Ensure the window updates correctly
-
-    def on_mouse_wheel(self, event):
-        self.weights_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+    def on_mousewheel(self, event):
+        self.canvas.yview_scroll(-1 * int(event.delta / 120), "units")
 
     def play_sound(self):
         try:
@@ -277,7 +265,7 @@ class GUI:
                     self.team_buttons_frame,
                     text=f"Visualize Team {idx + 1}",
                     command=lambda t=team: self.visualize_teams(t))
-                button.pack(padx=5, pady=5)
+                button.pack(fill="x", padx=5, pady=5)
         except Exception as e:
             print(f"Error generating teams: {e}")
 
