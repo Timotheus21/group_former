@@ -2,6 +2,7 @@ import tkinter as tk
 import re
 from tkinter import ttk
 from pygame import mixer
+from config import Config
 
 class GUI:
     def __init__(self, root, data_processor, teamforming, visualization, tooltip):
@@ -77,7 +78,7 @@ class GUI:
             display_attribute = self.format_attribute_for_display(attribute)
 
             label = ttk.Label(self.weights_frame, text=display_attribute)
-            label.grid(row=index, column=0, sticky=tk.W)
+            label.grid(row=index, column=0, padx=5, pady=5, sticky=tk.W)
 
             label_weight = ttk.Label(self.weights_frame, text=int(weight))
             label_weight.grid(row=index, column=1, sticky=tk.W)
@@ -180,7 +181,7 @@ class GUI:
         show_config_button = ttk.Button(
             buttons_frame,
             text="Show Current Configuration",
-            command=lambda: self.data_processor.show_configuration())
+            command=lambda: Config(self.root, self.data_processor))
         show_config_button.grid(row=0, column=4, padx=10, pady=10, sticky=tk.W)
         self.tooltip(show_config_button, "Show the current configuration of the data processor.")
 
