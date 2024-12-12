@@ -187,7 +187,7 @@ class GUI:
 
     def create_checkbutton(self, row, attribute):
         # Create BooleanVar for the Checkbutton
-        self.checkbox_vars[attribute] = tk.BooleanVar(value=False)
+        self.checkbox_vars[attribute] = tk.BooleanVar(value=True)
 
         # Create and configure the Checkbutton
         checkbutton = ttk.Checkbutton(
@@ -269,7 +269,7 @@ class GUI:
             self.teams = self.teamforming.generate_teams()
             self.teamforming.set_teams(self.teams)  # Set teams attribute
             self.teamforming.print_teams()  # Print teams with names
-            for idx, (team, score) in enumerate(self.teams):
+            for idx, team in enumerate(self.teams):
                 button = ttk.Button(
                     self.team_buttons_frame,
                     text=f"Visualize Team {idx + 1}",

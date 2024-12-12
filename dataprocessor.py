@@ -35,8 +35,8 @@ class DataProcessor:
         self.background_attributes = [
             'EducationLevel', 'StudyField', 'Gender', 'NativeLanguage', 'CulturalBackground'
         ]
-        self.homogenous_attributes = self.flatten_lists([self.motivation_attributes, self.project_attributes, 'GroupImportance'])
-        self.heterogenous_attributes = self.flatten_lists([self.skill_attributes, self.background_attributes, 'KnownParticipants'])
+        self.homogenous_attributes = self.flatten_lists([self.skill_attributes, self.motivation_attributes, self.project_attributes, 'GroupImportance'])
+        self.heterogenous_attributes = self.flatten_lists([self.background_attributes, 'KnownParticipants'])
 
     def load_csv_file(self):
         # Open file dialog to select a CSV file
@@ -70,7 +70,6 @@ class DataProcessor:
             return {}
 
     def normalize_weights(self, weights):
-        print(f"Normalizing weights: {weights}")
         # Normalize weights so that their sum equals 1 and they fall within the range 0 to 1
         total_weight = sum(weights.values())
         if total_weight == 0:
@@ -84,7 +83,6 @@ class DataProcessor:
             print("Weights out of range, adjusting to fit within 0 to 1.")
             range_weight = max_weight - min_weight
             normalized_weights = {k: (v - min_weight) / range_weight for k, v in normalized_weights.items()}
-        print(f"Normalized weights: {normalized_weights}")
         return normalized_weights
 
     def load_questionnaire_interpreter(self):
