@@ -1,4 +1,5 @@
 import tkinter as tk
+import re
 from tkinter import ttk
 from pygame import mixer
 
@@ -40,26 +41,27 @@ class GUI:
 
     def create_top_frame(self):
         self.top_frame = ttk.Frame(self.root)
-        self.top_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+        self.top_frame.grid(row=0, column=0, columnspan=3, padx=10, pady=10, sticky="ew")
 
         # Add a label for the overall program explanation
         program_explanation = ttk.Label(
             self.top_frame,
             text=("Welcome to the Hackathon Group Former! This program helps you form teams based on various attributes. "
                  "Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
-                 "Select whether the following attributes should be homogenous or heterogenous within teams."),
+                 "Select whether the following attributes should be homogenous or heterogenous within teams by checking or unchecking the boxes."),
             background='#5d33bd',
             foreground='white',
-            wraplength=800
+            wraplength=800,
+            font=('Helvetica', 12, "bold")
         )
         program_explanation.pack(fill="x")
 
     def create_scrollable_area(self):
         # Create a frame to hold the weights and checkboxes
-        self.scrollable_frame = ttk.Frame(self.root)
+        self.scrollable_frame = ttk.Frame(self.root, style='Custom.TFrame')
         self.scrollable_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
-        self.canvas = tk.Canvas(self.scrollable_frame, bg='#5d33bd')
+        self.canvas = tk.Canvas(self.scrollable_frame, bg='#f0f0f0')
         scrollbar = ttk.Scrollbar(self.scrollable_frame, orient="vertical", command=self.canvas.yview)
         self.weights_frame = ttk.Frame(self.canvas)
 
@@ -72,10 +74,12 @@ class GUI:
 
         # Add labels and buttons for each weight attribute
         for index, (attribute, weight) in enumerate(self.data_processor.weights.items()):
-            label = ttk.Label(self.weights_frame, text=attribute)
+            display_attribute = self.format_attribute_for_display(attribute)
+
+            label = ttk.Label(self.weights_frame, text=display_attribute)
             label.grid(row=index, column=0, sticky=tk.W)
 
-            label_weight = ttk.Label(self.weights_frame, text=weight)
+            label_weight = ttk.Label(self.weights_frame, text=int(weight))
             label_weight.grid(row=index, column=1, sticky=tk.W)
             self.weight_labels[attribute] = label_weight # Store the label for later updates
 
@@ -101,7 +105,8 @@ class GUI:
 
         for index, attribute in enumerate(self.data_processor.get_other_attributes()):
             row = start_row + index
-            label = ttk.Label(self.weights_frame, text=attribute)
+            display_attribute = self.format_attribute_for_display(attribute)
+            label = ttk.Label(self.weights_frame, text=display_attribute)
             label.grid(row=row, column=0, padx=5, pady=5, sticky=tk.W)
 
             # Create BooleanVars for the homogenous and heterogenous attributes
@@ -206,6 +211,9 @@ class GUI:
         except Exception as e:
             print(f"Error playing sound: {e}")
 
+    def format_attribute_for_display(self, attribute):
+        return re.sub(r'(?<!^)(?=[A-Z])', ' ', attribute)
+
     def handle_checkbox_toggle(self, attribute):
         is_homogeneous = self.checkbox_vars[attribute].get()
         # Update the text of the checkbutton based on the state
@@ -222,7 +230,7 @@ class GUI:
             if new_weight < 0:
                 new_weight = 0
             self.weight_vars[attribute].set(new_weight)
-            self.weight_labels[attribute].config(text=new_weight)
+            self.weight_labels[attribute].config(text=int(new_weight))
             self.data_processor.custom_weights[attribute] = new_weight
             self.update_current_weights()
         except Exception as e:
@@ -242,7 +250,7 @@ class GUI:
             # Update the weight variables and labels in the GUI
             for attribute, weight in self.data_processor.custom_weights.items():
                 self.weight_vars[attribute].set(weight)
-                self.weight_labels[attribute].config(text=weight)
+                self.weight_labels[attribute].config(text=int(weight))
             self.update_current_weights()
         except Exception as e:
             print(f"Error loading {weight_type} weights: {e}")
