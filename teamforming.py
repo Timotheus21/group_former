@@ -44,7 +44,7 @@ class TeamForming:
             # Store the calculated score for the member
             scores[member] = score
         return scores
-    
+
     def calculate_compatibility_scores(self, member1, member2):
         # Get homogenous and heterogenous attributes
         self.homogenous_attributes = self.data_processor.get_homogenous_attributes()
@@ -58,38 +58,46 @@ class TeamForming:
             if self.df.loc[member1, attribute] != self.df.loc[member2, attribute]:
                 compatibility_score += 1
         return compatibility_score
-    
+
     def all_combinations(self, members, min_size, max_size):
+        # Generate all possible combinations of members with sizes ranging from min_size to max_size
         combinations = []
         for size in range(min_size, max_size + 1):
             combinations.extend(itertools.combinations(members, size))
         return combinations
-    
+
     def calculate_total_scores(self, combination, individual_scores, compatibility_scores):
+        # Calculate the total score for a given combination of members
         total_score = 0
+        # Add individual scores of each member in the combination
         for member in combination:
             total_score += individual_scores[member]
+        # Add compatibility scores between each pair of members in the combination
         for member in range(len(combination)):
             for other_member in range(member + 1, len(combination)):
                 total_score += compatibility_scores[combination[member]][combination[other_member]]
         return total_score
-    
+
     def generate_teams(self):
+        # Calculate individual scores for all members
         individual_scores = self.calculate_individual_scores()
+        # Get a list of all members
         members = list(self.df.index)
+        # Calculate compatibility scores between all pairs of members
         compatibility_scores = {
             member1: {
                 member2: self.calculate_compatibility_scores(member1, member2)
                 for member2 in members
-                }
-                for member1 in members}
+            }
+            for member1 in members
+        }
         teams = []
 
         while members:
             best_score = None
             best_team = None
 
-        # Iterate over team sizes from 4 to 3
+            # Iterate over team sizes from 4 to 3
             for size in [4, 5, 3]:
                 # Iterate over all possible team combinations for team sizes of 3 to 5
                 for combination in self.all_combinations(members, size, size):
@@ -104,14 +112,14 @@ class TeamForming:
                 # If a best team is found for the current team size, break out of the loop
                 if best_team:
                     break
-        
+
             # After evaluating all team sizes, add the best team to the list of teams and remove the members from the pool
             if best_team:
                 teams.append(best_team)
                 members = [member for member in members if member not in best_team]
             else:
                 print(f"No best team found for {members}. Reiterating with remaining members...")
-            
+
                 # Handle any remaining members that were not assigned to a team
                 while members:
                     remaining_member = members.pop(0)
@@ -128,7 +136,7 @@ class TeamForming:
                             if best_score is None or team_score > best_score:
                                 best_score = team_score
                                 best_team = team
-            
+
                     # Add the remaining member to the best team
                     if best_team:
                         member_name = self.df.loc[remaining_member, 'Name']
