@@ -7,7 +7,8 @@ from config import Config
 class GUI:
     def __init__(self, root, data_processor, teamforming, visualization, tooltip):
         self.root = root
-        self.root.configure(bg='#5d33bd')
+        self.main_color = '#5d33bd'
+        self.root.configure(bg=self.main_color)
         self.data_processor = data_processor
         self.teamforming = teamforming
         self.visualization = visualization
@@ -32,6 +33,9 @@ class GUI:
         self.checkbox_vars = {} # Store the checkbox variables for later updates
         self.checkbuttons = {} # Store the checkbuttons for later updates
 
+        # Define styles for the GUI
+        self.define_styles()
+
         # Add explanatory texts to the GUI
         self.create_top_frame()
         # Create a frame for the buttons on the left
@@ -39,6 +43,10 @@ class GUI:
 
         # Create a frame for adjusting weights in the middle
         self.create_button_frame()
+
+    def define_styles(self):
+        style = ttk.Style()
+        style.configure('Custom.TCheckbutton', foreground=self.main_color)
 
     def create_top_frame(self):
         self.top_frame = ttk.Frame(self.root)
@@ -50,7 +58,7 @@ class GUI:
             text=("Welcome to the Hackathon Group Former! This program helps you form teams based on various attributes. "
                  "Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
                  "Select whether the following attributes should be homogenous or heterogenous within teams by checking or unchecking the boxes."),
-            background='#5d33bd',
+            background=self.main_color,
             foreground='white',
             wraplength=800,
             font=('Helvetica', 12, "bold")
@@ -64,7 +72,7 @@ class GUI:
 
         self.canvas = tk.Canvas(self.scrollable_frame, bg='#f0f0f0')
         scrollbar = ttk.Scrollbar(self.scrollable_frame, orient="vertical", command=self.canvas.yview)
-        self.weights_frame = ttk.Frame(self.canvas)
+        self.weights_frame = ttk.LabelFrame(self.canvas, text="Adjust Weights and Attributes")
 
         # Create a window in the canvas to hold the weights frame
         self.canvas.create_window((0, 0), window=self.weights_frame, anchor="nw")
@@ -117,16 +125,18 @@ class GUI:
             self.checkbox_vars[attribute] = checkbox_var
 
             # Create Checkbuttons for the homogenous and heterogenous attributes
-            checkbutton = ttk.Checkbutton(
+            self.checkbutton = ttk.Checkbutton(
                 self.weights_frame,
+                style='Custom.TCheckbutton',
+                text="Match" if self.checkbox_vars[attribute].get() else "Diversify",
                 variable=checkbox_var,
                 onvalue=True,
                 offvalue=False,
                 command=lambda a=attribute: self.handle_checkbox_toggle(a))
-            checkbutton.grid(row=row, column=1, padx=5, pady=5, sticky=tk.W)
-            self.tooltip(checkbutton, "Toggle between matching and differentiating this attribute.")
+            self.checkbutton.grid(row=row, column=1, padx=5, pady=5, sticky=tk.W)
+            self.tooltip(self.checkbutton, "Toggle between matching and differentiating this attribute.")
 
-            self.checkbuttons[attribute] = checkbutton
+            self.checkbuttons[attribute] = self.checkbutton
 
         # Bind the canvas to the scrollbar
         self.weights_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
@@ -143,7 +153,7 @@ class GUI:
 
         self.bottom_frame.columnconfigure(0, weight=1)
 
-        buttons_frame = ttk.Frame(self.bottom_frame)
+        buttons_frame = ttk.LabelFrame(self.bottom_frame, text="Actions")
         buttons_frame.grid(row=0, column=0)
 
         # Button to generate teams
@@ -192,6 +202,8 @@ class GUI:
         # Create and configure the Checkbutton
         checkbutton = ttk.Checkbutton(
             self.weights_frame,
+            style='Custom.TCheckbutton',
+            text="Match" if self.checkbox_vars[attribute].get() else "Diversify",
             variable=self.checkbox_vars[attribute],
             onvalue=True,
             offvalue=False,
@@ -219,8 +231,10 @@ class GUI:
         is_homogeneous = self.checkbox_vars[attribute].get()
         # Update the text of the checkbutton based on the state
         if is_homogeneous:
+            self.checkbuttons[attribute].config(text="Match")
             self.data_processor.add_homogenous_attribute(attribute)
         else:
+            self.checkbuttons[attribute].config(text="Diversify")
             self.data_processor.add_heterogenous_attribute(attribute)
 
     # Method to adjust weight
