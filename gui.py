@@ -181,7 +181,7 @@ class GUI:
         show_config_button = ttk.Button(
             buttons_frame,
             text="Show Current Configuration",
-            command=lambda: Config(self.root, self.data_processor))
+            command=lambda: Config(self.root, self.data_processor, self))
         show_config_button.grid(row=0, column=4, padx=10, pady=10, sticky=tk.W)
         self.tooltip(show_config_button, "Show the current configuration of the data processor.")
 

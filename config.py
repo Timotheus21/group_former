@@ -3,9 +3,10 @@ from tkinter import ttk
 import re
 
 class Config:
-    def __init__(self, root, data_processor):
+    def __init__(self, root, data_processor, root_canvas):
         self.root = root
         self.data_processor = data_processor
+        self.root_canvas = root_canvas
         self.create_config_window()
 
     def format_attribute_for_display(self, attribute):
@@ -34,6 +35,13 @@ class Config:
         self.canvas.configure(yscrollcommand=scrollbar.set)
 
         self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
+
+        def on_close():
+            self.canvas.unbind_all("<MouseWheel>")
+            self.root_canvas.canvas.bind_all("<MouseWheel>", self.root_canvas.on_mousewheel)
+            config_window.destroy()
+
+        config_window.protocol("WM_DELETE_WINDOW", on_close)
 
         homogenous_attributes = self.data_processor.get_homogenous_attributes()
         heterogenous_attributes = self.data_processor.get_heterogenous_attributes()
