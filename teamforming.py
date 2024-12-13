@@ -56,7 +56,7 @@ class TeamForming:
                 compatibility_score += 1
         for attribute in self.heterogenous_attributes:
             if self.df.loc[member1, attribute] != self.df.loc[member2, attribute]:
-                compatibility_score += 1
+                compatibility_score += 2
         return compatibility_score
 
     def all_combinations(self, members, min_size, max_size):
