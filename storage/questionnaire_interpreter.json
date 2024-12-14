@@ -1,6 +1,6 @@
 {
     "SkillLevelAssessment": {
-      "ProgrammingExperience": {
+      "CodingExperience": {
         "scale": {
           "1": "very inexperienced",
           "2": "inexperienced",
@@ -23,7 +23,7 @@
           "4": "expert"
           }
         },
-      "ProgrammingExperienceYears": {
+      "ExperienceYears": {
         "scale": {
           "1": "1 - 6 months",
           "2": "6 - 12 months",
@@ -163,7 +163,7 @@
           "5": "completely"
         }
       },
-      "FamiliarityWithOthers": {
+      "FamiliarityOthers": {
         "scale": {
           "1": "not familiar at all",
           "2": "familiar to some extent",

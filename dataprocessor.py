@@ -19,8 +19,8 @@ class DataProcessor:
         self.questionnaire_interpreter = self.load_questionnaire_interpreter()
 
         self.skill_attributes = [
-            'ProgrammingExperience', 'ProgrammingCourses', 
-            'PythonProficiency', 'ProgrammingExperienceYears',
+            'CodingExperience', 'ProgrammingCourses', 
+            'PythonProficiency', 'ExperienceYears',
             'ProgrammingContext', 'PracticedConcepts', 'GitFamiliarity'
         ]
         self.motivation_attributes = [
