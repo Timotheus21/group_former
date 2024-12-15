@@ -31,6 +31,7 @@ class GUI:
 
     def create_widgets(self):
         self.checkbox_vars = {} # Store the checkbox variables for later updates
+        self.remove_checkbox_vars = {} # Store the remove variables for later updates
         self.checkbuttons = {} # Store the checkbuttons for later updates
 
         # Define styles for the GUI
@@ -122,7 +123,11 @@ class GUI:
             is_homogeneous = attribute in self.data_processor.get_homogenous_attributes()
             checkbox_var = tk.BooleanVar(value=is_homogeneous)
 
+            is_instance = attribute in self.data_processor.get_homogenous_attributes() or attribute in self.data_processor.get_heterogenous_attributes()
+            remove_checkbox_var = tk.BooleanVar(value=is_instance)
+
             self.checkbox_vars[attribute] = checkbox_var
+            self.remove_checkbox_vars[attribute] = remove_checkbox_var
 
             # Create Checkbuttons for the homogenous and heterogenous attributes
             self.checkbutton = ttk.Checkbutton(
@@ -136,7 +141,18 @@ class GUI:
             self.checkbutton.grid(row=row, column=1, padx=5, pady=5, sticky=tk.W)
             self.tooltip(self.checkbutton, "Toggle between matching and differentiating this attribute.")
 
+            self.remove_checkbutton = ttk.Checkbutton(
+                self.weights_frame,
+                text= "Remove" if attribute in self.data_processor.get_homogenous_attributes() or attribute in self.data_processor.get_heterogenous_attributes() else "Add",
+                variable=remove_checkbox_var,
+                onvalue=True,
+                offvalue=False,
+                command=lambda a=attribute: self.handle_remove_toggle(a))
+            self.checkbutton.grid(row=row, column=2, padx=5, pady=5, sticky=tk.W)
+            self.tooltip(self.remove_checkbutton, "Remove this attribute.")
+
             self.checkbuttons[attribute] = self.checkbutton
+            self.checkbuttons[f"remove_{attribute}"] = self.remove_checkbutton
 
         # Bind the canvas to the scrollbar
         self.weights_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
@@ -211,8 +227,19 @@ class GUI:
         checkbutton.grid(row=row, column=4, padx=5, pady=5)
         self.tooltip(checkbutton, "Toggle between matching and differentiating this attribute.")
 
+        remove_checkbutton = ttk.Checkbutton(
+            self.weights_frame,
+            text= "Remove" if attribute in self.data_processor.get_homogenous_attributes() or attribute in self.data_processor.get_heterogenous_attributes() else "Add",
+            variable=self.checkbox_vars[attribute],
+            onvalue=True,
+            offvalue=False,
+            command=lambda a=attribute: self.handle_remove_toggle(a))
+        remove_checkbutton.grid(row=row, column=5, padx=5, pady=5)
+        self.tooltip(remove_checkbutton, "Remove this attribute.")
+
         # Store Checkbutton for reference
         self.checkbuttons[attribute] = checkbutton
+        self.checkbuttons[f"remove_{attribute}"] = remove_checkbutton
 
     def on_mousewheel(self, event):
         self.canvas.yview_scroll(-1 * int(event.delta / 120), "units")
@@ -236,6 +263,19 @@ class GUI:
         else:
             self.checkbuttons[attribute].config(text="Diversify")
             self.data_processor.add_heterogenous_attribute(attribute)
+
+    def handle_remove_toggle(self, attribute):
+        is_instance = self.remove_checkbox_vars[attribute].get()
+        if is_instance:
+            self.data_processor.remove_attribute(attribute)
+            self.checkbuttons[f"remove_{attribute}"].config(text="Add")
+        else:
+            if attribute in self.data_processor.get_homogenous_attributes():
+                self.data_processor.add_homogenous_attribute(attribute)
+            else:
+                self.data_processor.add_heterogenous_attribute(attribute)
+            self.checkbuttons[f"remove_{attribute}"].config(text="Remove")
+
 
     # Method to adjust weight
     def adjust_weight(self, attribute, delta=0):

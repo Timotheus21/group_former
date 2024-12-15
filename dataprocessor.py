@@ -104,22 +104,31 @@ class DataProcessor:
     def add_homogenous_attribute(self, attribute):
         # Add a homogenous attribute to the list and remove it from the heterogenous list
         if attribute not in self.homogenous_attributes:
-            print(f"Adding homogenous attribute: {attribute}")
+            print(f"Adding {attribute} as homogenous attribute.")
             self.homogenous_attributes.append(attribute)
             print(f"Homogenous: {self.homogenous_attributes}")
         if attribute in self.heterogenous_attributes:
-            print(f"Removing heterogenous attribute: {attribute}")
             self.heterogenous_attributes.remove(attribute)
 
     def add_heterogenous_attribute(self, attribute):
         # Add a heterogenous attribute to the list and remove it from the homogenous list
         if attribute not in self.heterogenous_attributes:
-            print(f"Adding heterogenous attribute: {attribute}")
+            print(f"Adding {attribute} as heterogenous attribute.")
             self.heterogenous_attributes.append(attribute)
             print(f"Heterogenous: {self.heterogenous_attributes}")
         if attribute in self.homogenous_attributes:
+            self.homogenous_attributes.remove(attribute)
+
+    def remove_attribute(self, attribute):
+        # Remove an attribute from both lists
+        if attribute in self.homogenous_attributes:
             print(f"Removing homogenous attribute: {attribute}")
             self.homogenous_attributes.remove(attribute)
+            print(f"Homogenous: {self.homogenous_attributes}")
+        elif attribute in self.heterogenous_attributes:
+            print(f"Removing heterogenous attribute: {attribute}")
+            self.heterogenous_attributes.remove(attribute)
+            print(f"Heterogenous: {self.heterogenous_attributes}")
 
     def get_data(self):
         # Return the loaded data
