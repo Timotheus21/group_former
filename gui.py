@@ -13,6 +13,7 @@ class GUI:
         self.teamforming = teamforming
         self.visualization = visualization
         self.tooltip = tooltip
+        self.font_settings = ("Helvetica", 10)
         mixer.init()
 
         # Set the title of the main window
@@ -34,6 +35,7 @@ class GUI:
         self.checkbuttons = {} # Store the checkbuttons for later updates
         self.remove_checkbuttons = {} # Store the remove checkbuttons for later updates
         self.remove_checkbox_vars = {} # Store the remove checkbox variables for later updates
+        self.attribute_labels = {} # Store the attribute labels for later updates
 
         # Define styles for the GUI
         self.define_styles()
@@ -48,7 +50,12 @@ class GUI:
 
     def define_styles(self):
         style = ttk.Style()
-        style.configure('Custom.TCheckbutton', foreground=self.main_color)
+        style.configure('Custom.TButton',
+                        foreground=self.main_color,
+                        padding=(5, 5),
+                        relief="raised",
+                        anchor="center"
+                        )
 
     def create_top_frame(self):
         self.top_frame = ttk.Frame(self.root)
@@ -59,7 +66,8 @@ class GUI:
             self.top_frame,
             text=("Welcome to the Hackathon Group Former! This program helps you form teams based on various attributes. "
                  "Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
-                 "Select whether the following attributes should be homogenous or heterogenous within teams by checking or unchecking the boxes."),
+                 "Select whether the following attributes should be homogenous or heterogenous within teams by checking or unchecking the boxes. "
+                 "You can also remove attributes by checking the remove box. "),
             background=self.main_color,
             foreground='white',
             wraplength=800,
@@ -87,10 +95,11 @@ class GUI:
         for index, (attribute, weight) in enumerate(self.data_processor.weights.items()):
             display_attribute = self.format_attribute_for_display(attribute)
 
-            label = ttk.Label(self.weights_frame, text=display_attribute)
+            label = ttk.Label(self.weights_frame, text=display_attribute, font=self.font_settings)
             label.grid(row=index, column=0, padx=5, pady=5, sticky=tk.W)
+            self.attribute_labels[attribute] = label # Store the label for later updates
 
-            label_weight = ttk.Label(self.weights_frame, text=int(weight))
+            label_weight = ttk.Label(self.weights_frame, text=int(weight), font=self.font_settings)
             label_weight.grid(row=index, column=1, sticky=tk.W)
             self.weight_labels[attribute] = label_weight # Store the label for later updates
 
@@ -117,8 +126,15 @@ class GUI:
         for index, attribute in enumerate(self.data_processor.get_other_attributes()):
             row = start_row + index
             display_attribute = self.format_attribute_for_display(attribute)
-            label = ttk.Label(self.weights_frame, text=display_attribute)
+
+            row_frame = ttk.Frame(self.weights_frame)
+            row_frame.grid(row=row, column=1, columnspan=4, padx=5, pady=5, sticky=tk.W)
+
+            label = ttk.Label(self.weights_frame, text=display_attribute, font=self.font_settings)
             label.grid(row=row, column=0, padx=5, pady=5, sticky=tk.W)
+
+            self.attribute_labels[attribute] = label
+            self.attribute_labels[attribute].original_font = self.attribute_labels[attribute].cget("font")
 
             # Create BooleanVars for the homogenous and heterogenous attributes
             is_homogeneous = attribute in self.data_processor.get_homogenous_attributes()
@@ -127,13 +143,10 @@ class GUI:
             self.checkbox_vars[attribute] = checkbox_var
 
             # Create Checkbuttons for the homogenous and heterogenous attributes
-            self.checkbutton = ttk.Checkbutton(
-                self.weights_frame,
-                style='Custom.TCheckbutton',
+            self.checkbutton = ttk.Button(
+                row_frame,
+                style='Custom.TButton',
                 text="Match" if self.checkbox_vars[attribute].get() else "Diversify",
-                variable=checkbox_var,
-                onvalue=True,
-                offvalue=False,
                 command=lambda a=attribute: self.handle_checkbox_toggle(a))
             self.checkbutton.grid(row=row, column=1, padx=5, pady=5, sticky=tk.W)
             self.tooltip(self.checkbutton, "Toggle between matching and differentiating this attribute.")
@@ -141,8 +154,8 @@ class GUI:
             self.remove_checkbox_vars[attribute] = tk.BooleanVar(value=False)
 
             self.remove_checkbutton = ttk.Checkbutton(
-                self.weights_frame,
-                text= "Added" if attribute in self.data_processor.get_homogenous_attributes() or attribute in self.data_processor.get_heterogenous_attributes() else "Removed",
+                row_frame,
+                text= "" if attribute in self.data_processor.get_homogenous_attributes() or attribute in self.data_processor.get_heterogenous_attributes() else "Removed",
                 variable=self.remove_checkbox_vars[attribute],
                 onvalue=True,
                 offvalue=False,
@@ -216,13 +229,10 @@ class GUI:
         self.checkbox_vars[attribute] = tk.BooleanVar(value=True)
 
         # Create and configure the Checkbutton
-        checkbutton = ttk.Checkbutton(
+        checkbutton = ttk.Button(
             self.weights_frame,
-            style='Custom.TCheckbutton',
+            style='Custom.TButton',
             text="Match" if self.checkbox_vars[attribute].get() else "Diversify",
-            variable=self.checkbox_vars[attribute],
-            onvalue=True,
-            offvalue=False,
             command=lambda: self.handle_checkbox_toggle(attribute))
         checkbutton.grid(row=row, column=4, padx=5, pady=5)
         self.tooltip(checkbutton, "Toggle between matching and differentiating this attribute.")
@@ -231,7 +241,7 @@ class GUI:
 
         remove_checkbutton = ttk.Checkbutton(
             self.weights_frame,
-            text= "Added" if attribute in self.data_processor.get_homogenous_attributes() or attribute in self.data_processor.get_heterogenous_attributes() else "Removed",
+            text= "" if attribute in self.data_processor.get_homogenous_attributes() or attribute in self.data_processor.get_heterogenous_attributes() else "Removed",
             variable=self.remove_checkbox_vars[attribute],
             onvalue=True,
             offvalue=False,
@@ -258,8 +268,9 @@ class GUI:
 
     def handle_checkbox_toggle(self, attribute):
         is_homogeneous = self.checkbox_vars[attribute].get()
+        self.checkbox_vars[attribute].set(not is_homogeneous)
         # Update the text of the checkbutton based on the state
-        if is_homogeneous:
+        if self.checkbox_vars[attribute].get():
             self.checkbuttons[attribute].config(text="Match")
             self.data_processor.add_homogenous_attribute(attribute)
         else:
@@ -270,12 +281,16 @@ class GUI:
             if self.remove_checkbox_vars[attribute].get():
                 self.remove_checkbuttons[attribute].config(text="Removed")
                 self.data_processor.remove_attribute(attribute)
+                # Apply strike-through to the label
+                self.attribute_labels[attribute].config(foreground='gray', font=("Helvetica", 10,'overstrike'))
             else:
-                self.remove_checkbuttons[attribute].config(text="Added")
+                self.remove_checkbuttons[attribute].config(text="")
                 if self.checkbox_vars[attribute].get():
                     self.data_processor.add_homogenous_attribute(attribute)
                 else:
                     self.data_processor.add_heterogenous_attribute(attribute)
+                # Remove strike-through from the label
+                self.attribute_labels[attribute].config(foreground='black', font=("Helvetica", 10))
 
 
     # Method to adjust weight

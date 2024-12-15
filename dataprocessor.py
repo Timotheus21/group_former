@@ -185,3 +185,9 @@ class DataProcessor:
     def get_heterogenous_attributes(self):
         # Return the flattened heterogenous attributes
         return self.heterogenous_attributes
+    
+    def get_removed_attributes(self):
+        # Return the removed attributes
+        all_attributes = set(self.flatten_lists([self.skill_attributes, self.motivation_attributes, self.project_attributes, self.familiarity_attributes, self.background_attributes]))
+        current_attributes = set(self.get_homogenous_attributes() + self.get_heterogenous_attributes())
+        return list(all_attributes - current_attributes)
