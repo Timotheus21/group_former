@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     data_processor = DataProcessor()
     teamforming = TeamForming(data_processor)
-    visualization = Visualization
+    visualization = Visualization(data_processor.get_data())
     tooltip = Tooltip
     config = Config
 

@@ -403,6 +403,6 @@ class GUI:
     # Method to visualize teams
     def visualize_teams(self, team):
         try:
-            self.visualization.visualize(team, self.data_processor.get_data())
+            self.visualization.visualize([team])
         except Exception as e:
             print(f"Error visualizing teams: {e}")
