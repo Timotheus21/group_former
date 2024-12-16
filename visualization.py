@@ -74,6 +74,8 @@ class Visualization:
                 python = self.df.loc[member, 'PythonProficiency']
                 learning = self.df.loc[member, 'PreferredLearning']
                 learning_entries = [entry.strip() for entry in learning.split(',') if entry.strip().lower() != 'no']
+                if len(learning_entries) > 5:
+                    learning_entries = learning_entries[:3] + ['...'] + learning_entries[-3:]
                 study_field = self.df.loc[member, 'StudyField']
                 is_student = self.df.loc[member, 'IsStudent']
 

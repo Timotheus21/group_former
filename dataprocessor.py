@@ -34,7 +34,6 @@ class DataProcessor:
         "StudyField": "StudyField",
         "Semester": "Semester",
         "Gender": "Gender",
-        "NativeLanguage": "NativeLanguage",
         "Age": "Age",
         "CulturalBackground": "CulturalBackground",
         "PreferredChallenge": "PreferredChallenge",
@@ -91,7 +90,7 @@ class DataProcessor:
             'GroupImportance', 'KnownParticipants'
         ]
         self.background_attributes = [
-            'EducationLevel', 'StudyField', 'Gender', 'NativeLanguage', 'CulturalBackground'
+            'EducationLevel', 'StudyField', 'Gender', 'CulturalBackground'
         ]
         self.homogenous_attributes = self.flatten_lists([self.skill_attributes, self.motivation_attributes, self.project_attributes, 'GroupImportance'])
         self.heterogenous_attributes = self.flatten_lists([self.background_attributes, 'KnownParticipants'])
