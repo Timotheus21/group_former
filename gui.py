@@ -146,7 +146,7 @@ class GUI:
             self.checkbutton = ttk.Button(
                 row_frame,
                 style='Custom.TButton',
-                text="Match" if self.checkbox_vars[attribute].get() else "Diversify",
+                text="Matched" if self.checkbox_vars[attribute].get() else "Diverse",
                 command=lambda a=attribute: self.handle_checkbox_toggle(a))
             self.checkbutton.grid(row=row, column=1, padx=5, pady=5, sticky=tk.W)
             self.tooltip(self.checkbutton, "Toggle between matching and differentiating this attribute.")
@@ -232,7 +232,7 @@ class GUI:
         checkbutton = ttk.Button(
             self.weights_frame,
             style='Custom.TButton',
-            text="Match" if self.checkbox_vars[attribute].get() else "Diversify",
+            text="Matched" if self.checkbox_vars[attribute].get() else "Diverse",
             command=lambda: self.handle_checkbox_toggle(attribute))
         checkbutton.grid(row=row, column=4, padx=5, pady=5)
         self.tooltip(checkbutton, "Toggle between matching and differentiating this attribute.")
@@ -271,10 +271,10 @@ class GUI:
         self.checkbox_vars[attribute].set(not is_homogeneous)
         # Update the text of the checkbutton based on the state
         if self.checkbox_vars[attribute].get():
-            self.checkbuttons[attribute].config(text="Match")
+            self.checkbuttons[attribute].config(text="Matched")
             self.data_processor.add_homogenous_attribute(attribute)
         else:
-            self.checkbuttons[attribute].config(text="Diversify")
+            self.checkbuttons[attribute].config(text="Diverse")
             self.data_processor.add_heterogenous_attribute(attribute)
 
     def handle_remove_toggle(self, attribute):
