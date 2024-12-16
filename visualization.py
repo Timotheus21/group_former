@@ -73,6 +73,7 @@ class Visualization:
                 git = self.df.loc[member, 'GitFamiliarity']
                 python = self.df.loc[member, 'PythonProficiency']
                 learning = self.df.loc[member, 'PreferredLearning']
+                learning_entries = [entry.strip() for entry in learning.split(',') if entry.strip().lower() != 'no']
                 study_field = self.df.loc[member, 'StudyField']
                 is_student = self.df.loc[member, 'IsStudent']
 
@@ -80,8 +81,8 @@ class Visualization:
                 profile_text = f"{name} ({pronouns}),\n"
                 profile_text += f"{coding_experience} in {primary_language} with {experience_years} years of experience." + "\n"
                 profile_text += f"Git Familiarity: {git} and in Python they are {python}." + "\n"
-                if learning and learning.lower() not in ['none', 'n/a']:
-                    profile_text += f"In this event they hope to learn {learning}." + "\n"
+                if learning_entries and learning_entries not in ['none', 'no', 'n/a']:
+                    profile_text += f"They hope to learn {', '.join(learning_entries)}." + "\n"
                 if is_student.lower() == 'yes' and study_field is not None:
                     profile_text += f"Their field of study is {study_field}."
 

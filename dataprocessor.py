@@ -12,11 +12,69 @@ class DataProcessor:
 
     def __init__(self):
         # Load CSV file, weights, and questionnaire interpreter on initialization
-        self.df = self.load_csv_file()
+        results_survey = self.load_csv_file()
+        questionnaire_responses = pd.read_csv('storage/questionnaire_responses.csv')
         self.weights = self.load_weights(self.STD_WEIGHT_FILE)
         self.custom_weights = self.load_weights(self.CUSTOM_WEIGHT_FILE)
         self.current_weights = self.weights.copy()
         self.questionnaire_interpreter = self.load_questionnaire_interpreter()
+
+        column_mapping = {
+        "CodingExperience": "CodingExperience",
+        "PeersGroup": "PeersGroup",
+        "PrimaryLanguage": "PrimaryLanguage",
+        "PythonProficiency": "PythonProficiency",
+        "ExperienceYears": "ExperienceYears",
+        "ProgrammingContext": "ProgrammingContext",
+        "GitFamiliarity": "GitFamiliarity",
+        "AdditionalMotivation": "AdditionalMotivation",
+        "OtherInterests": "OtherInterests",
+        "EducationLevel": "EducationLevel",
+        "IsStudent": "IsStudent",
+        "StudyField": "StudyField",
+        "Semester": "Semester",
+        "Gender": "Gender",
+        "NativeLanguage": "NativeLanguage",
+        "Age": "Age",
+        "CulturalBackground": "CulturalBackground",
+        "PreferredChallenge": "PreferredChallenge",
+        "GroupImportance": "GroupImportance",
+        "KnownParticipants": "KnownParticipants",
+        "FamiliarityOthers": "FamiliarityOthers",
+        "Name": "Name"
+        }
+
+    # Merge columns with similar names
+        def merge_columns(df, base_name):
+            columns_to_merge = [col for col in df.columns if col.startswith(base_name)]
+            df[base_name] = df[columns_to_merge].apply(lambda x: ', '.join(x.dropna().astype(str)), axis=1)
+            df.drop(columns=columns_to_merge, inplace=True)
+
+            # Merge specific columns
+        merge_columns(results_survey, "ProgrammingCourses")
+        merge_columns(results_survey, "PracticedConcepts")
+        merge_columns(results_survey, "Motivations")
+        merge_columns(results_survey, "PreferredLearning")
+        merge_columns(results_survey, "PreferredGamesEasy")
+        merge_columns(results_survey, "PreferredGamesMedium")
+        merge_columns(results_survey, "PreferredGamesHard")
+
+        # Rename columns in the results_survey DataFrame
+        results_survey_renamed = results_survey.rename(columns=column_mapping)
+
+        # Ensure all required columns are present
+        missing_columns = [col for col in questionnaire_responses.columns if col not in results_survey_renamed.columns]
+        for col in missing_columns:
+            results_survey_renamed[col] = None
+
+        # Select only the columns that are present in the questionnaire_responses DataFrame
+        results_survey_transformed = results_survey_renamed[questionnaire_responses.columns]
+
+        # Save the transformed DataFrame to a new CSV file
+        results_survey_transformed.to_csv('storage/transformed_results_survey.csv', index=False)
+
+        self.df = pd.read_csv('storage/transformed_results_survey.csv')
+        self.apply_interpreter()
 
         self.skill_attributes = [
             'CodingExperience', 'ProgrammingCourses', 
@@ -96,6 +154,30 @@ class DataProcessor:
         except Exception as e:
             print(f"Error loading questionnaire interpreter: {e}")
             return {}
+        
+    def apply_interpreter(self):
+        # Apply the entry mappings to specific columns
+        for column, mappings in self.questionnaire_interpreter.get('entry_mapping', {}).items():
+            if column in self.df.columns:
+                # Ensure the column values are strings
+                self.df[column] = self.df[column].astype(str)
+                # Split the values in the column
+                self.df[column] = self.df[column].apply(
+                    lambda x: ', '.join([
+                        mappings.get(value.strip(), value.strip()) for value, (key, mappings) in zip(x.split(', '), self.questionnaire_interpreter['entry_mapping'][column].items())
+                    ])
+                )
+
+        # Apply scale mappings for skill levels
+        for column, scale_info in self.questionnaire_interpreter.get('SkillLevelAssessment', {}).items():
+            scale = scale_info.get('scale', {})
+            if column in self.df.columns and isinstance(scale, dict):
+                # Ensure the column values are strings and map the scale
+                self.df[column] = self.df[column].astype(str)
+                self.df[column] = self.df[column].apply(
+                    lambda x: ', '.join([scale.get(value.strip(), value.strip()) for value in x.split(', ')])
+                )
+
         
     def flatten_lists(self, lists):
         # Flatten a list of lists

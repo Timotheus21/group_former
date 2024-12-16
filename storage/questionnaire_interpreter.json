@@ -56,5 +56,135 @@
           "5": "completely"
         }
       }
+    },
+    "entry_mapping": {
+      "ProgrammingCourses": {
+        "ProgrammingCourses[Course01]": {
+          "Yes": "GPT"
+        },
+        "ProgrammingCourses[Course02]": {
+          "Yes": "FPT"
+        },
+        "ProgrammingCourses[other]": {
+          "Yes": "Other"
+        }
+      },
+      "PracticedConcepts": {
+        "PracticedConcepts[Conc01]": {
+          "Yes": "variables"
+        },
+        "PracticedConcepts[Conc02]": {
+          "Yes": "conditions (if-else)"
+        },
+        "PracticedConcepts[Conc03]": {
+          "Yes": "loops (for or while)"
+        },
+        "PracticedConcepts[Conc04]": {
+          "Yes": "functions"
+        },
+        "PracticedConcepts[Conc05]": {
+          "Yes": "saving/reading data"
+        },
+        "PracticedConcepts[Conc06]": {
+          "Yes": "recursion"
+        },
+        "PracticedConcepts[Conc07]": {
+          "Yes": "OOP"
+        }
+      },
+      "Motivations": {
+        "Motivations[mot1]": {
+          "Completely": "Having fun: completely",
+          "To a large extent": "Having fun: to a large extent",
+          "To a moderate extent": "Having fun: to a moderate extent",
+          "To some extent": "Having fun: to some extent",
+          "Not at all": "Having fun: not at all"
+        },
+        "Motivations[mot2]": {
+          "Completely": "Making something cool/working on an interesting project: completely",
+          "To a large extent": "Making something cool/working on an interesting project: to a large extent",
+          "To a moderate extent": "Making something cool/working on an interesting project: to a moderate extent",
+          "To some extent": "Making something cool/working on an interesting project: to some extent",
+          "Not at all": "Making something cool/working on an interesting project: not at all"
+        },
+        "Motivations[mot3]": {
+          "Completely": "Learning about Python: completely",
+          "To a large extent": "Learning about Python: to a large extent",
+          "To a moderate extent": "Learning about Python: to a moderate extent",
+          "To some extent": "Learning about Python: to some extent",
+          "Not at all": "Learning about Python: not at all"
+        },
+        "Motivations[mot4]": {
+          "Completely": "Arcade Games: completely",
+          "To a large extent": "Arcade Games: to a large extent",
+          "To a moderate extent": "Arcade Games: to a moderate extent",
+          "To some extent": "Arcade Games: to some extent",
+          "Not at all": "Arcade Games: not at all"
+        },
+        "Motivations[mot5]": {
+          "Completely": "Meeting new people: completely",
+          "To a large extent": "Meeting new people: to a large extent",
+          "To a moderate extent": "Meeting new people: to a moderate extent",
+          "To some extent": "Meeting new people: to some extent",
+          "Not at all": "Meeting new people: not at all"
+        },
+        "Motivations[mot6]": {
+          "Completely": "Sharing my experience and expertise: completely",
+          "To a large extent": "Sharing my experience and expertise: to a large extent",
+          "To a moderate extent": "Sharing my experience and expertise: to a moderate extent",
+          "To some extent": "Sharing my experience and expertise: to some extent",
+          "Not at all": "Sharing my experience and expertise: not at all"
+        },
+        "Motivations[mot7]": {
+          "Completely": "Joining friends that participate: completely",
+          "To a large extent": "Joining friends that participate: to a large extent",
+          "To a moderate extent": "Joining friends that participate: to a moderate extent",
+          "To some extent": "Joining friends that participate: to some extent",
+          "Not at all": "Joining friends that participate: not at all"
+        }
+      },
+      "PreferredLearning": {
+        "PreferredLearning[lear1]": {
+          "Yes": "variables"
+        },
+        "PreferredLearning[lear2]": {
+          "Yes": "conditions (if-else)"
+        },
+        "PreferredLearning[lear3]": {
+          "Yes": "loops (for or while)"
+        },
+        "PreferredLearning[lear4]": {
+          "Yes": "functions"
+        },
+        "PreferredLearning[lear5]": {
+          "Yes": "saving/reading data"
+        },
+        "PreferredLearning[lear6]": {
+          "Yes": "recursion"
+        },
+        "PreferredLearning[lear7]": {
+          "Yes": "OOP"
+        }
+      },
+      "PreferredGames": {
+        "PreferredGamesEasy[game01]": {
+          "Yes": "Pong(easy)"
+        },
+        "PreferredGamesEasy[game02]": {
+          "Yes": "Snake(easy to medium)"
+        },
+        "PreferredGamesMedium[game01]": {
+          "Yes": "Pacman(easy to hard)"
+        },
+        "PreferredGamesMedium[game02]": {
+          "Yes": "Pinball(medium)"
+        },
+        "PreferredGamesHard[game01]": {
+          "Yes": "Space Invaders(hard)"
+        },
+        "PreferredGamesHard[game02]": {
+          "Yes": "Racing Game(hard)"
+}
+      }
     }
-  }
+}
