@@ -21,7 +21,6 @@ class GUI:
 
         # Initialize weight variables from data processor
         self.weight_vars = {attribute: tk.DoubleVar(value=weight) for attribute, weight in self.data_processor.get_weights().items()}
-        self.weight_labels = {} # Store the labels for later updates
 
         # Configure grid weights for the root window
         self.root.grid_rowconfigure(1, weight=1)
@@ -36,6 +35,9 @@ class GUI:
         self.remove_checkbuttons = {} # Store the remove checkbuttons for later updates
         self.remove_checkbox_vars = {} # Store the remove checkbox variables for later updates
         self.attribute_labels = {} # Store the attribute labels for later updates
+        self.increase_buttons = {} # Store the increase buttons for later updates
+        self.decrease_buttons = {} # Store the decrease buttons for later updates
+        self.weight_labels = {} # Store the labels for later updates
 
         # Define styles for the GUI
         self.define_styles()
@@ -54,7 +56,15 @@ class GUI:
                         foreground=self.main_color,
                         padding=(5, 5),
                         relief="raised",
-                        anchor="center"
+                        anchor="center",
+                        font=("Helvetica", 10)
+                        )
+        style.configure('Removed.TButton',
+                        foreground='gray',
+                        padding=(5, 5),
+                        relief="raised",
+                        anchor="center",
+                        font=("Helvetica", 10, 'overstrike')
                         )
 
     def create_top_frame(self):
@@ -66,7 +76,7 @@ class GUI:
             self.top_frame,
             text=("Welcome to the Hackathon Group Former! This program helps you form teams based on various attributes. "
                  "Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
-                 "Select whether the following attributes should be homogenous or heterogenous within teams by checking or unchecking the boxes. "
+                 "Select whether the following attributes should be homogenous or heterogenous within teams. "
                  "You can also remove attributes by checking the remove box. "),
             background=self.main_color,
             foreground='white',
@@ -111,6 +121,8 @@ class GUI:
             increase_button.grid(row=index, column=2, padx=5, pady=5)
             self.tooltip(increase_button, "Increase the weight of this attribute.")
 
+            self.increase_buttons[attribute] = increase_button
+
             # Button to decrease weight
             decrease_button = ttk.Button(
                 self.weights_frame,
@@ -118,6 +130,8 @@ class GUI:
                 command=lambda a=attribute: self.adjust_weight(a, -1))
             decrease_button.grid(row=index, column=3, padx=5, pady=5)
             self.tooltip(decrease_button, "Decrease the weight of this attribute.")
+
+            self.decrease_buttons[attribute] = decrease_button
 
             self.create_checkbutton(index, attribute)
 
@@ -282,7 +296,10 @@ class GUI:
                 self.remove_checkbuttons[attribute].config(text="Removed")
                 self.data_processor.remove_attribute(attribute)
                 # Apply strike-through to the label
-                self.attribute_labels[attribute].config(foreground='gray', font=("Helvetica", 10,'overstrike'))
+                self.attribute_labels[attribute].config(foreground='gray', font=('Helvetica', 10,'overstrike'))
+                self.checkbuttons[attribute].config(style='Removed.TButton')
+                self.weight_labels[attribute].config(foreground='gray', font=('Helvetica', 10,'overstrike'))
+                self.set_attribute_button_state(attribute, state=tk.DISABLED)
             else:
                 self.remove_checkbuttons[attribute].config(text="")
                 if self.checkbox_vars[attribute].get():
@@ -290,8 +307,15 @@ class GUI:
                 else:
                     self.data_processor.add_heterogenous_attribute(attribute)
                 # Remove strike-through from the label
-                self.attribute_labels[attribute].config(foreground='black', font=("Helvetica", 10))
+                self.attribute_labels[attribute].config(foreground='black', font=self.font_settings)
+                self.weight_labels[attribute].config(foreground='black', font=self.font_settings)
+                self.set_attribute_button_state(attribute, state=tk.NORMAL)
+                self.checkbuttons[attribute].config(style='Custom.TButton')
 
+    def set_attribute_button_state(self, attribute, state):
+        self.checkbuttons[attribute].config(state=state)
+        self.increase_buttons[attribute].config(state=state)
+        self.decrease_buttons[attribute].config(state=state)
 
     # Method to adjust weight
     def adjust_weight(self, attribute, delta=0):
