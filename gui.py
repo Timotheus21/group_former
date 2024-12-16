@@ -1,7 +1,8 @@
+import random
 import tkinter as tk
 import re
 from tkinter import ttk
-from pygame import mixer
+import pygame
 from config import Config
 
 class GUI:
@@ -14,7 +15,8 @@ class GUI:
         self.visualization = visualization
         self.tooltip = tooltip
         self.font_settings = ("Helvetica", 10)
-        mixer.init()
+        
+        pygame.mixer.init()
 
         # Set the title of the main window
         self.root.title("Hackathon Group Former")
@@ -44,6 +46,7 @@ class GUI:
 
         # Add explanatory texts to the GUI
         self.create_top_frame()
+
         # Create a frame for the buttons on the left
         self.create_scrollable_area()
 
@@ -52,19 +55,33 @@ class GUI:
 
     def define_styles(self):
         style = ttk.Style()
-        style.configure('Custom.TButton',
+        style.configure('Diverse.TButton',
                         foreground=self.main_color,
                         padding=(5, 5),
                         relief="raised",
                         anchor="center",
-                        font=("Helvetica", 10)
+                        font=("Helvetica", 9)
+                        )
+        style.configure('Custom.TButton',
+                        foreground='black',
+                        padding=(5, 5),
+                        relief="raised",
+                        anchor="center",
+                        font=("Helvetica", 9)
                         )
         style.configure('Removed.TButton',
                         foreground='gray',
                         padding=(5, 5),
                         relief="raised",
                         anchor="center",
-                        font=("Helvetica", 10, 'overstrike')
+                        font=("Helvetica", 9, 'overstrike')
+                        )
+        style.configure('Generate.TButton',
+                        foreground='#28a745',
+                        padding=(5, 5),
+                        relief="raised",
+                        anchor="center",
+                        font=("Helvetica", 9)
                         )
 
     def create_top_frame(self):
@@ -106,19 +123,20 @@ class GUI:
             display_attribute = self.format_attribute_for_display(attribute)
 
             label = ttk.Label(self.weights_frame, text=display_attribute, font=self.font_settings)
-            label.grid(row=index, column=0, padx=5, pady=5, sticky=tk.W)
+            label.grid(row=index, column=1, padx=5, pady=5, sticky=tk.W)
             self.attribute_labels[attribute] = label # Store the label for later updates
 
             label_weight = ttk.Label(self.weights_frame, text=int(weight), font=self.font_settings)
-            label_weight.grid(row=index, column=1, sticky=tk.W)
+            label_weight.grid(row=index, column=2, sticky=tk.W)
             self.weight_labels[attribute] = label_weight # Store the label for later updates
 
             # Button to increase weight
             increase_button = ttk.Button(
                 self.weights_frame,
                 text="+",
+                style='Custom.TButton',
                 command=lambda a=attribute: self.adjust_weight(a, 1))
-            increase_button.grid(row=index, column=2, padx=5, pady=5)
+            increase_button.grid(row=index, column=3, padx=5, pady=5)
             self.tooltip(increase_button, "Increase the weight of this attribute.")
 
             self.increase_buttons[attribute] = increase_button
@@ -127,8 +145,9 @@ class GUI:
             decrease_button = ttk.Button(
                 self.weights_frame,
                 text="-",
+                style='Custom.TButton',
                 command=lambda a=attribute: self.adjust_weight(a, -1))
-            decrease_button.grid(row=index, column=3, padx=5, pady=5)
+            decrease_button.grid(row=index, column=4, padx=5, pady=5)
             self.tooltip(decrease_button, "Decrease the weight of this attribute.")
 
             self.decrease_buttons[attribute] = decrease_button
@@ -142,10 +161,10 @@ class GUI:
             display_attribute = self.format_attribute_for_display(attribute)
 
             row_frame = ttk.Frame(self.weights_frame)
-            row_frame.grid(row=row, column=1, columnspan=4, padx=5, pady=5, sticky=tk.W)
+            row_frame.grid(row=row, column=3, columnspan=4, padx=5, pady=5, sticky=tk.W)
 
             label = ttk.Label(self.weights_frame, text=display_attribute, font=self.font_settings)
-            label.grid(row=row, column=0, padx=5, pady=5, sticky=tk.W)
+            label.grid(row=row, column=1, padx=5, pady=5, sticky=tk.W)
 
             self.attribute_labels[attribute] = label
             self.attribute_labels[attribute].original_font = self.attribute_labels[attribute].cget("font")
@@ -159,27 +178,25 @@ class GUI:
             # Create Checkbuttons for the homogenous and heterogenous attributes
             self.checkbutton = ttk.Button(
                 row_frame,
-                style='Custom.TButton',
+                style='Custom.TButton' if self.checkbox_vars[attribute].get() else 'Diverse.TButton',
                 text="Matched" if self.checkbox_vars[attribute].get() else "Diverse",
                 command=lambda a=attribute: self.handle_checkbox_toggle(a))
-            self.checkbutton.grid(row=row, column=1, padx=5, pady=5, sticky=tk.W)
+            self.checkbutton.grid(row=row, column=0, padx=5, pady=5, sticky=tk.W)
             self.tooltip(self.checkbutton, "Toggle between matching and differentiating this attribute.")
 
-            self.remove_checkbox_vars[attribute] = tk.BooleanVar(value=False)
+            self.remove_checkbox_vars[attribute] = tk.BooleanVar(value=True)
 
             self.remove_checkbutton = ttk.Checkbutton(
-                row_frame,
-                text= "" if attribute in self.data_processor.get_homogenous_attributes() or attribute in self.data_processor.get_heterogenous_attributes() else "Removed",
+                self.weights_frame,
                 variable=self.remove_checkbox_vars[attribute],
                 onvalue=True,
                 offvalue=False,
                 command=lambda a=attribute: self.handle_remove_toggle(a))
-            self.remove_checkbutton.grid(row=row, column=2, padx=5, pady=5, sticky=tk.W)
+            self.remove_checkbutton.grid(row=row, column=0, padx=5, pady=5, sticky=tk.W)
             self.tooltip(self.remove_checkbutton, "Toggle between removing and adding this attribute.")
 
             self.checkbuttons[attribute] = self.checkbutton
             self.remove_checkbuttons[attribute] = self.remove_checkbutton
-
 
         # Bind the canvas to the scrollbar
         self.weights_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
@@ -203,6 +220,7 @@ class GUI:
         generate_button = ttk.Button(
             buttons_frame,
             text="Generate Teams",
+            style='Generate.TButton',
             command=lambda: [self.generate_teams(), self.play_sound()])
         generate_button.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
         self.tooltip(generate_button, "Generate teams based on the current weights.")
@@ -211,22 +229,25 @@ class GUI:
         save_weights_button = ttk.Button(
             buttons_frame,
             text="Save Current Weights",
+            style='Custom.TButton',
             command=lambda: [self.data_processor.save_weights(), self.play_sound()])
         save_weights_button.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
         self.tooltip(save_weights_button, "Save the current weights to a file.")
 
         # Button to load custom weights
         load_custom_weights_button = ttk.Button(
-            buttons_frame, 
-            text="Load Custom Weights", 
+            buttons_frame,
+            text="Load Custom Weights",
+            style='Custom.TButton',
             command=lambda: [self.load_weights("custom"), self.play_sound()])
         load_custom_weights_button.grid(row=0, column=2, padx=10, pady=10, sticky=tk.W)
         self.tooltip(load_custom_weights_button, "Load custom weights from a file.")
 
         # Button to load standard weights
         load_std_weights_button = ttk.Button(
-            buttons_frame, 
-            text="Load Standard Weights", 
+            buttons_frame,
+            text="Load Standard Weights",
+            style='Custom.TButton',
             command=lambda: [self.load_weights("standard"), self.play_sound()])
         load_std_weights_button.grid(row=0, column=3, padx=10, pady=10, sticky=tk.W)
         self.tooltip(load_std_weights_button, "Load standard weights from a file.")
@@ -234,6 +255,7 @@ class GUI:
         show_config_button = ttk.Button(
             buttons_frame,
             text="Show Current Configuration",
+            style='Custom.TButton',
             command=lambda: Config(self.root, self.data_processor, self))
         show_config_button.grid(row=0, column=4, padx=10, pady=10, sticky=tk.W)
         self.tooltip(show_config_button, "Show the current configuration of the data processor.")
@@ -245,22 +267,21 @@ class GUI:
         # Create and configure the Checkbutton
         checkbutton = ttk.Button(
             self.weights_frame,
-            style='Custom.TButton',
+            style='Custom.TButton' if self.checkbox_vars[attribute].get() else 'Diverse.TButton',
             text="Matched" if self.checkbox_vars[attribute].get() else "Diverse",
             command=lambda: self.handle_checkbox_toggle(attribute))
-        checkbutton.grid(row=row, column=4, padx=5, pady=5)
+        checkbutton.grid(row=row, column=5, padx=5, pady=5)
         self.tooltip(checkbutton, "Toggle between matching and differentiating this attribute.")
 
-        self.remove_checkbox_vars[attribute] = tk.BooleanVar(value=False)
+        self.remove_checkbox_vars[attribute] = tk.BooleanVar(value=True)
 
         remove_checkbutton = ttk.Checkbutton(
             self.weights_frame,
-            text= "" if attribute in self.data_processor.get_homogenous_attributes() or attribute in self.data_processor.get_heterogenous_attributes() else "Removed",
             variable=self.remove_checkbox_vars[attribute],
             onvalue=True,
             offvalue=False,
             command=lambda a=attribute: self.handle_remove_toggle(a))
-        remove_checkbutton.grid(row=row, column=5, padx=5, pady=5)
+        remove_checkbutton.grid(row=row, column=0, padx=5, pady=5)
         self.tooltip(remove_checkbutton, "Toggle between removing and adding this attribute.")
 
         # Store Checkbutton for reference
@@ -272,8 +293,8 @@ class GUI:
 
     def play_sound(self):
         try:
-            mixer.music.load('assets/sound/selection.wav')
-            mixer.music.play()
+            pygame.mixer.music.load('assets/sound/selection.wav')
+            pygame.mixer.music.play()
         except Exception as e:
             print(f"Error playing sound: {e}")
 
@@ -286,36 +307,43 @@ class GUI:
         # Update the text of the checkbutton based on the state
         if self.checkbox_vars[attribute].get():
             self.checkbuttons[attribute].config(text="Matched")
+            self.checkbuttons[attribute].config(style='Custom.TButton')
             self.data_processor.add_homogenous_attribute(attribute)
         else:
             self.checkbuttons[attribute].config(text="Diverse")
+            self.checkbuttons[attribute].config(style='Diverse.TButton')
             self.data_processor.add_heterogenous_attribute(attribute)
 
     def handle_remove_toggle(self, attribute):
-            if self.remove_checkbox_vars[attribute].get():
-                self.remove_checkbuttons[attribute].config(text="Removed")
+            if not self.remove_checkbox_vars[attribute].get():
                 self.data_processor.remove_attribute(attribute)
                 # Apply strike-through to the label
                 self.attribute_labels[attribute].config(foreground='gray', font=('Helvetica', 10,'overstrike'))
                 self.checkbuttons[attribute].config(style='Removed.TButton')
-                self.weight_labels[attribute].config(foreground='gray', font=('Helvetica', 10,'overstrike'))
+                if attribute in self.weight_labels:
+                    self.weight_labels[attribute].config(foreground='gray', font=('Helvetica', 10,'overstrike'))
                 self.set_attribute_button_state(attribute, state=tk.DISABLED)
             else:
-                self.remove_checkbuttons[attribute].config(text="")
                 if self.checkbox_vars[attribute].get():
                     self.data_processor.add_homogenous_attribute(attribute)
                 else:
                     self.data_processor.add_heterogenous_attribute(attribute)
                 # Remove strike-through from the label
                 self.attribute_labels[attribute].config(foreground='black', font=self.font_settings)
-                self.weight_labels[attribute].config(foreground='black', font=self.font_settings)
+                if attribute in self.weight_labels:
+                    self.weight_labels[attribute].config(foreground='black', font=self.font_settings)
                 self.set_attribute_button_state(attribute, state=tk.NORMAL)
-                self.checkbuttons[attribute].config(style='Custom.TButton')
+                if self.checkbox_vars[attribute].get():
+                    self.checkbuttons[attribute].config(style='Custom.TButton')
+                else:
+                    self.checkbuttons[attribute].config(style='Diverse.TButton')
 
     def set_attribute_button_state(self, attribute, state):
         self.checkbuttons[attribute].config(state=state)
-        self.increase_buttons[attribute].config(state=state)
-        self.decrease_buttons[attribute].config(state=state)
+        if attribute in self.increase_buttons:
+            self.increase_buttons[attribute].config(state=state)
+        if attribute in self.decrease_buttons:
+            self.decrease_buttons[attribute].config(state=state)
 
     # Method to adjust weight
     def adjust_weight(self, attribute, delta=0):
