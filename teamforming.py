@@ -98,7 +98,7 @@ class TeamForming:
             best_team = None
 
             # Iterate over team sizes from 4 to 3
-            for size in [4, 5, 3]:
+            for size in [2, 3]:
                 # Iterate over all possible team combinations for team sizes of 3 to 5
                 for combination in self.all_combinations(members, size, size):
                     # Calculate total score for the combination
@@ -128,7 +128,7 @@ class TeamForming:
 
                     # Iterate over the teams to find the best team to add the remaining member to
                     for team in teams:
-                        if len(team) < 5:
+                        if len(team) < 3:
                             combination = list(team) + [remaining_member]
                             team_score = self.calculate_total_scores(combination, individual_scores, compatibility_scores)
                             print(f"Team {team} score: {team_score}")
