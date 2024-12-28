@@ -8,16 +8,17 @@ class DataProcessor:
     # File paths for standard weights, custom weights, and questionnaire interpreter
     STD_WEIGHT_FILE = 'storage/std_weights.csv'
     CUSTOM_WEIGHT_FILE = 'storage/custom_weights.csv'
-    QUESTIONNAIRE_FILE = 'storage/questionnaire_interpreter.json'
+    INTERPRETER_FILE = 'storage/interpreter.json'
+    QUESTIONNAIRE_EXAMPLE_FILE = 'storage/questionnaire_example.csv'
 
     def __init__(self):
         # Load CSV file, weights, and questionnaire interpreter on initialization
         results_survey = self.load_csv_file()
-        questionnaire_responses = pd.read_csv('storage/questionnaire_responses.csv')
         self.weights = self.load_weights(self.STD_WEIGHT_FILE)
         self.custom_weights = self.load_weights(self.CUSTOM_WEIGHT_FILE)
         self.current_weights = self.weights.copy()
         self.questionnaire_interpreter = self.load_questionnaire_interpreter()
+        self.questionnaire_example = pd.read_csv(self.QUESTIONNAIRE_EXAMPLE_FILE)
 
         column_mapping = {
         "CodingExperience": "CodingExperience",
@@ -43,13 +44,13 @@ class DataProcessor:
         "Name": "Name"
         }
 
-    # Merge columns with similar names
+        # Merge columns with similar names
         def merge_columns(df, base_name):
             columns_to_merge = [col for col in df.columns if col.startswith(base_name)]
             df[base_name] = df[columns_to_merge].apply(lambda x: ', '.join(x.dropna().astype(str)), axis=1)
             df.drop(columns=columns_to_merge, inplace=True)
 
-            # Merge specific columns
+        # Merge specific columns
         merge_columns(results_survey, "ProgrammingCourses")
         merge_columns(results_survey, "PracticedConcepts")
         merge_columns(results_survey, "Motivations")
@@ -62,12 +63,12 @@ class DataProcessor:
         results_survey_renamed = results_survey.rename(columns=column_mapping)
 
         # Ensure all required columns are present
-        missing_columns = [col for col in questionnaire_responses.columns if col not in results_survey_renamed.columns]
+        missing_columns = [col for col in self.questionnaire_example.columns if col not in results_survey_renamed.columns]
         for col in missing_columns:
             results_survey_renamed[col] = None
 
         # Select only the columns that are present in the questionnaire_responses DataFrame
-        results_survey_transformed = results_survey_renamed[questionnaire_responses.columns]
+        results_survey_transformed = results_survey_renamed[self.questionnaire_example.columns]
 
         # Save the transformed DataFrame to a new CSV file
         results_survey_transformed.to_csv('storage/transformed_results_survey.csv', index=False)
@@ -145,7 +146,7 @@ class DataProcessor:
     def load_questionnaire_interpreter(self):
         # Load questionnaire interpreter from a JSON file
         try:
-            with open(self.QUESTIONNAIRE_FILE, 'r') as file:
+            with open(self.INTERPRETER_FILE, 'r') as file:
                 return json.load(file)
         except json.JSONDecodeError as e:
             print(f"Error loading JSON file: {e}")
