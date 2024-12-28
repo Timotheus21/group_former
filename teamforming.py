@@ -78,7 +78,7 @@ class TeamForming:
                 total_score += compatibility_scores[combination[member]][combination[other_member]]
         return total_score
 
-    def generate_teams(self):
+    def generate_teams(self, desired_size, min_size, max_size):
         # Calculate individual scores for all members
         individual_scores = self.calculate_individual_scores()
         # Get a list of all members
@@ -97,9 +97,9 @@ class TeamForming:
             best_score = None
             best_team = None
 
-            # Iterate over team sizes from 4 to 3
-            for size in [4,3,5]:
-                # Iterate over all possible team combinations for team sizes of 3 to 5
+            # Iterate over team sizes
+            for size in [desired_size, min_size]:
+                # Iterate over all possible team combinations for team sizes
                 for combination in self.all_combinations(members, size, size):
                     # Calculate total score for the combination
                     total_score = self.calculate_total_scores(combination, individual_scores, compatibility_scores)
@@ -128,7 +128,7 @@ class TeamForming:
 
                     # Iterate over the teams to find the best team to add the remaining member to
                     for team in teams:
-                        if len(team) < 5:
+                        if len(team) < max_size:
                             combination = list(team) + [remaining_member]
                             team_score = self.calculate_total_scores(combination, individual_scores, compatibility_scores)
                             print(f"Team {team} score: {team_score}")

@@ -1,8 +1,6 @@
 import sys
 import pandas as pd
 import json
-from tkinter import Tk
-from tkinter.filedialog import askopenfilename
 
 class DataProcessor:
     # File paths for standard weights, custom weights, and questionnaire interpreter
@@ -11,9 +9,9 @@ class DataProcessor:
     INTERPRETER_FILE = 'storage/interpreter.json'
     QUESTIONNAIRE_EXAMPLE_FILE = 'storage/questionnaire_example.csv'
 
-    def __init__(self):
+    def __init__(self, filepath):
         # Load CSV file, weights, and questionnaire interpreter on initialization
-        results_survey = self.load_csv_file()
+        results_survey = self.load_csv_file(filepath)
         self.weights = self.load_weights(self.STD_WEIGHT_FILE)
         self.custom_weights = self.load_weights(self.CUSTOM_WEIGHT_FILE)
         self.current_weights = self.weights.copy()
@@ -96,15 +94,10 @@ class DataProcessor:
         self.homogenous_attributes = self.flatten_lists([self.skill_attributes, self.motivation_attributes, self.project_attributes, 'GroupImportance'])
         self.heterogenous_attributes = self.flatten_lists([self.background_attributes, 'KnownParticipants'])
 
-    def load_csv_file(self):
+    def load_csv_file(self, filepath):
         # Open file dialog to select a CSV file
-        Tk().withdraw()
-        filename = askopenfilename(title="Select Questionnaire CSV file", filetypes=[("CSV files", "*.csv")])
-        if not filename:
-            print("No file selected. Exiting...")
-            sys.exit()
         try:
-            return pd.read_csv(filename)
+            return pd.read_csv(filepath)
         except Exception as e:
             print(f"Error loading CSV file: {e}")
             sys.exit()

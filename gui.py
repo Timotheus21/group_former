@@ -1,8 +1,6 @@
-import random
 import tkinter as tk
 import re
 from tkinter import ttk
-import pygame
 from config import Config
 
 class GUI:
@@ -15,8 +13,6 @@ class GUI:
         self.visualization = visualization
         self.tooltip = tooltip
         self.font_settings = ("Helvetica", 10)
-        
-        pygame.mixer.init()
 
         # Set the title of the main window
         self.root.title("Hackathon Group Former")
@@ -47,10 +43,10 @@ class GUI:
         # Add explanatory texts to the GUI
         self.create_top_frame()
 
-        # Create a frame for the buttons on the left
+        # Create a scrollable area for the weights and checkboxes
         self.create_scrollable_area()
 
-        # Create a frame for adjusting weights in the middle
+        # Create a frame for the team buttons
         self.create_button_frame()
 
     def define_styles(self):
@@ -67,6 +63,14 @@ class GUI:
                         padding=(5, 5),
                         relief="raised",
                         anchor="center",
+                        font=("Helvetica", 9)
+                        )
+        style.configure('Adjust.TButton',
+                        foreground='black',
+                        padding=(5, 5),
+                        relief="raised",
+                        anchor="center",
+                        width=3,
                         font=("Helvetica", 9)
                         )
         style.configure('Removed.TButton',
@@ -86,21 +90,23 @@ class GUI:
 
     def create_top_frame(self):
         self.top_frame = ttk.Frame(self.root)
-        self.top_frame.grid(row=0, column=0, columnspan=3, padx=10, pady=10, sticky="ew")
+        self.top_frame.grid(row=0, column=0, columnspan=4, padx=10, pady=10, sticky="ew")
 
         # Add a label for the overall program explanation
         program_explanation = ttk.Label(
             self.top_frame,
-            text=("Welcome to the Hackathon Group Former! This program helps you form teams based on various attributes. "
+            text=("Welcome to the Hackathon Group Former! This program helps you form teams based on various attributes.\n"
                  "Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
                  "Select whether the following attributes should be homogenous or heterogenous within teams. "
-                 "You can also remove attributes by checking the remove box. "),
+                 "You can remove attributes by unchecking the remove box or emphasize them with the corresponding button.\n"
+                 "You can also adjust the desired teamsizes. Click 'Generate Teams' to create teams based on the current configuration."),
             background=self.main_color,
             foreground='white',
             wraplength=800,
             font=('Helvetica', 12, "bold")
         )
-        program_explanation.pack(fill="x")
+        program_explanation.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        program_explanation.pack(fill="x", expand=True)
 
     def create_scrollable_area(self):
         # Create a frame to hold the weights and checkboxes
@@ -109,14 +115,67 @@ class GUI:
 
         self.canvas = tk.Canvas(self.scrollable_frame, bg='#f0f0f0')
         scrollbar = ttk.Scrollbar(self.scrollable_frame, orient="vertical", command=self.canvas.yview)
-        self.weights_frame = ttk.LabelFrame(self.canvas, text="Adjust Weights and Attributes")
-
-        # Create a window in the canvas to hold the weights frame
-        self.canvas.create_window((0, 0), window=self.weights_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=scrollbar.set)
 
-        # Bind the mousewheel to the canvas
-        self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
+        # Create a parent frame inside the canvas to hold both weights_frame and teamsizing_frame
+        self.inner_frame = ttk.Frame(self.canvas)
+        self.canvas.create_window((0, 0), window=self.inner_frame, anchor="nw")
+
+        self.weights_frame = ttk.LabelFrame(self.inner_frame, text="Adjust Weights and Attributes")
+        self.weights_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+
+        self.teamsizing_frame = ttk.LabelFrame(self.inner_frame, text="Team Sizing")
+        self.teamsizing_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
+
+        # Label for the team size
+        team_size_label = ttk.Label(self.teamsizing_frame, text="Desired Team Size:", font=self.font_settings)
+        team_size_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
+
+        # Entry for the desired team size
+        self.team_size_var = tk.IntVar(value=4)
+        team_size_entry = ttk.Entry(
+            self.teamsizing_frame,
+            textvariable=self.team_size_var,
+            justify=tk.CENTER,
+            font=self.font_settings,
+            width=5)
+        team_size_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
+        self.tooltip(team_size_entry, "The first teams will be generated with this size.")
+
+        # Label for the maximum number of team members
+        max_teams_label = ttk.Label(self.teamsizing_frame, text="Maximum Team Size:", font=self.font_settings)
+        max_teams_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
+
+        # Entry for the maximum number of team members
+        self.max_team_size_var = tk.IntVar(value=5)
+        max_teams_entry = ttk.Entry(
+            self.teamsizing_frame,
+            textvariable=self.max_team_size_var,
+            justify=tk.CENTER,
+            font=self.font_settings,
+            width=5)
+        max_teams_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
+        self.tooltip(max_teams_entry, "Teams will not exceed this size by adding remaining members to teams below this size.")
+
+        # Label for the minimum number of team members
+        min_teams_label = ttk.Label(self.teamsizing_frame, text="Minimum Team Size:", font=self.font_settings)
+        min_teams_label.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
+
+        # Entry for the minimum number of team members
+        self.min_team_size_var = tk.IntVar(value=3)
+        min_teams_entry = ttk.Entry(
+            self.teamsizing_frame,
+            textvariable=self.min_team_size_var,
+            justify=tk.CENTER,
+            font=self.font_settings,
+            width=5)
+        min_teams_entry.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
+        self.tooltip(min_teams_entry, "Teams will not be smaller than this size.")
+
+        # Bind the canvas to the scrollbar
+        self.inner_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+        self.canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
 
         # Add labels and buttons for each weight attribute
         for index, (attribute, weight) in enumerate(self.data_processor.weights.items()):
@@ -134,7 +193,7 @@ class GUI:
             increase_button = ttk.Button(
                 self.weights_frame,
                 text="+",
-                style='Custom.TButton',
+                style='Adjust.TButton',
                 command=lambda a=attribute: self.adjust_weight(a, 1))
             increase_button.grid(row=index, column=3, padx=5, pady=5)
             self.tooltip(increase_button, "Increase the weight of this attribute.")
@@ -145,7 +204,7 @@ class GUI:
             decrease_button = ttk.Button(
                 self.weights_frame,
                 text="-",
-                style='Custom.TButton',
+                style='Adjust.TButton',
                 command=lambda a=attribute: self.adjust_weight(a, -1))
             decrease_button.grid(row=index, column=4, padx=5, pady=5)
             self.tooltip(decrease_button, "Decrease the weight of this attribute.")
@@ -167,7 +226,6 @@ class GUI:
             label.grid(row=row, column=1, padx=5, pady=5, sticky=tk.W)
 
             self.attribute_labels[attribute] = label
-            self.attribute_labels[attribute].original_font = self.attribute_labels[attribute].cget("font")
 
             # Create BooleanVars for the homogenous and heterogenous attributes
             is_homogeneous = attribute in self.data_processor.get_homogenous_attributes()
@@ -198,14 +256,11 @@ class GUI:
             self.checkbuttons[attribute] = self.checkbutton
             self.remove_checkbuttons[attribute] = self.remove_checkbutton
 
-        # Bind the canvas to the scrollbar
-        self.weights_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
-        self.canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
+        self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
 
         # Frame to hold team buttons on the right
         self.team_buttons_frame = ttk.Frame(self.root)
-        self.team_buttons_frame.grid(row=1, column=4, padx=10, pady=10, sticky=tk.NW)
+        self.team_buttons_frame.grid(row=1, column=5, padx=10, pady=10, sticky=tk.NW)
 
     def create_button_frame(self):
         self.bottom_frame = ttk.Frame(self.root)
@@ -221,16 +276,16 @@ class GUI:
             buttons_frame,
             text="Generate Teams",
             style='Generate.TButton',
-            command=lambda: [self.generate_teams(), self.play_sound()])
+            command=lambda: self.generate_teams())
         generate_button.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
-        self.tooltip(generate_button, "Generate teams based on the current weights.")
+        self.tooltip(generate_button, "Generate teams based on the current configuration.")
 
         # Button to save current weights
         save_weights_button = ttk.Button(
             buttons_frame,
             text="Save Current Weights",
             style='Custom.TButton',
-            command=lambda: [self.data_processor.save_weights(), self.play_sound()])
+            command=lambda: self.data_processor.save_weights())
         save_weights_button.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
         self.tooltip(save_weights_button, "Save the current weights to a file.")
 
@@ -239,7 +294,7 @@ class GUI:
             buttons_frame,
             text="Load Custom Weights",
             style='Custom.TButton',
-            command=lambda: [self.load_weights("custom"), self.play_sound()])
+            command=lambda: self.load_weights("custom"))
         load_custom_weights_button.grid(row=0, column=2, padx=10, pady=10, sticky=tk.W)
         self.tooltip(load_custom_weights_button, "Load custom weights from a file.")
 
@@ -248,7 +303,7 @@ class GUI:
             buttons_frame,
             text="Load Standard Weights",
             style='Custom.TButton',
-            command=lambda: [self.load_weights("standard"), self.play_sound()])
+            command=lambda: self.load_weights("standard"))
         load_std_weights_button.grid(row=0, column=3, padx=10, pady=10, sticky=tk.W)
         self.tooltip(load_std_weights_button, "Load standard weights from a file.")
 
@@ -290,13 +345,6 @@ class GUI:
 
     def on_mousewheel(self, event):
         self.canvas.yview_scroll(-1 * int(event.delta / 120), "units")
-
-    def play_sound(self):
-        try:
-            pygame.mixer.music.load('assets/sound/selection.wav')
-            pygame.mixer.music.play()
-        except Exception as e:
-            print(f"Error playing sound: {e}")
 
     def format_attribute_for_display(self, attribute):
         return re.sub(r'(?<!^)(?=[A-Z])', ' ', attribute)
@@ -388,12 +436,17 @@ class GUI:
             for widget in self.team_buttons_frame.winfo_children():
                 widget.destroy()
 
-            self.teams = self.teamforming.generate_teams()
+            min_size = self.min_team_size_var.get()
+            max_size = self.max_team_size_var.get()
+            desired_size = self.team_size_var.get()
+
+            self.teams = self.teamforming.generate_teams(desired_size, min_size, max_size)
             self.teamforming.set_teams(self.teams)  # Set teams attribute
             self.teamforming.print_teams()  # Print teams with names
             for idx, team in enumerate(self.teams):
                 button = ttk.Button(
                     self.team_buttons_frame,
+                    style='Custom.TButton',
                     text=f"Visualize Team {idx + 1}",
                     command=lambda t=team: self.visualize_teams(t))
                 button.pack(fill="x", padx=5, pady=5)
