@@ -160,4 +160,4 @@ cython_debug/
 #.idea/
 
 # storages local file
-storage/
+.storage/
