@@ -159,5 +159,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# storages local file
-.storage/
+# Ignore specidif files
+storage/transformed_results_survey.csv
+storage/custom_weights.csv
