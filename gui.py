@@ -13,6 +13,7 @@ class GUI:
         self.visualization = visualization
         self.tooltip = tooltip
         self.font_settings = ("Helvetica", 10)
+        self.attribute_label_font = ("Helvetica", 10, "bold")
 
         # Set the title of the main window
         self.root.title("Hackathon Group Former")
@@ -53,21 +54,21 @@ class GUI:
         style = ttk.Style()
         style.configure('Diverse.TButton',
                         foreground=self.main_color,
-                        padding=(5, 5),
+                        padding=(6, 6),
                         relief="raised",
                         anchor="center",
                         font=("Helvetica", 9)
                         )
         style.configure('Custom.TButton',
                         foreground='black',
-                        padding=(5, 5),
+                        padding=(6, 6),
                         relief="raised",
                         anchor="center",
                         font=("Helvetica", 9)
                         )
         style.configure('Adjust.TButton',
                         foreground='black',
-                        padding=(5, 5),
+                        padding=(6, 6),
                         relief="raised",
                         anchor="center",
                         width=3,
@@ -75,14 +76,14 @@ class GUI:
                         )
         style.configure('Removed.TButton',
                         foreground='gray',
-                        padding=(5, 5),
+                        padding=(6, 6),
                         relief="raised",
                         anchor="center",
                         font=("Helvetica", 9, 'overstrike')
                         )
         style.configure('Generate.TButton',
                         foreground='#28a745',
-                        padding=(5, 5),
+                        padding=(6, 6),
                         relief="raised",
                         anchor="center",
                         font=("Helvetica", 9)
@@ -133,12 +134,15 @@ class GUI:
 
         # Entry for the desired team size
         self.team_size_var = tk.IntVar(value=4)
+        validate_team_size = (self.root.register(self.validate_size),'%P', '%d')
         team_size_entry = ttk.Entry(
             self.teamsizing_frame,
             textvariable=self.team_size_var,
             justify=tk.CENTER,
             font=self.font_settings,
-            width=5)
+            width=5,
+            validate='key',
+            validatecommand=validate_team_size)
         team_size_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
         self.tooltip(team_size_entry, "The first teams will be generated with this size.")
 
@@ -148,14 +152,17 @@ class GUI:
 
         # Entry for the maximum number of team members
         self.max_team_size_var = tk.IntVar(value=5)
+        validate_max_team_size = (self.root.register(self.validate_size),'%P', '%d')
         max_teams_entry = ttk.Entry(
             self.teamsizing_frame,
             textvariable=self.max_team_size_var,
             justify=tk.CENTER,
             font=self.font_settings,
-            width=5)
+            width=5,
+            validate='key',
+            validatecommand=validate_max_team_size)
         max_teams_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
-        self.tooltip(max_teams_entry, "Teams will not exceed this size by adding remaining members to teams below this size.")
+        self.tooltip(max_teams_entry, "Teams will not exceed this size. Adding remaining members to teams below this size.")
 
         # Label for the minimum number of team members
         min_teams_label = ttk.Label(self.teamsizing_frame, text="Minimum Team Size:", font=self.font_settings)
@@ -163,12 +170,15 @@ class GUI:
 
         # Entry for the minimum number of team members
         self.min_team_size_var = tk.IntVar(value=3)
+        validate_min_team_size = (self.root.register(self.validate_size),'%P', '%d')
         min_teams_entry = ttk.Entry(
             self.teamsizing_frame,
             textvariable=self.min_team_size_var,
             justify=tk.CENTER,
             font=self.font_settings,
-            width=5)
+            width=5,
+            validate='key',
+            validatecommand=validate_min_team_size)
         min_teams_entry.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
         self.tooltip(min_teams_entry, "Teams will not be smaller than this size.")
 
@@ -181,12 +191,12 @@ class GUI:
         for index, (attribute, weight) in enumerate(self.data_processor.weights.items()):
             display_attribute = self.format_attribute_for_display(attribute)
 
-            label = ttk.Label(self.weights_frame, text=display_attribute, font=self.font_settings)
+            label = ttk.Label(self.weights_frame, text=display_attribute, font=self.attribute_label_font)
             label.grid(row=index, column=1, padx=5, pady=5, sticky=tk.W)
             self.attribute_labels[attribute] = label # Store the label for later updates
 
             label_weight = ttk.Label(self.weights_frame, text=int(weight), font=self.font_settings)
-            label_weight.grid(row=index, column=2, sticky=tk.W)
+            label_weight.grid(row=index, column=2, padx=6, pady=6, sticky=tk.E)
             self.weight_labels[attribute] = label_weight # Store the label for later updates
 
             # Button to increase weight
@@ -222,7 +232,7 @@ class GUI:
             row_frame = ttk.Frame(self.weights_frame)
             row_frame.grid(row=row, column=3, columnspan=4, padx=5, pady=5, sticky=tk.W)
 
-            label = ttk.Label(self.weights_frame, text=display_attribute, font=self.font_settings)
+            label = ttk.Label(self.weights_frame, text=display_attribute, font=self.attribute_label_font)
             label.grid(row=row, column=1, padx=5, pady=5, sticky=tk.W)
 
             self.attribute_labels[attribute] = label
@@ -348,7 +358,15 @@ class GUI:
 
     def format_attribute_for_display(self, attribute):
         return re.sub(r'(?<!^)(?=[A-Z])', ' ', attribute)
-
+    
+    def validate_size(self, size, action):
+        if action == '1': # Insert
+            if size.isdigit() and int(size) > 0 and not size.startswith("0"):
+                return True
+            else:
+                return False
+        return True
+        
     def handle_checkbox_toggle(self, attribute):
         is_homogeneous = self.checkbox_vars[attribute].get()
         self.checkbox_vars[attribute].set(not is_homogeneous)
@@ -439,6 +457,14 @@ class GUI:
             min_size = self.min_team_size_var.get()
             max_size = self.max_team_size_var.get()
             desired_size = self.team_size_var.get()
+
+            if max_size < desired_size + 1:
+                max_size = desired_size + 1
+                self.max_team_size_var.set(max_size)
+            
+            if min_size > desired_size - 1:
+                min_size = desired_size - 1
+                self.min_team_size_var.set(min_size)
 
             self.teams = self.teamforming.generate_teams(desired_size, min_size, max_size)
             self.teamforming.set_teams(self.teams)  # Set teams attribute
