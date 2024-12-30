@@ -1,4 +1,5 @@
 import sys
+import os
 import pandas as pd
 import json
 
@@ -11,69 +12,22 @@ class DataProcessor:
 
     def __init__(self, filepath):
         # Load CSV file, weights, and questionnaire interpreter on initialization
-        results_survey = self.load_csv_file(filepath)
+        self.results_survey = self.load_csv_file(filepath)
         self.weights = self.load_weights(self.STD_WEIGHT_FILE)
         self.custom_weights = self.load_weights(self.CUSTOM_WEIGHT_FILE)
         self.current_weights = self.weights.copy()
         self.questionnaire_interpreter = self.load_questionnaire_interpreter()
-        self.questionnaire_example = pd.read_csv(self.QUESTIONNAIRE_EXAMPLE_FILE)
+        self.questionnaire_example = self.load_csv_file(self.QUESTIONNAIRE_EXAMPLE_FILE)
 
-        column_mapping = {
-        "CodingExperience": "CodingExperience",
-        "PeersGroup": "PeersGroup",
-        "PrimaryLanguage": "PrimaryLanguage",
-        "PythonProficiency": "PythonProficiency",
-        "ExperienceYears": "ExperienceYears",
-        "ProgrammingContext": "ProgrammingContext",
-        "GitFamiliarity": "GitFamiliarity",
-        "AdditionalMotivation": "AdditionalMotivation",
-        "OtherInterests": "OtherInterests",
-        "EducationLevel": "EducationLevel",
-        "IsStudent": "IsStudent",
-        "StudyField": "StudyField",
-        "Semester": "Semester",
-        "Gender": "Gender",
-        "Age": "Age",
-        "CulturalBackground": "CulturalBackground",
-        "PreferredChallenge": "PreferredChallenge",
-        "GroupImportance": "GroupImportance",
-        "KnownParticipants": "KnownParticipants",
-        "FamiliarityOthers": "FamiliarityOthers",
-        "Name": "Name"
-        }
-
-        # Merge columns with similar names
-        def merge_columns(df, base_name):
-            columns_to_merge = [col for col in df.columns if col.startswith(base_name)]
-            df[base_name] = df[columns_to_merge].apply(lambda x: ', '.join(x.dropna().astype(str)), axis=1)
-            df.drop(columns=columns_to_merge, inplace=True)
-
-        # Merge specific columns
-        merge_columns(results_survey, "ProgrammingCourses")
-        merge_columns(results_survey, "PracticedConcepts")
-        merge_columns(results_survey, "Motivations")
-        merge_columns(results_survey, "PreferredLearning")
-        merge_columns(results_survey, "PreferredGamesEasy")
-        merge_columns(results_survey, "PreferredGamesMedium")
-        merge_columns(results_survey, "PreferredGamesHard")
-
-        # Rename columns in the results_survey DataFrame
-        results_survey_renamed = results_survey.rename(columns=column_mapping)
-
-        # Ensure all required columns are present
-        missing_columns = [col for col in self.questionnaire_example.columns if col not in results_survey_renamed.columns]
-        for col in missing_columns:
-            results_survey_renamed[col] = None
-
-        # Select only the columns that are present in the questionnaire_responses DataFrame
-        results_survey_transformed = results_survey_renamed[self.questionnaire_example.columns]
-
-        # Save the transformed DataFrame to a new CSV file
+        # Process survey results
+        results_survey_transformed = self.process_survey_results(self.results_survey)
         results_survey_transformed.to_csv('storage/transformed_results_survey.csv', index=False)
 
+        # Load the transformed survey results
         self.df = pd.read_csv('storage/transformed_results_survey.csv')
         self.apply_interpreter()
 
+        # Define attribute groups
         self.skill_attributes = [
             'CodingExperience', 'ProgrammingCourses', 
             'PythonProficiency', 'ExperienceYears',
@@ -97,6 +51,8 @@ class DataProcessor:
     def load_csv_file(self, filepath):
         # Open file dialog to select a CSV file
         try:
+            if not os.path.exists(filepath):
+                raise FileNotFoundError(f"File not found: {filepath}")
             return pd.read_csv(filepath)
         except Exception as e:
             print(f"Error loading CSV file: {e}")
@@ -105,15 +61,43 @@ class DataProcessor:
     def save_weights(self):
         # Save weights to a CSV file
         try:
+            if not os.path.exists(self.CUSTOM_WEIGHT_FILE):
+                # Create a new file if it does not exist
+                with open(self.CUSTOM_WEIGHT_FILE, 'w') as file:
+                    file.write("attribute,weight\n")
             weights_csv = pd.DataFrame(list(self.custom_weights.items()), columns=['attribute', 'weight'])
             weights_csv.to_csv(self.CUSTOM_WEIGHT_FILE, index=False)
         except Exception as e:
             print(f"Error saving weights: {e}")
 
     def load_weights(self, filename):
+        # Default weights if the file does not exist
+        default_weights = {
+            'CodingExperience': 5.0,
+            'ProgrammingCourses': 5.0,
+            'PythonProficiency': 10.0,
+            'ExperienceYears': 6.0,
+            'ProgrammingContext': 10.0,
+            'PracticedConcepts': 7.0,
+            'GitFamiliarity': 6.0,
+        }
+
         # Load weights from a CSV file
         try:
+            if not os.path.exists(filename) or os.path.getsize(filename) == 0:
+                # Create a new file if it does not exist
+                weights_csv = pd.DataFrame(list(default_weights.items()), columns=['attribute', 'weight'])
+                weights_csv.to_csv(filename, index=False)
+                return default_weights
+            
             weights_csv = pd.read_csv(filename)
+
+            if weights_csv.empty:
+                # If the file is empty, write default weights to the file
+                weights_csv = pd.DataFrame(list(default_weights.items()), columns=['attribute', 'weight'])
+                weights_csv.to_csv(filename, index=False)
+                return default_weights
+            
             weights = dict(zip(weights_csv['attribute'], weights_csv['weight']))
             return weights
         except Exception as e:
@@ -171,7 +155,6 @@ class DataProcessor:
                     lambda x: ', '.join([scale.get(value.strip(), value.strip()) for value in x.split(', ')])
                 )
 
-        
     def flatten_lists(self, lists):
         # Flatten a list of lists
         return [item for sublist in lists for item in (sublist if isinstance(sublist, list) else [sublist])]
@@ -204,7 +187,64 @@ class DataProcessor:
             print(f"Removing heterogenous attribute: {attribute}")
             self.heterogenous_attributes.remove(attribute)
             print(f"Heterogenous: {self.heterogenous_attributes}")
+            # Merge multiple columns into one
 
+    def merge_columns(self, df, base_name):
+                columns_to_merge = [col for col in df.columns if col.startswith(base_name)]
+                df[base_name] = df[columns_to_merge].apply(lambda x: ', '.join(x.dropna().astype(str)), axis=1)
+                df.drop(columns=columns_to_merge, inplace=True)
+
+    def process_survey_results(self, results_survey):
+        try:
+            column_mapping = {
+                "CodingExperience": "CodingExperience",
+                "PeersGroup": "PeersGroup",
+                "PrimaryLanguage": "PrimaryLanguage",
+                "PythonProficiency": "PythonProficiency",
+                "ExperienceYears": "ExperienceYears",
+                "ProgrammingContext": "ProgrammingContext",
+                "GitFamiliarity": "GitFamiliarity",
+                "AdditionalMotivation": "AdditionalMotivation",
+                "OtherInterests": "OtherInterests",
+                "EducationLevel": "EducationLevel",
+                "IsStudent": "IsStudent",
+                "StudyField": "StudyField",
+                "Semester": "Semester",
+                "Gender": "Gender",
+                "Age": "Age",
+                "CulturalBackground": "CulturalBackground",
+                "PreferredChallenge": "PreferredChallenge",
+                "GroupImportance": "GroupImportance",
+                "KnownParticipants": "KnownParticipants",
+                "FamiliarityOthers": "FamiliarityOthers",
+                "Name": "Name"
+            }
+
+            # Merge specific columns
+            self.merge_columns(results_survey, "ProgrammingCourses")
+            self.merge_columns(results_survey, "PracticedConcepts")
+            self.merge_columns(results_survey, "Motivations")
+            self.merge_columns(results_survey, "PreferredLearning")
+            self.merge_columns(results_survey, "PreferredGamesEasy")
+            self.merge_columns(results_survey, "PreferredGamesMedium")
+            self.merge_columns(results_survey, "PreferredGamesHard")
+
+            # Rename columns in the results_survey DataFrame
+            results_survey_renamed = results_survey.rename(columns=column_mapping)
+
+            # Ensure all required columns are present
+            missing_columns = [col for col in self.questionnaire_example.columns if col not in results_survey_renamed.columns]
+            for col in missing_columns:
+                results_survey_renamed[col] = None
+
+            # Ensure the colmns match the example questionnaire
+            results_survey_transformed = results_survey_renamed[self.questionnaire_example.columns]
+            
+            return results_survey_transformed
+        except Exception as e:
+            print(f"Error processing survey results: {e}")
+            return pd.DataFrame()
+        
     def get_data(self):
         # Return the loaded data
         return self.df
