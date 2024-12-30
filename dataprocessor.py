@@ -133,27 +133,30 @@ class DataProcessor:
             return {}
         
     def apply_interpreter(self):
-        # Apply the entry mappings to specific columns
-        for column, mappings in self.questionnaire_interpreter.get('entry_mapping', {}).items():
-            if column in self.df.columns:
-                # Ensure the column values are strings
-                self.df[column] = self.df[column].astype(str)
-                # Split the values in the column
-                self.df[column] = self.df[column].apply(
-                    lambda x: ', '.join([
-                        mappings.get(value.strip(), value.strip()) for value, (key, mappings) in zip(x.split(', '), self.questionnaire_interpreter['entry_mapping'][column].items())
-                    ])
-                )
+        try:
+            # Apply the entry mappings to specific columns
+            for column, mappings in self.questionnaire_interpreter.get('entry_mapping', {}).items():
+                if column in self.df.columns:
+                    # Ensure the column values are strings
+                    self.df[column] = self.df[column].astype(str)
+                    # Split the values in the column
+                    self.df[column] = self.df[column].apply(
+                        lambda x: ', '.join([
+                            mappings.get(value.strip(), value.strip()) for value, (key, mappings) in zip(x.split(', '), self.questionnaire_interpreter['entry_mapping'][column].items())
+                        ])
+                    )
 
-        # Apply scale mappings for skill levels
-        for column, scale_info in self.questionnaire_interpreter.get('SkillLevelAssessment', {}).items():
-            scale = scale_info.get('scale', {})
-            if column in self.df.columns and isinstance(scale, dict):
-                # Ensure the column values are strings and map the scale
-                self.df[column] = self.df[column].astype(str)
-                self.df[column] = self.df[column].apply(
-                    lambda x: ', '.join([scale.get(value.strip(), value.strip()) for value in x.split(', ')])
-                )
+            # Apply scale mappings for skill levels
+            for column, scale_info in self.questionnaire_interpreter.get('SkillLevelAssessment', {}).items():
+                scale = scale_info.get('scale', {})
+                if column in self.df.columns and isinstance(scale, dict):
+                    # Ensure the column values are strings and map the scale
+                    self.df[column] = self.df[column].astype(str)
+                    self.df[column] = self.df[column].apply(
+                        lambda x: ', '.join([scale.get(value.strip(), value.strip()) for value in x.split(', ')])
+                    )
+        except Exception as e:
+            print(f"Error applying interpreter: {e}")
 
     def flatten_lists(self, lists):
         # Flatten a list of lists
@@ -190,9 +193,12 @@ class DataProcessor:
             # Merge multiple columns into one
 
     def merge_columns(self, df, base_name):
-                columns_to_merge = [col for col in df.columns if col.startswith(base_name)]
-                df[base_name] = df[columns_to_merge].apply(lambda x: ', '.join(x.dropna().astype(str)), axis=1)
-                df.drop(columns=columns_to_merge, inplace=True)
+        try:
+            columns_to_merge = [col for col in df.columns if col.startswith(base_name)]
+            df[base_name] = df[columns_to_merge].apply(lambda x: ', '.join(x.dropna().astype(str)), axis=1)
+            df.drop(columns=columns_to_merge, inplace=True)
+        except Exception as e:
+            print(f"Error merging columns for {base_name}: {e}")
 
     def process_survey_results(self, results_survey):
         try:
@@ -245,6 +251,22 @@ class DataProcessor:
             print(f"Error processing survey results: {e}")
             return pd.DataFrame()
         
+    def data_descriptive(self):
+        # Get descriptive data about the loaded data
+        try:
+            total_members = len(self.df)
+            gender_distribution = self.df['Gender'].value_counts().to_dict()
+
+            descriptive_data = {
+                'total_members': total_members,
+                'gender_distribution': gender_distribution,
+            } 
+
+            return descriptive_data
+        except Exception as e:
+            print(f"Error getting data descriptive: {e}")
+            return {}
+
     def get_data(self):
         # Return the loaded data
         return self.df
@@ -252,7 +274,7 @@ class DataProcessor:
     def get_weights(self):
         # Return the loaded weights
         return self.weights
-    
+
     def get_custom_weights(self):
         # Return the loaded custom weights
         return self.custom_weights
@@ -268,39 +290,47 @@ class DataProcessor:
     def get_questionnaire_interpreter(self):
         # Return the loaded questionnaire interpreter
         return self.questionnaire_interpreter
-    
+
+    def get_data_descriptive(self):
+        # Return the member breakdown
+        return self.data_descriptive()
+
+    def get_total_members(self):
+        # Return the total number of members
+        return len(self.df)
+
     def get_skill_attributes(self):
         # Return the skill attributes
         return self.skill_attributes
-    
+
     def get_motivation_attributes(self):
         # Return the motivation attributes
         return self.motivation_attributes
-    
+
     def get_project_attributes(self):
         # Return the project attributes
         return self.project_attributes
-    
+
     def get_familiarity_attributes(self):
         # Return the familiarity attributes
         return self.familiarity_attributes
-    
+
     def get_background_attributes(self):
         # Return the background attributes
         return self.background_attributes
-    
+
     def get_other_attributes(self):
         # Return all the attributes except the skill attributes
         return self.motivation_attributes + self.project_attributes + self.familiarity_attributes + self.background_attributes
-    
+
     def get_homogenous_attributes(self):
         # Return the flattened homogenous attributes
         return self.homogenous_attributes
-    
+
     def get_heterogenous_attributes(self):
         # Return the flattened heterogenous attributes
         return self.heterogenous_attributes
-    
+
     def get_removed_attributes(self):
         # Return the removed attributes
         all_attributes = set(self.flatten_lists([self.skill_attributes, self.motivation_attributes, self.project_attributes, self.familiarity_attributes, self.background_attributes]))

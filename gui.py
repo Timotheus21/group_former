@@ -12,8 +12,8 @@ class GUI:
         self.teamforming = teamforming
         self.visualization = visualization
         self.tooltip = tooltip
-        self.font_settings = ("Helvetica", 10)
-        self.attribute_label_font = ("Helvetica", 10, "bold")
+        self.font_settings = ("Helvetica", 11)
+        self.attribute_label_font = ("Helvetica", 11)
 
         # Set the title of the main window
         self.root.title("Hackathon Group Former")
@@ -57,14 +57,14 @@ class GUI:
                         padding=(6, 6),
                         relief="raised",
                         anchor="center",
-                        font=("Helvetica", 9)
+                        font=("Helvetica", 10)
                         )
         style.configure('Custom.TButton',
                         foreground='black',
                         padding=(6, 6),
                         relief="raised",
                         anchor="center",
-                        font=("Helvetica", 9)
+                        font=("Helvetica", 10)
                         )
         style.configure('Adjust.TButton',
                         foreground='black',
@@ -72,21 +72,21 @@ class GUI:
                         relief="raised",
                         anchor="center",
                         width=3,
-                        font=("Helvetica", 9)
+                        font=("Helvetica", 10)
                         )
         style.configure('Removed.TButton',
                         foreground='gray',
                         padding=(6, 6),
                         relief="raised",
                         anchor="center",
-                        font=("Helvetica", 9, 'overstrike')
+                        font=("Helvetica", 10, 'overstrike')
                         )
         style.configure('Generate.TButton',
                         foreground='#28a745',
                         padding=(6, 6),
                         relief="raised",
                         anchor="center",
-                        font=("Helvetica", 9)
+                        font=("Helvetica", 10)
                         )
 
     def create_top_frame(self):
@@ -124,63 +124,6 @@ class GUI:
 
         self.weights_frame = ttk.LabelFrame(self.inner_frame, text="Adjust Weights and Attributes")
         self.weights_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
-
-        self.teamsizing_frame = ttk.LabelFrame(self.inner_frame, text="Team Sizing")
-        self.teamsizing_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
-
-        # Label for the team size
-        team_size_label = ttk.Label(self.teamsizing_frame, text="Desired Team Size:", font=self.font_settings)
-        team_size_label.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
-
-        # Entry for the desired team size
-        self.team_size_var = tk.IntVar(value=4)
-        validate_team_size = (self.root.register(self.validate_size),'%P', '%d')
-        team_size_entry = ttk.Entry(
-            self.teamsizing_frame,
-            textvariable=self.team_size_var,
-            justify=tk.CENTER,
-            font=self.font_settings,
-            width=5,
-            validate='key',
-            validatecommand=validate_team_size)
-        team_size_entry.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
-        self.tooltip(team_size_entry, "The first teams will be generated with this size.")
-
-        # Label for the maximum number of team members
-        max_teams_label = ttk.Label(self.teamsizing_frame, text="Maximum Team Size:", font=self.font_settings)
-        max_teams_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
-
-        # Entry for the maximum number of team members
-        self.max_team_size_var = tk.IntVar(value=5)
-        validate_max_team_size = (self.root.register(self.validate_size),'%P', '%d')
-        max_teams_entry = ttk.Entry(
-            self.teamsizing_frame,
-            textvariable=self.max_team_size_var,
-            justify=tk.CENTER,
-            font=self.font_settings,
-            width=5,
-            validate='key',
-            validatecommand=validate_max_team_size)
-        max_teams_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
-        self.tooltip(max_teams_entry, "Teams will not exceed this size. Adding remaining members to teams below this size.")
-
-        # Label for the minimum number of team members
-        min_teams_label = ttk.Label(self.teamsizing_frame, text="Minimum Team Size:", font=self.font_settings)
-        min_teams_label.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
-
-        # Entry for the minimum number of team members
-        self.min_team_size_var = tk.IntVar(value=3)
-        validate_min_team_size = (self.root.register(self.validate_size),'%P', '%d')
-        min_teams_entry = ttk.Entry(
-            self.teamsizing_frame,
-            textvariable=self.min_team_size_var,
-            justify=tk.CENTER,
-            font=self.font_settings,
-            width=5,
-            validate='key',
-            validatecommand=validate_min_team_size)
-        min_teams_entry.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
-        self.tooltip(min_teams_entry, "Teams will not be smaller than this size.")
 
         # Bind the canvas to the scrollbar
         self.inner_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
@@ -265,6 +208,76 @@ class GUI:
 
             self.checkbuttons[attribute] = self.checkbutton
             self.remove_checkbuttons[attribute] = self.remove_checkbutton
+
+        self.teamsizing_frame = ttk.LabelFrame(self.inner_frame, text="Team Sizing")
+        self.teamsizing_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
+
+        # Get descriptive statistics about the data
+        descriptive = self.data_processor.get_data_descriptive()
+
+        descriptive_text = f"Total Members: {descriptive.get('total_members')}\n\n"
+        descriptive_text += f"Gender Distribution:\n"
+        for gender, count in descriptive.get('gender_distribution', {}).items():
+            descriptive_text += f" {gender}: {count}  "
+
+        self.member_descriptive_label = ttk.Label(self.teamsizing_frame, text=descriptive_text, font=self.attribute_label_font)
+        self.member_descriptive_label.grid(row=0, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W)
+
+        # Label for the team size
+        team_size_label = ttk.Label(self.teamsizing_frame, text="Desired Team Size:", font=self.attribute_label_font)
+        team_size_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
+
+        # Entry for the desired team size
+        self.team_size_var = tk.IntVar(value=4)
+        validate_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
+        self.team_size_entry = ttk.Entry(
+            self.teamsizing_frame,
+            textvariable=self.team_size_var,
+            justify=tk.CENTER,
+            font=self.font_settings,
+            width=5,
+            validate='key',
+            validatecommand=validate_team_size)
+        self.team_size_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
+        self.tooltip(self.team_size_entry, "The first teams will be generated with this size.")
+
+        # Label for the maximum number of team members
+        max_teams_label = ttk.Label(self.teamsizing_frame, text="Maximum Team Size:", font=self.attribute_label_font)
+        max_teams_label.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
+
+        # Entry for the maximum number of team members
+        self.max_team_size_var = tk.IntVar(value=5)
+        validate_max_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
+        self.max_teams_entry = ttk.Entry(
+            self.teamsizing_frame,
+            textvariable=self.max_team_size_var,
+            justify=tk.CENTER,
+            font=self.font_settings,
+            width=5,
+            validate='key',
+            validatecommand=validate_max_team_size)
+        self.max_teams_entry.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
+        self.tooltip(self.max_teams_entry, "Teams will not exceed this size. Adding remaining members to teams below this size.\n"+
+                     "If the desired team size is greater than this, the maximum team size will be adjusted.")
+
+        # Label for the minimum number of team members
+        min_teams_label = ttk.Label(self.teamsizing_frame, text="Minimum Team Size:", font=self.attribute_label_font)
+        min_teams_label.grid(row=3, column=0, padx=5, pady=5, sticky=tk.W)
+
+        # Entry for the minimum number of team members
+        self.min_team_size_var = tk.IntVar(value=3)
+        validate_min_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
+        self.min_teams_entry = ttk.Entry(
+            self.teamsizing_frame,
+            textvariable=self.min_team_size_var,
+            justify=tk.CENTER,
+            font=self.font_settings,
+            width=5,
+            validate='key',
+            validatecommand=validate_min_team_size)
+        self.min_teams_entry.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
+        self.tooltip(self.min_teams_entry, "Teams will not be smaller than this size.\n"+
+                     "If the desired team size is smaller than this, the minimum team size will be adjusted.")
 
         self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
 
@@ -359,14 +372,24 @@ class GUI:
     def format_attribute_for_display(self, attribute):
         return re.sub(r'(?<!^)(?=[A-Z])', ' ', attribute)
     
-    def validate_size(self, size, action):
+    def show_feedback(self, widget, message, color):
+        self.feedback_label = ttk.Label(self.teamsizing_frame, text=message, foreground=color, font=('Helvetica', 10))
+        self.feedback_label.grid(row=widget.grid_info()['row'], column=widget.grid_info()['column'] + 2, padx=5, pady=5, sticky=tk.W)
+
+    def validate_size(self, size, action, entry_name):
+        entry_widget = self.root.nametowidget(entry_name)
         if action == '1': # Insert
             if size.isdigit() and int(size) > 0 and not size.startswith("0"):
+                if hasattr(self, 'feedback_label'):
+                    self.feedback_label.grid_forget()
                 return True
             else:
+                self.show_feedback(entry_widget, "Please enter a positive integer.", 'red')
                 return False
+        if hasattr(self, 'feedback_label'):
+            self.feedback_label.grid_forget()
         return True
-        
+
     def handle_checkbox_toggle(self, attribute):
         is_homogeneous = self.checkbox_vars[attribute].get()
         self.checkbox_vars[attribute].set(not is_homogeneous)
@@ -384,10 +407,10 @@ class GUI:
             if not self.remove_checkbox_vars[attribute].get():
                 self.data_processor.remove_attribute(attribute)
                 # Apply strike-through to the label
-                self.attribute_labels[attribute].config(foreground='gray', font=('Helvetica', 10,'overstrike'))
+                self.attribute_labels[attribute].config(foreground='gray', font=('Helvetica', 11,'overstrike'))
                 self.checkbuttons[attribute].config(style='Removed.TButton')
                 if attribute in self.weight_labels:
-                    self.weight_labels[attribute].config(foreground='gray', font=('Helvetica', 10,'overstrike'))
+                    self.weight_labels[attribute].config(foreground='gray', font=('Helvetica', 11,'overstrike'))
                 self.set_attribute_button_state(attribute, state=tk.DISABLED)
             else:
                 if self.checkbox_vars[attribute].get():
@@ -458,13 +481,23 @@ class GUI:
             max_size = self.max_team_size_var.get()
             desired_size = self.team_size_var.get()
 
+            total_members = self.data_processor.get_total_members()
+            if desired_size > total_members:
+                desired_size = total_members
+                self.team_size_var.set(desired_size)
+                self.show_feedback(self.team_size_entry, "Value decreased to accommodate total number of members.", self.main_color)
+
             if max_size < desired_size + 1:
                 max_size = desired_size + 1
                 self.max_team_size_var.set(max_size)
+                self.show_feedback(self.max_teams_entry, "Value increased to accommodate desired team size.", self.main_color)
             
             if min_size > desired_size - 1:
                 min_size = desired_size - 1
+                if min_size <= 1:
+                    min_size = desired_size
                 self.min_team_size_var.set(min_size)
+                self.show_feedback(self.min_teams_entry, "Value decreased to accommodate desired team size.", self.main_color)
 
             self.teams = self.teamforming.generate_teams(desired_size, min_size, max_size)
             self.teamforming.set_teams(self.teams)  # Set teams attribute
