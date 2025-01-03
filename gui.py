@@ -213,9 +213,9 @@ class GUI:
         self.teamsizing_frame = ttk.LabelFrame(self.inner_frame, text="Team Sizing")
         self.teamsizing_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
 
-        descriptive_text = f"Total Members: {len(self.data_processor.get_data())}"
+        total_members = f"Total Members: {len(self.data_processor.get_data())}"
 
-        self.member_descriptive_label = ttk.Label(self.teamsizing_frame, text=descriptive_text, font=self.attribute_label_font)
+        self.member_descriptive_label = ttk.Label(self.teamsizing_frame, text=total_members, font=self.attribute_label_font)
         self.member_descriptive_label.grid(row=0, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W)
 
         # Label for the team size
@@ -276,6 +276,10 @@ class GUI:
         self.min_teams_entry.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
         self.tooltip(self.min_teams_entry, "Teams will not be smaller than this size.\n"+
                      "If the desired team size is smaller than this, the minimum team size will be adjusted.")
+        
+        remaining_members = f"Remaining Members: {}"
+        self.remaining_members_label = ttk.Label(self.teamsizing_frame, text=remaining_members, font=self.attribute_label_font)
+        self.remaining_members_label.grid(row=4, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W)
 
         self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
 
