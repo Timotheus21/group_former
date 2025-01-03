@@ -250,22 +250,6 @@ class DataProcessor:
         except Exception as e:
             print(f"Error processing survey results: {e}")
             return pd.DataFrame()
-        
-    def data_descriptive(self):
-        # Get descriptive data about the loaded data
-        try:
-            total_members = len(self.df)
-            gender_distribution = self.df['Gender'].value_counts().to_dict()
-
-            descriptive_data = {
-                'total_members': total_members,
-                'gender_distribution': gender_distribution,
-            } 
-
-            return descriptive_data
-        except Exception as e:
-            print(f"Error getting data descriptive: {e}")
-            return {}
 
     def get_data(self):
         # Return the loaded data
@@ -290,14 +274,6 @@ class DataProcessor:
     def get_questionnaire_interpreter(self):
         # Return the loaded questionnaire interpreter
         return self.questionnaire_interpreter
-
-    def get_data_descriptive(self):
-        # Return the member breakdown
-        return self.data_descriptive()
-
-    def get_total_members(self):
-        # Return the total number of members
-        return len(self.df)
 
     def get_skill_attributes(self):
         # Return the skill attributes

@@ -37,6 +37,7 @@ class GUI:
         self.increase_buttons = {} # Store the increase buttons for later updates
         self.decrease_buttons = {} # Store the decrease buttons for later updates
         self.weight_labels = {} # Store the labels for later updates
+        self.feedback_labels = {} # Store the feedback labels for later updates
 
         # Define styles for the GUI
         self.define_styles()
@@ -212,13 +213,7 @@ class GUI:
         self.teamsizing_frame = ttk.LabelFrame(self.inner_frame, text="Team Sizing")
         self.teamsizing_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
 
-        # Get descriptive statistics about the data
-        descriptive = self.data_processor.get_data_descriptive()
-
-        descriptive_text = f"Total Members: {descriptive.get('total_members')}\n\n"
-        descriptive_text += f"Gender Distribution:\n"
-        for gender, count in descriptive.get('gender_distribution', {}).items():
-            descriptive_text += f" {gender}: {count}  "
+        descriptive_text = f"Total Members: {len(self.data_processor.get_data())}"
 
         self.member_descriptive_label = ttk.Label(self.teamsizing_frame, text=descriptive_text, font=self.attribute_label_font)
         self.member_descriptive_label.grid(row=0, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W)
@@ -228,7 +223,8 @@ class GUI:
         team_size_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
 
         # Entry for the desired team size
-        self.team_size_var = tk.IntVar(value=4)
+        self.team_size_var = tk.StringVar(value=4)
+        self.team_size_var.trace_add("write", self.validate_entries)
         validate_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
         self.team_size_entry = ttk.Entry(
             self.teamsizing_frame,
@@ -246,7 +242,8 @@ class GUI:
         max_teams_label.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
 
         # Entry for the maximum number of team members
-        self.max_team_size_var = tk.IntVar(value=5)
+        self.max_team_size_var = tk.StringVar(value=5)
+        self.max_team_size_var.trace_add("write", self.validate_entries)
         validate_max_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
         self.max_teams_entry = ttk.Entry(
             self.teamsizing_frame,
@@ -265,7 +262,8 @@ class GUI:
         min_teams_label.grid(row=3, column=0, padx=5, pady=5, sticky=tk.W)
 
         # Entry for the minimum number of team members
-        self.min_team_size_var = tk.IntVar(value=3)
+        self.min_team_size_var = tk.StringVar(value=3)
+        self.min_team_size_var.trace_add("write", self.validate_entries)
         validate_min_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
         self.min_teams_entry = ttk.Entry(
             self.teamsizing_frame,
@@ -295,13 +293,13 @@ class GUI:
         buttons_frame.grid(row=0, column=0)
 
         # Button to generate teams
-        generate_button = ttk.Button(
+        self.generate_button = ttk.Button(
             buttons_frame,
             text="Generate Teams",
             style='Generate.TButton',
             command=lambda: self.generate_teams())
-        generate_button.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
-        self.tooltip(generate_button, "Generate teams based on the current configuration.")
+        self.generate_button.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
+        self.tooltip(self.generate_button, "Generate teams based on the current configuration.")
 
         # Button to save current weights
         save_weights_button = ttk.Button(
@@ -375,19 +373,42 @@ class GUI:
     def show_feedback(self, widget, message, color):
         self.feedback_label = ttk.Label(self.teamsizing_frame, text=message, foreground=color, font=('Helvetica', 10))
         self.feedback_label.grid(row=widget.grid_info()['row'], column=widget.grid_info()['column'] + 2, padx=5, pady=5, sticky=tk.W)
+        self.feedback_labels[widget] = self.feedback_label
+
+    def validate_entries(self, *args):
+        try:
+            min_size = int(self.min_team_size_var.get())
+            max_size = int(self.max_team_size_var.get())
+            desired_size = int(self.team_size_var.get())
+
+            if not min_size or not max_size or not desired_size:
+                self.generate_button.config(state=tk.DISABLED)
+                return
+
+            if min_size > 0 and max_size > 0 and desired_size > 0:
+                self.generate_button.config(state=tk.NORMAL)
+            else:
+                self.generate_button.config(state=tk.DISABLED)
+
+        except:
+            self.generate_button.config(state=tk.DISABLED)
 
     def validate_size(self, size, action, entry_name):
         entry_widget = self.root.nametowidget(entry_name)
         if action == '1': # Insert
             if size.isdigit() and int(size) > 0 and not size.startswith("0"):
-                if hasattr(self, 'feedback_label'):
-                    self.feedback_label.grid_forget()
+                if entry_widget in self.feedback_labels:
+                    self.feedback_labels[entry_widget].grid_forget()
+                    del self.feedback_labels[entry_widget]
                 return True
             else:
                 self.show_feedback(entry_widget, "Please enter a positive integer.", 'red')
                 return False
-        if hasattr(self, 'feedback_label'):
-            self.feedback_label.grid_forget()
+
+        if entry_widget in self.feedback_labels:
+            self.feedback_labels[entry_widget].grid_forget()
+            del self.feedback_labels[entry_widget]
+
         return True
 
     def handle_checkbox_toggle(self, attribute):
@@ -474,30 +495,48 @@ class GUI:
     # Method to generate teams
     def generate_teams(self):
         try:
+            for label in self.feedback_labels.values():
+                label.grid_forget()
+                del label
+            self.feedback_labels.clear()
+
+            feedback_shown = False
+
             for widget in self.team_buttons_frame.winfo_children():
                 widget.destroy()
 
-            min_size = self.min_team_size_var.get()
-            max_size = self.max_team_size_var.get()
-            desired_size = self.team_size_var.get()
+            min_size = int(self.min_team_size_var.get())
+            max_size = int(self.max_team_size_var.get())
+            desired_size = int(self.team_size_var.get())
 
-            total_members = self.data_processor.get_total_members()
+            total_members = len(self.data_processor.get_data())
             if desired_size > total_members:
                 desired_size = total_members
                 self.team_size_var.set(desired_size)
                 self.show_feedback(self.team_size_entry, "Value decreased to accommodate total number of members.", self.main_color)
+                feedback_shown = True
 
-            if max_size < desired_size + 1:
+            if max_size < desired_size:
                 max_size = desired_size + 1
                 self.max_team_size_var.set(max_size)
                 self.show_feedback(self.max_teams_entry, "Value increased to accommodate desired team size.", self.main_color)
-            
-            if min_size > desired_size - 1:
+                feedback_shown = True
+
+            if min_size > desired_size:
                 min_size = desired_size - 1
                 if min_size <= 1:
                     min_size = desired_size
                 self.min_team_size_var.set(min_size)
                 self.show_feedback(self.min_teams_entry, "Value decreased to accommodate desired team size.", self.main_color)
+                feedback_shown = True
+
+            if not feedback_shown:
+                # Remove feedback label if no feedback is shown
+                if hasattr(self, 'feedback_label'):
+                    for label in self.feedback_labels.values():
+                        label.grid_forget()
+                        del label
+                    self.feedback_labels.clear()
 
             self.teams = self.teamforming.generate_teams(desired_size, min_size, max_size)
             self.teamforming.set_teams(self.teams)  # Set teams attribute
