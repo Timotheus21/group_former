@@ -92,6 +92,7 @@ class TeamForming:
             for member1 in members
         }
         teams = []
+        unassigned_members = members.copy()
 
         while members:
             best_score = None
@@ -117,12 +118,13 @@ class TeamForming:
             if best_team:
                 teams.append(best_team)
                 members = [member for member in members if member not in best_team]
+                unassigned_members = [member for member in unassigned_members if member not in best_team]
             else:
                 print(f"No best team found for {members}. Reiterating with remaining members...")
 
                 # Handle any remaining members that were not assigned to a team
-                while members:
-                    remaining_member = members.pop(0)
+                while unassigned_members:
+                    remaining_member = unassigned_members.pop(0)
                     best_score = None
                     best_team = None
 
@@ -148,8 +150,12 @@ class TeamForming:
                         teams[best_team_index] = tuple(best_team)
                         print(f"Updated team: {best_team}")
                         print(f"All teams: {teams}")
+                        members.remove(remaining_member)
+                
+                break
 
-        return teams
+        print(f"Remaining members: {members}")
+        return teams, members
 
     def set_teams(self, teams):
         # Set the teams attribute with the generated teams

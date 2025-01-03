@@ -277,7 +277,7 @@ class GUI:
         self.tooltip(self.min_teams_entry, "Teams will not be smaller than this size.\n"+
                      "If the desired team size is smaller than this, the minimum team size will be adjusted.")
         
-        remaining_members = f"Remaining Members: {}"
+        remaining_members = f"Remaining Members: "
         self.remaining_members_label = ttk.Label(self.teamsizing_frame, text=remaining_members, font=self.attribute_label_font)
         self.remaining_members_label.grid(row=4, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W)
 
@@ -496,6 +496,9 @@ class GUI:
         self.data_processor.current_weights = {attribute: var.get() for attribute, var in self.weight_vars.items()}
         print(f"Current weights: {self.data_processor.current_weights}")
 
+    def update_remaining_members_label(self, remaining_members):
+        self.remaining_members_label.config(text=f"Remaining Members: {remaining_members}")
+
     # Method to generate teams
     def generate_teams(self):
         try:
@@ -542,8 +545,9 @@ class GUI:
                         del label
                     self.feedback_labels.clear()
 
-            self.teams = self.teamforming.generate_teams(desired_size, min_size, max_size)
+            self.teams, remaining_members = self.teamforming.generate_teams(desired_size, min_size, max_size)
             self.teamforming.set_teams(self.teams)  # Set teams attribute
+            self.update_remaining_members_label(len(remaining_members))
             self.teamforming.print_teams()  # Print teams with names
             for idx, team in enumerate(self.teams):
                 button = ttk.Button(
