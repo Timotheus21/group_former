@@ -14,6 +14,7 @@ class GUI:
         self.tooltip = tooltip
         self.font_settings = ("Helvetica", 11)
         self.attribute_label_font = ("Helvetica", 11)
+        self.max_emphasis = 2
 
         # Set the title of the main window
         self.root.title("Hackathon Group Former")
@@ -31,6 +32,8 @@ class GUI:
     def create_widgets(self):
         self.checkbox_vars = {} # Store the checkbox variables for later updates
         self.checkbuttons = {} # Store the checkbuttons for later updates
+        self.emphasis_buttons = {} # Store the emphasis buttons for later updates
+        self.emphasis_attributes = {} # Store the emphasized attributes for later updates
         self.remove_checkbuttons = {} # Store the remove checkbuttons for later updates
         self.remove_checkbox_vars = {} # Store the remove checkbox variables for later updates
         self.attribute_labels = {} # Store the attribute labels for later updates
@@ -53,6 +56,13 @@ class GUI:
 
     def define_styles(self):
         style = ttk.Style()
+        style.configure('Emphasized.TButton',
+                        foreground='red',
+                        padding=(6, 6),
+                        relief="raised",
+                        anchor="center",
+                        font=("Helvetica", 10)
+                        )
         style.configure('Diverse.TButton',
                         foreground=self.main_color,
                         padding=(6, 6),
@@ -97,11 +107,11 @@ class GUI:
         # Add a label for the overall program explanation
         program_explanation = ttk.Label(
             self.top_frame,
-            text=("Welcome to the Hackathon Group Former! This program helps you form teams based on various attributes.\n"
-                 "Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
-                 "Select whether the following attributes should be homogenous or heterogenous within teams. "
-                 "You can remove attributes by unchecking the remove box or emphasize them with the corresponding button.\n"
-                 "You can also adjust the desired teamsizes. Click 'Generate Teams' to create teams based on the current configuration."),
+            text=(f"Welcome to the Hackathon Group Former! This program helps you form teams based on various attributes.\n"
+                 f"Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
+                 f"Select whether the following attributes should be homogenous or heterogenous within teams. "
+                 f"You can remove attributes by unchecking the remove box or emphasize {self.max_emphasis} of them, all with the corresponding buttons.\n"
+                 f"You can also adjust the desired teamsizes. Click 'Generate Teams' to create teams based on the current configuration."),
             background=self.main_color,
             foreground='white',
             wraplength=800,
@@ -167,6 +177,8 @@ class GUI:
 
             self.create_checkbutton(index, attribute)
 
+            self.create_emphasis_button(self.weights_frame, index, 6, attribute)
+
         start_row = len(self.data_processor.weights.items())
 
         for index, attribute in enumerate(self.data_processor.get_other_attributes()):
@@ -209,6 +221,8 @@ class GUI:
 
             self.checkbuttons[attribute] = self.checkbutton
             self.remove_checkbuttons[attribute] = self.remove_checkbutton
+
+            self.create_emphasis_button(row_frame, row, 1, attribute)
 
         self.teamsizing_frame = ttk.LabelFrame(self.inner_frame, text="Team Sizing")
         self.teamsizing_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
@@ -368,6 +382,17 @@ class GUI:
         self.checkbuttons[attribute] = checkbutton
         self.remove_checkbuttons[attribute] = remove_checkbutton
 
+    def create_emphasis_button(self, frame, row, column, attribute):
+        self.emphasis_button = ttk.Button(
+            frame,
+            text="Emphasize",
+            style='Custom.TButton',
+            command=lambda: self.handle_emphasis_toggle(attribute))
+        self.emphasis_button.grid(row=row, column=column, padx=5, pady=5)
+        self.tooltip(self.emphasis_button, "Emphasize this attribute in team formation.")
+
+        self.emphasis_buttons[attribute] = self.emphasis_button
+
     def on_mousewheel(self, event):
         self.canvas.yview_scroll(-1 * int(event.delta / 120), "units")
 
@@ -428,12 +453,31 @@ class GUI:
             self.checkbuttons[attribute].config(style='Diverse.TButton')
             self.data_processor.add_heterogenous_attribute(attribute)
 
+    def handle_emphasis_toggle(self, attribute):
+        emphasized_attributes = self.data_processor.get_emphasized_attributes()
+        if attribute not in emphasized_attributes:
+            if len(emphasized_attributes) >= self.max_emphasis:
+                # Remove the first emphasized attribute
+                first_attribute = emphasized_attributes[0]
+                self.data_processor.remove_emphasized_attribute(first_attribute)
+                self.emphasis_buttons[first_attribute].config(style='Custom.TButton')
+                self.emphasis_attributes[first_attribute] = False
+
+            self.data_processor.add_emphasized_attribute(attribute)
+            self.emphasis_buttons[attribute].config(style='Emphasized.TButton')
+            self.emphasis_attributes[attribute] = True
+        else:
+            self.data_processor.remove_emphasized_attribute(attribute)
+            self.emphasis_buttons[attribute].config(style='Custom.TButton')
+            self.emphasis_attributes[attribute] = False
+
     def handle_remove_toggle(self, attribute):
             if not self.remove_checkbox_vars[attribute].get():
                 self.data_processor.remove_attribute(attribute)
                 # Apply strike-through to the label
                 self.attribute_labels[attribute].config(foreground='gray', font=('Helvetica', 11,'overstrike'))
                 self.checkbuttons[attribute].config(style='Removed.TButton')
+                self.emphasis_buttons[attribute].config(style='Removed.TButton')
                 if attribute in self.weight_labels:
                     self.weight_labels[attribute].config(foreground='gray', font=('Helvetica', 11,'overstrike'))
                 self.set_attribute_button_state(attribute, state=tk.DISABLED)
@@ -451,9 +495,17 @@ class GUI:
                     self.checkbuttons[attribute].config(style='Custom.TButton')
                 else:
                     self.checkbuttons[attribute].config(style='Diverse.TButton')
+                if attribute in self.emphasis_buttons:
+                    if self.emphasis_attributes[attribute]:
+                        self.emphasis_buttons[attribute].config(style='Emphasized.TButton')
+                        self.data_processor.add_emphasized_attribute(attribute)
+                    else:
+                        self.emphasis_buttons[attribute].config(style='Custom.TButton')
+                        self.data_processor.remove_emphasized_attribute(attribute)
 
     def set_attribute_button_state(self, attribute, state):
         self.checkbuttons[attribute].config(state=state)
+        self.emphasis_buttons[attribute].config(state=state)
         if attribute in self.increase_buttons:
             self.increase_buttons[attribute].config(state=state)
         if attribute in self.decrease_buttons:

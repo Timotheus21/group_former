@@ -47,6 +47,8 @@ class DataProcessor:
         ]
         self.homogenous_attributes = self.flatten_lists([self.skill_attributes, self.motivation_attributes, self.project_attributes, 'GroupImportance'])
         self.heterogenous_attributes = self.flatten_lists([self.background_attributes, 'KnownParticipants'])
+        self.emphasized_attributes_type = {}
+        self.emphasized_attributes = []
 
     def load_csv_file(self, filepath):
         # Open file dialog to select a CSV file
@@ -180,6 +182,28 @@ class DataProcessor:
         if attribute in self.homogenous_attributes:
             self.homogenous_attributes.remove(attribute)
 
+    def add_emphasized_attribute(self, attribute):
+        # Add an emphasized attribute to the list
+        if attribute not in self.emphasized_attributes:
+            print(f"Adding emphasized attribute: {attribute}")
+            self.emphasized_attributes.append(attribute)
+            print(f"Emphasized: {self.emphasized_attributes}")
+
+            # Store information about the emphasized attribute
+            if attribute in self.homogenous_attributes:
+                self.emphasized_attributes_type[attribute] = 'homogenous'
+            elif attribute in self.heterogenous_attributes:
+                self.emphasized_attributes_type[attribute] = 'heterogenous'
+
+    def remove_emphasized_attribute(self, attribute):
+        # Remove an emphasized attribute from the list
+        if attribute in self.emphasized_attributes:
+            print(f"Removing emphasized attribute: {attribute}")
+            self.emphasized_attributes.remove(attribute)
+            print(f"Emphasized: {self.emphasized_attributes}")
+            if attribute in self.emphasized_attributes_type:
+                del self.emphasized_attributes_type[attribute]
+
     def remove_attribute(self, attribute):
         # Remove an attribute from both lists
         if attribute in self.homogenous_attributes:
@@ -190,8 +214,12 @@ class DataProcessor:
             print(f"Removing heterogenous attribute: {attribute}")
             self.heterogenous_attributes.remove(attribute)
             print(f"Heterogenous: {self.heterogenous_attributes}")
-            # Merge multiple columns into one
+        if attribute in self.emphasized_attributes:
+            print(f"Removing emphasized attribute: {attribute}")
+            self.emphasized_attributes.remove(attribute)
+            print(f"Emphasized: {self.emphasized_attributes}")
 
+    # Merge multiple columns into one
     def merge_columns(self, df, base_name):
         try:
             columns_to_merge = [col for col in df.columns if col.startswith(base_name)]
@@ -306,6 +334,14 @@ class DataProcessor:
     def get_heterogenous_attributes(self):
         # Return the flattened heterogenous attributes
         return self.heterogenous_attributes
+
+    def get_emphasized_attributes(self):
+        # Return the emphasized attributes
+        return self.emphasized_attributes
+
+    def get_emphasized_attributes_type(self):
+        # Return the emphasized attributes type
+        return self.emphasized_attributes_type
 
     def get_removed_attributes(self):
         # Return the removed attributes

@@ -78,7 +78,30 @@ class TeamForming:
                 total_score += compatibility_scores[combination[member]][combination[other_member]]
         return total_score
 
+    def refine_teams(self, teams, emphasized_attributes):
+        # Refine the generated teams based on emphasis attributes
+        emphasized_attributes_type = self.data_processor.get_emphasized_attributes_type()
+        refined_teams = []
+        for team in teams:
+            refined_team = []
+            for member in team:
+                # Check if any emphasis attributes are present in the team
+                for attribute in emphasized_attributes:
+                    attribute_type = emphasized_attributes_type.get(attribute)
+                    if attribute_type == 'homogenous' and all(self.df.loc[m, attribute] == self.df.loc[member, attribute] for m in team):
+                        # Add the member to the refined team if the attribute is homogenous
+                        refined_team.append(member)
+                    elif attribute_type == 'heterogenous' and any(self.df.loc[m, attribute] != self.df.loc[member, attribute] for m in team):
+                        # Add the member to the refined team if the attribute is heterogenous
+                        refined_team.append(member)
+            # Add the refined team to the list of refined teams
+            if refined_team:
+                refined_teams.append(refined_team)
+
+        return refined_teams
+
     def generate_teams(self, desired_size, min_size, max_size):
+        emphasized_attributes = self.data_processor.get_emphasized_attributes()
         # Calculate individual scores for all members
         individual_scores = self.calculate_individual_scores()
         # Get a list of all members
@@ -151,8 +174,13 @@ class TeamForming:
                         print(f"Updated team: {best_team}")
                         print(f"All teams: {teams}")
                         members.remove(remaining_member)
-                
+
                 break
+
+            # Refine the teams if there are any emphasized attributes
+        if emphasized_attributes:
+            print(f"Refining teams based on emphasized attributes: {emphasized_attributes}")
+            self.refine_teams(teams, emphasized_attributes)
 
         print(f"Remaining members: {members}")
         return teams, members
