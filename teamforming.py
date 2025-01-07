@@ -81,6 +81,7 @@ class TeamForming:
     def refine_teams(self, teams, emphasized_attributes):
         # Refine the generated teams based on emphasis attributes
         emphasized_attributes_type = self.data_processor.get_emphasized_attributes_type()
+        print(f"Refining teams based on emphasized attributes: {emphasized_attributes} Types: {emphasized_attributes_type}")
         refined_teams = []
         for team in teams:
             refined_team = []
@@ -97,7 +98,7 @@ class TeamForming:
             # Add the refined team to the list of refined teams
             if refined_team:
                 refined_teams.append(refined_team)
-
+        print(f"Refined teams: {refined_teams}")
         return refined_teams
 
     def generate_teams(self, desired_size, min_size, max_size):
@@ -179,7 +180,6 @@ class TeamForming:
 
             # Refine the teams if there are any emphasized attributes
         if emphasized_attributes:
-            print(f"Refining teams based on emphasized attributes: {emphasized_attributes}")
             self.refine_teams(teams, emphasized_attributes)
 
         print(f"Remaining members: {members}")

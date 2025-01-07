@@ -189,12 +189,6 @@ class DataProcessor:
             self.emphasized_attributes.append(attribute)
             print(f"Emphasized: {self.emphasized_attributes}")
 
-            # Store information about the emphasized attribute
-            if attribute in self.homogenous_attributes:
-                self.emphasized_attributes_type[attribute] = 'homogenous'
-            elif attribute in self.heterogenous_attributes:
-                self.emphasized_attributes_type[attribute] = 'heterogenous'
-
     def remove_emphasized_attribute(self, attribute):
         # Remove an emphasized attribute from the list
         if attribute in self.emphasized_attributes:
@@ -341,6 +335,11 @@ class DataProcessor:
 
     def get_emphasized_attributes_type(self):
         # Return the emphasized attributes type
+        for attribute in self.emphasized_attributes:
+            if attribute in self.homogenous_attributes:
+                self.emphasized_attributes_type[attribute] = 'homogenous'
+            elif attribute in self.heterogenous_attributes:
+                self.emphasized_attributes_type[attribute] = 'heterogenous'
         return self.emphasized_attributes_type
 
     def get_removed_attributes(self):
