@@ -135,7 +135,7 @@ class TeamForming:
                 members = [member for member in members if member not in best_team]
                 unassigned_members = [member for member in unassigned_members if member not in best_team]
             else:
-                print(f"No best team found for {members}. Reiterating with remaining members...")
+                print(f"\nNo best team found for {members}. Reiterating with remaining members...")
 
                 # Handle any remaining members that were not assigned to a team
                 while unassigned_members:
@@ -164,12 +164,12 @@ class TeamForming:
                         # Update the teams list and replace with the new team
                         teams[best_team_index] = tuple(best_team)
                         print(f"Updated team: {best_team}")
-                        print(f"All teams: {teams}")
+                        print(f"All teams: {teams}\n")
                         members.remove(remaining_member)
 
                 break
 
-        print(f"Remaining members: {members}")
+        print(f"Remaining members: {members}\n")
         return teams, members
 
     def set_teams(self, teams):
@@ -223,4 +223,5 @@ class TeamForming:
                         heterogenous_count += 1
 
             print(f"Total true homogenous attributes: {homogenous_count}")
-            print(f"Total true heterogenous attributes: {heterogenous_count}\n\n")
+            print(f"Total true heterogenous attributes: {heterogenous_count}\n")
+            print("--------------------------------------------------\n\n")

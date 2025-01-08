@@ -496,6 +496,9 @@ class GUI:
                 else:
                     self.checkbuttons[attribute].config(style='Diverse.TButton')
                 if attribute in self.emphasis_buttons:
+                    if attribute not in self.emphasis_attributes:
+                        self.emphasis_buttons[attribute].config(style='Custom.TButton')
+                        self.emphasis_attributes[attribute] = False
                     if self.emphasis_attributes[attribute]:
                         self.emphasis_buttons[attribute].config(style='Emphasized.TButton')
                         self.data_processor.add_emphasized_attribute(attribute)
