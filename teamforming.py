@@ -61,16 +61,16 @@ class TeamForming:
                 compatibility_score += 1
 
                 if attribute in emphasized_attributes and emphasized_attributes_type.get(attribute) == 'homogenous':
-                    compatibility_score += 4
-                    print(f"Emphasized attribute {attribute} found in homogenous attributes, {compatibility_score}")
+                    if self.df.loc[member1, attribute] == self.df.loc[member2, attribute]:
+                        compatibility_score += 4
 
         for attribute in self.heterogenous_attributes:
             if self.df.loc[member1, attribute] != self.df.loc[member2, attribute]:
                 compatibility_score += 2
 
                 if attribute in emphasized_attributes and emphasized_attributes_type.get(attribute) == 'heterogenous':
-                    compatibility_score += 6
-                    print(f"Emphasized attribute {attribute} found in heterogenous attributes, {compatibility_score}")
+                    if self.df.loc[member1, attribute] != self.df.loc[member2, attribute]:
+                        compatibility_score += 6
 
         return compatibility_score
 
@@ -92,20 +92,6 @@ class TeamForming:
             for other_member in range(member + 1, len(combination)):
                 total_score += compatibility_scores[combination[member]][combination[other_member]]
         return total_score
-
-    def refine_teams(self, teams):
-        # Refine the generated teams
-        refined_teams = []
-        for team in teams:
-            refined_team = []
-            for member in team:
-                # Check what attributes are present in the team
-
-            # Add the refined team to the list of refined teams
-                if refined_team:
-                    refined_teams.append(refined_team)
-
-        return refined_teams
 
     def generate_teams(self, desired_size, min_size, max_size):
         # Calculate individual scores for all members
@@ -182,9 +168,6 @@ class TeamForming:
                         members.remove(remaining_member)
 
                 break
-
-        # Refine the teams
-        #self.refine_teams(teams)
 
         print(f"Remaining members: {members}")
         return teams, members

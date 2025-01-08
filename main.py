@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     data_processor = DataProcessor(filepath)
     teamforming = TeamForming(data_processor)
-    visualization = Visualization(data_processor.get_data())
+    visualization = Visualization(data_processor)
     tooltip = Tooltip
     config = Config
 
