@@ -93,6 +93,68 @@ class TeamForming:
                 total_score += compatibility_scores[combination[member]][combination[other_member]]
         return total_score
 
+    def check_for_names(self, teams, max_size, min_size, individual_scores, compatibility_scores):
+        for i, team in enumerate(teams):
+            teams[i] = list(team)
+
+        # Check if the members have high GroupImportance values and check for KnownParticipants
+        for team in teams:
+            for member in team[:]:
+                try:
+                    name = self.df.loc[member, 'Name']
+                    group_importance = self.df.loc[member, 'GroupImportance']
+                    known_participants = self.df.loc[member, 'KnownParticipants']
+
+                    if isinstance(known_participants, str):
+                        known_participants = known_participants.split(', ')
+                    else:
+                        known_participants = []
+
+                    print(f"{known_participants} are known participants for {name}")
+
+                    if group_importance.lower() == 'completely':
+                        # Place the member in a team with known participants
+                        for participant in known_participants:
+                            for other_team in teams:
+                                if participant in [self.df.loc[member, 'Name'] for member in other_team]:
+                                    if member not in other_team and len(other_team) < max_size:
+                                        if len(team) > min_size:
+                                            team.remove(member)
+                                            other_team.append(member)
+                                            print(f"Placing {name} in team with known participants {other_team}")
+                                            break
+
+                    else:
+                        current_team = team
+                        best_team = current_team
+                        best_score = self.calculate_total_scores(current_team, individual_scores, compatibility_scores)
+
+
+                        # Check if the known participants are in the same team and split them
+                        for other_team in teams:
+                            if other_team != current_team and len(other_team) < max_size:
+                                if not any(participant in [self.df.loc[member, 'Name'] for member in other_team] for participant in known_participants):
+                                        if member not in other_team:
+                                            combination = other_team + [member]
+                                            total_score = self.calculate_total_scores(combination, individual_scores, compatibility_scores)
+
+                                            if total_score > best_score:
+                                                best_score = total_score
+                                                best_team = other_team
+
+                                if best_team != current_team and len(current_team) > min_size:
+                                    print(f"Placing {name} in other team with no known participants {best_team}")
+
+                                    current_team.remove(member)
+                                    best_team.append(member)
+                                    break
+
+                except KeyError as e:
+                    print(f"Error seperating member {member}: {e}")
+            
+        return teams
+
+
     def generate_teams(self, desired_size, min_size, max_size):
         # Calculate individual scores for all members
         individual_scores = self.calculate_individual_scores()
@@ -168,6 +230,9 @@ class TeamForming:
                         members.remove(remaining_member)
 
                 break
+
+        # Check for names with high GroupImportance values and KnownParticipants
+        self.check_for_names(teams, max_size, min_size, individual_scores, compatibility_scores)
 
         print(f"Remaining members: {members}\n")
         return teams, members

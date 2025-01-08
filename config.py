@@ -47,6 +47,7 @@ class Config:
         heterogenous_attributes = self.data_processor.get_heterogenous_attributes()
         removed_attributes = self.data_processor.get_removed_attributes()
         normalized_weights = self.data_processor.get_normalized_current_weights()
+        emphasized_attributes = self.data_processor.get_emphasized_attributes()
 
         font_settings = ("Helvetica", 11)
 
@@ -68,6 +69,16 @@ class Config:
             attribute_label.pack(anchor='w', padx=20)
         if not heterogenous_attributes:
             empty_label = ttk.Label(scrollable_frame, text="No heterogenous attributes found", foreground='#5d33bd', font=font_settings)
+            empty_label.pack(anchor='w', padx=20)
+
+        emphasized_label = ttk.Label(scrollable_frame, text="Emphasized Attributes:", foreground='#5d33bd', font=font_settings)
+        emphasized_label.pack(anchor='w', padx=10, pady=5)
+        for attribute in emphasized_attributes:
+            display_attribute = self.format_attribute_for_display(attribute)
+            attribute_label = ttk.Label(scrollable_frame, text=display_attribute, foreground='#5d33bd', font=font_settings)
+            attribute_label.pack(anchor='w', padx=20)
+        if not emphasized_attributes:
+            empty_label = ttk.Label(scrollable_frame, text="No emphasized attributes found", foreground='#5d33bd', font=font_settings)
             empty_label.pack(anchor='w', padx=20)
 
         removed_label = ttk.Label(scrollable_frame, text="Removed Attributes:", foreground='#5d33bd', font=font_settings)
