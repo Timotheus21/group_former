@@ -78,12 +78,6 @@ class Visualization:
                 if len(learning_entries) > 4:
                     learning_entries = learning_entries[:2] + ['...'] + learning_entries[-2:]
                 preferred_challenge = self.df.loc[member, 'PreferredChallenge']
-
-                preferred_games = self.df.loc[member, 'PreferredGamesEasy'], self.df.loc[member, 'PreferredGamesMedium'], self.df.loc[member, 'PreferredGamesHard']
-                preferred_games_entry = [entry for entry in preferred_games if entry.lower() not in ['none', 'no', 'n/a', 'nan']]
-                preferred_games_entry = [entry for entry in preferred_games_entry if entry.lower() != 'no']
-                preferred_games_entry = ', '.join(preferred_games_entry)
-
                 study_field = self.df.loc[member, 'StudyField']
                 is_student = self.df.loc[member, 'IsStudent']
 
@@ -91,7 +85,7 @@ class Visualization:
                 profile_text = f"{name}, {age} ({pronouns}),\n"
                 profile_text += f"{coding_experience} in {primary_language} with {experience_years} years of experience." + "\n"
                 profile_text += f"Git Familiarity: {git} and in Python they are {python}." + "\n"
-                profile_text += f"They prefer a {preferred_challenge} challenge with {preferred_games_entry}" + "\n"
+                profile_text += f"They prefer a {preferred_challenge} challenge." + "\n"
                 if learning_entries and learning_entries not in ['none', 'no', 'n/a']:
                     profile_text += f"They hope to learn {', '.join(learning_entries)}." + "\n"
                 if is_student.lower() == 'yes' and study_field is not None:
