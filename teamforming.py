@@ -49,14 +49,29 @@ class TeamForming:
         # Get homogenous and heterogenous attributes
         self.homogenous_attributes = self.data_processor.get_homogenous_attributes()
         self.heterogenous_attributes = self.data_processor.get_heterogenous_attributes()
+
+        # Get emphasized attributes and their types
+        emphasized_attributes = self.data_processor.get_emphasized_attributes()
+        emphasized_attributes_type = self.data_processor.get_emphasized_attributes_type()
+
         compatibility_score = 0
         # Calculate compatibility score based on homogenous and heterogenous attributes
         for attribute in self.homogenous_attributes:
             if self.df.loc[member1, attribute] == self.df.loc[member2, attribute]:
                 compatibility_score += 1
+
+                if attribute in emphasized_attributes and emphasized_attributes_type.get(attribute) == 'homogenous':
+                    if self.df.loc[member1, attribute] == self.df.loc[member2, attribute]:
+                        compatibility_score += 4
+
         for attribute in self.heterogenous_attributes:
             if self.df.loc[member1, attribute] != self.df.loc[member2, attribute]:
                 compatibility_score += 2
+
+                if attribute in emphasized_attributes and emphasized_attributes_type.get(attribute) == 'heterogenous':
+                    if self.df.loc[member1, attribute] != self.df.loc[member2, attribute]:
+                        compatibility_score += 6
+
         return compatibility_score
 
     def all_combinations(self, members, min_size, max_size):
@@ -78,7 +93,7 @@ class TeamForming:
                 total_score += compatibility_scores[combination[member]][combination[other_member]]
         return total_score
 
-    def generate_teams(self):
+    def generate_teams(self, desired_size, min_size, max_size):
         # Calculate individual scores for all members
         individual_scores = self.calculate_individual_scores()
         # Get a list of all members
@@ -92,14 +107,15 @@ class TeamForming:
             for member1 in members
         }
         teams = []
+        unassigned_members = members.copy()
 
         while members:
             best_score = None
             best_team = None
 
-            # Iterate over team sizes from 4 to 3
-            for size in [4, 5, 3]:
-                # Iterate over all possible team combinations for team sizes of 3 to 5
+            # Iterate over team sizes
+            for size in [desired_size, min_size]:
+                # Iterate over all possible team combinations for team sizes
                 for combination in self.all_combinations(members, size, size):
                     # Calculate total score for the combination
                     total_score = self.calculate_total_scores(combination, individual_scores, compatibility_scores)
@@ -117,18 +133,19 @@ class TeamForming:
             if best_team:
                 teams.append(best_team)
                 members = [member for member in members if member not in best_team]
+                unassigned_members = [member for member in unassigned_members if member not in best_team]
             else:
-                print(f"No best team found for {members}. Reiterating with remaining members...")
+                print(f"\nNo best team found for {members}. Reiterating with remaining members...")
 
                 # Handle any remaining members that were not assigned to a team
-                while members:
-                    remaining_member = members.pop(0)
+                while unassigned_members:
+                    remaining_member = unassigned_members.pop(0)
                     best_score = None
                     best_team = None
 
                     # Iterate over the teams to find the best team to add the remaining member to
                     for team in teams:
-                        if len(team) < 5:
+                        if len(team) < max_size:
                             combination = list(team) + [remaining_member]
                             team_score = self.calculate_total_scores(combination, individual_scores, compatibility_scores)
                             print(f"Team {team} score: {team_score}")
@@ -147,9 +164,13 @@ class TeamForming:
                         # Update the teams list and replace with the new team
                         teams[best_team_index] = tuple(best_team)
                         print(f"Updated team: {best_team}")
-                        print(f"All teams: {teams}")
+                        print(f"All teams: {teams}\n")
+                        members.remove(remaining_member)
 
-        return teams
+                break
+
+        print(f"Remaining members: {members}\n")
+        return teams, members
 
     def set_teams(self, teams):
         # Set the teams attribute with the generated teams
@@ -160,9 +181,47 @@ class TeamForming:
         for idx, (team) in enumerate(self.teams):
             print(f"Generating team {idx + 1}...")
             print(f"Team {idx + 1}:")
+
+            same_attributes = {}
+            different_attributes = {}
+
+            homogenous_count = 0
+            heterogenous_count = 0
+
             for member in team:
                 try:
                     name = self.df.loc[member, 'Name']
                     print(f"  - {name} (Score: {self.calculate_individual_scores()[member]:.4f})")
+
+                    for attribute in self.homogenous_attributes + self.heterogenous_attributes:
+                        value = self.df.loc[member, attribute]
+                        if attribute not in same_attributes:
+                            same_attributes[attribute] = value
+                            different_attributes[attribute] = set()
+
+                        if same_attributes[attribute] != value:
+                            different_attributes[attribute].add(value)
+                            different_attributes[attribute].add(same_attributes[attribute])
+                            same_attributes[attribute] = None
+
                 except KeyError as e:
                     print(f"Error retrieving name for member {member}: {e}")
+
+            print("\nSame attributes:")
+            for attribute, value in same_attributes.items():
+                if value is not None:
+                    print(f"  - {attribute}: {value}")
+                    if attribute in self.homogenous_attributes:
+                        homogenous_count += 1
+
+            print("Different attributes:")
+            for attribute, values in different_attributes.items():
+                filtered_values = [str(value) for value in values if value is not None]
+                if filtered_values:
+                    print(f"  - {attribute}: {', '.join(filtered_values)}\n")
+                    if attribute in self.heterogenous_attributes:
+                        heterogenous_count += 1
+
+            print(f"Total true homogenous attributes: {homogenous_count}")
+            print(f"Total true heterogenous attributes: {heterogenous_count}\n")
+            print("--------------------------------------------------\n\n")

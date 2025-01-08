@@ -2,8 +2,9 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 class Visualization:
-    def __init__(self, df):
-        self.df = df
+    def __init__(self, data_processor):
+        self.data_processor = data_processor
+        self.df = data_processor.get_data()
         self.main_color = '#5d33bd'
 
     def get_pronouns(self, gender):
@@ -22,11 +23,7 @@ class Visualization:
         for team in teams:
             for member in team:
                 name = self.df.loc[member, 'Name']
-                coding_experience = self.df.loc[member, 'CodingExperience']
-                experience_years = self.df.loc[member, 'ExperienceYears']
-                study_field = self.df.loc[member, 'StudyField']
-                label = f"{coding_experience}, {experience_years}\n{study_field}"
-                G.add_node(name, label=label)
+                G.add_node(name)
 
         # Add edges based on similar answers
         for team in teams:
@@ -36,13 +33,12 @@ class Visualization:
                     if i >= j:
                         continue
                     other_name = self.df.loc[other_member, 'Name']
-                    similarity = Visualization.calculate_similarity(self.df.loc[member], self.df.loc[other_member])
+                    similarity = Visualization.calculate_similarity(self.df.loc[member], self.df.loc[other_member], self.data_processor.get_homogenous_attributes())
                     if similarity > 0:  # Adjust threshold as needed
                         G.add_edge(name, other_name, weight=similarity)
 
         # Generate layout and draw the graph
         pos = nx.spring_layout(G)
-        labels = nx.get_node_attributes(G, 'label')
         edges = G.edges(data=True)
         weights = [edge[2]['weight'] for edge in edges]
 
@@ -57,8 +53,7 @@ class Visualization:
 
         # Draw labels
         for node, (x, y) in pos.items():
-            plt.text(x, y, node, fontsize=12, fontweight='bold', ha='center')
-            plt.text(x, y - 0.09, labels[node], fontsize=12, ha='center')
+            plt.text(x, y, node, fontsize=14, fontweight='bold', ha='center')
 
         plt.subplot(1, 2, 1)  # Profiles on the left
         y_offset = 1.0
@@ -67,28 +62,34 @@ class Visualization:
             for member in team:
                 name = self.df.loc[member, 'Name']
                 pronouns = self.get_pronouns(self.df.loc[member, 'Gender'])
+                age = self.df.loc[member, 'Age']
                 coding_experience = self.df.loc[member, 'CodingExperience']
                 primary_language = self.df.loc[member, 'PrimaryLanguage']
                 experience_years = self.df.loc[member, 'ExperienceYears']
                 git = self.df.loc[member, 'GitFamiliarity']
                 python = self.df.loc[member, 'PythonProficiency']
                 learning = self.df.loc[member, 'PreferredLearning']
+                learning_entries = [entry.strip() for entry in learning.split(',') if entry.strip().lower() != 'no']
+                if len(learning_entries) > 4:
+                    learning_entries = learning_entries[:2] + ['...'] + learning_entries[-2:]
+                preferred_challenge = self.df.loc[member, 'PreferredChallenge']
                 study_field = self.df.loc[member, 'StudyField']
                 is_student = self.df.loc[member, 'IsStudent']
 
                 # Add name with pronouns and a line break
-                profile_text = f"{name} ({pronouns}),\n"
+                profile_text = f"{name}, {age} ({pronouns}),\n"
                 profile_text += f"{coding_experience} in {primary_language} with {experience_years} years of experience." + "\n"
                 profile_text += f"Git Familiarity: {git} and in Python they are {python}." + "\n"
-                if learning and learning.lower() not in ['none', 'n/a']:
-                    profile_text += f"In this event they hope to learn {learning}." + "\n"
+                profile_text += f"They prefer a {preferred_challenge} challenge." + "\n"
+                if learning_entries and learning_entries not in ['none', 'no', 'n/a']:
+                    profile_text += f"They hope to learn {', '.join(learning_entries)}." + "\n"
                 if is_student.lower() == 'yes' and study_field is not None:
                     profile_text += f"Their field of study is {study_field}."
 
                 lines = profile_text.split('\n')
                 for line in lines:
                     if line.startswith(name):
-                        plt.text(0.02, y_offset, line, fontsize=12, fontweight='bold', verticalalignment='top', horizontalalignment='left', color=self.main_color)
+                        plt.text(0.02, y_offset, line, fontsize=13, fontweight='bold', verticalalignment='top', horizontalalignment='left', color=self.main_color)
                     else:
                         plt.text(0.02, y_offset, line, fontsize=12, verticalalignment='top', horizontalalignment='left')
                     y_offset -= 0.04  # Adjust spacing
@@ -98,10 +99,10 @@ class Visualization:
         plt.show()
 
     @staticmethod
-    def calculate_similarity(member1, member2):
+    def calculate_similarity(member1, member2, homogenous_attributes):
         # Calculate similarity based on common answers
         common_entries = 0
-        for attr in member1.index:
+        for attr in homogenous_attributes:
             if member1[attr] == member2[attr]:
                 common_entries += 1
         return common_entries
