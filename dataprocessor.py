@@ -37,7 +37,7 @@ class DataProcessor:
             'Motivations', 'PreferredLearning'
         ]
         self.project_attributes = [
-            'PreferredChallenge', 'PreferredGames'
+            'PreferredChallenge', 'PreferredGamesEasy', 'PreferredGamesMedium', 'PreferredGamesHard'
         ]
         self.familiarity_attributes = [
             'GroupImportance', 'KnownParticipants'
@@ -234,17 +234,17 @@ class DataProcessor:
                 "GitFamiliarity": "GitFamiliarity",
                 "AdditionalMotivation": "AdditionalMotivation",
                 "OtherInterests": "OtherInterests",
-                "EducationLevel": "EducationLevel",
-                "IsStudent": "IsStudent",
-                "StudyField": "StudyField",
-                "Semester": "Semester",
-                "Gender": "Gender",
-                "Age": "Age",
-                "CulturalBackground": "CulturalBackground",
                 "PreferredChallenge": "PreferredChallenge",
                 "GroupImportance": "GroupImportance",
                 "KnownParticipants": "KnownParticipants",
                 "FamiliarityOthers": "FamiliarityOthers",
+                "Age": "Age",
+                "Gender": "Gender",
+                "EducationLevel": "EducationLevel",
+                "IsStudent": "IsStudent",
+                "StudyField": "StudyField",
+                "Semester": "Semester",
+                "CulturalBackground": "CulturalBackground",
                 "Name": "Name"
             }
 

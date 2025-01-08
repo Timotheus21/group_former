@@ -49,14 +49,29 @@ class TeamForming:
         # Get homogenous and heterogenous attributes
         self.homogenous_attributes = self.data_processor.get_homogenous_attributes()
         self.heterogenous_attributes = self.data_processor.get_heterogenous_attributes()
+
+        # Get emphasized attributes and their types
+        emphasized_attributes = self.data_processor.get_emphasized_attributes()
+        emphasized_attributes_type = self.data_processor.get_emphasized_attributes_type()
+
         compatibility_score = 0
         # Calculate compatibility score based on homogenous and heterogenous attributes
         for attribute in self.homogenous_attributes:
             if self.df.loc[member1, attribute] == self.df.loc[member2, attribute]:
                 compatibility_score += 1
+
+                if attribute in emphasized_attributes and emphasized_attributes_type.get(attribute) == 'homogenous':
+                    compatibility_score += 4
+                    print(f"Emphasized attribute {attribute} found in homogenous attributes, {compatibility_score}")
+
         for attribute in self.heterogenous_attributes:
             if self.df.loc[member1, attribute] != self.df.loc[member2, attribute]:
                 compatibility_score += 2
+
+                if attribute in emphasized_attributes and emphasized_attributes_type.get(attribute) == 'heterogenous':
+                    compatibility_score += 6
+                    print(f"Emphasized attribute {attribute} found in heterogenous attributes, {compatibility_score}")
+
         return compatibility_score
 
     def all_combinations(self, members, min_size, max_size):
@@ -78,31 +93,21 @@ class TeamForming:
                 total_score += compatibility_scores[combination[member]][combination[other_member]]
         return total_score
 
-    def refine_teams(self, teams, emphasized_attributes):
-        # Refine the generated teams based on emphasis attributes
-        emphasized_attributes_type = self.data_processor.get_emphasized_attributes_type()
-        print(f"Refining teams based on emphasized attributes: {emphasized_attributes} Types: {emphasized_attributes_type}")
+    def refine_teams(self, teams):
+        # Refine the generated teams
         refined_teams = []
         for team in teams:
             refined_team = []
             for member in team:
-                # Check if any emphasis attributes are present in the team
-                for attribute in emphasized_attributes:
-                    attribute_type = emphasized_attributes_type.get(attribute)
-                    if attribute_type == 'homogenous' and all(self.df.loc[m, attribute] == self.df.loc[member, attribute] for m in team):
-                        # Add the member to the refined team if the attribute is homogenous
-                        refined_team.append(member)
-                    elif attribute_type == 'heterogenous' and any(self.df.loc[m, attribute] != self.df.loc[member, attribute] for m in team):
-                        # Add the member to the refined team if the attribute is heterogenous
-                        refined_team.append(member)
+                # Check what attributes are present in the team
+
             # Add the refined team to the list of refined teams
-            if refined_team:
-                refined_teams.append(refined_team)
-        print(f"Refined teams: {refined_teams}")
+                if refined_team:
+                    refined_teams.append(refined_team)
+
         return refined_teams
 
     def generate_teams(self, desired_size, min_size, max_size):
-        emphasized_attributes = self.data_processor.get_emphasized_attributes()
         # Calculate individual scores for all members
         individual_scores = self.calculate_individual_scores()
         # Get a list of all members
@@ -178,9 +183,8 @@ class TeamForming:
 
                 break
 
-            # Refine the teams if there are any emphasized attributes
-        if emphasized_attributes:
-            self.refine_teams(teams, emphasized_attributes)
+        # Refine the teams
+        #self.refine_teams(teams)
 
         print(f"Remaining members: {members}")
         return teams, members
@@ -194,9 +198,46 @@ class TeamForming:
         for idx, (team) in enumerate(self.teams):
             print(f"Generating team {idx + 1}...")
             print(f"Team {idx + 1}:")
+
+            same_attributes = {}
+            different_attributes = {}
+
+            homogenous_count = 0
+            heterogenous_count = 0
+
             for member in team:
                 try:
                     name = self.df.loc[member, 'Name']
                     print(f"  - {name} (Score: {self.calculate_individual_scores()[member]:.4f})")
+
+                    for attribute in self.homogenous_attributes + self.heterogenous_attributes:
+                        value = self.df.loc[member, attribute]
+                        if attribute not in same_attributes:
+                            same_attributes[attribute] = value
+                            different_attributes[attribute] = set()
+
+                        if same_attributes[attribute] != value:
+                            different_attributes[attribute].add(value)
+                            different_attributes[attribute].add(same_attributes[attribute])
+                            same_attributes[attribute] = None
+
                 except KeyError as e:
                     print(f"Error retrieving name for member {member}: {e}")
+
+            print("\nSame attributes:")
+            for attribute, value in same_attributes.items():
+                if value is not None:
+                    print(f"  - {attribute}: {value}")
+                    if attribute in self.homogenous_attributes:
+                        homogenous_count += 1
+
+            print("Different attributes:")
+            for attribute, values in different_attributes.items():
+                filtered_values = [str(value) for value in values if value is not None]
+                if filtered_values:
+                    print(f"  - {attribute}: {', '.join(filtered_values)}\n")
+                    if attribute in self.heterogenous_attributes:
+                        heterogenous_count += 1
+
+            print(f"Total true homogenous attributes: {homogenous_count}")
+            print(f"Total true heterogenous attributes: {heterogenous_count}\n\n")

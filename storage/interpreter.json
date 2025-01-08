@@ -166,25 +166,29 @@
           "Yes": "OOP"
         }
       },
-      "PreferredGames": {
+      "PreferredGamesEasy": {
         "PreferredGamesEasy[game01]": {
-          "Yes": "Pong(easy)"
+          "Yes": "Pong"
         },
         "PreferredGamesEasy[game02]": {
-          "Yes": "Snake(easy to medium)"
-        },
+          "Yes": "Snake"
+        }
+      },
+        "PreferredGamesMedium": {
         "PreferredGamesMedium[game01]": {
-          "Yes": "Pacman(easy to hard)"
+          "Yes": "Pacman"
         },
         "PreferredGamesMedium[game02]": {
-          "Yes": "Pinball(medium)"
-        },
+          "Yes": "Pinball"
+        }
+      },
+      "PreferredGamesHard": {
         "PreferredGamesHard[game01]": {
-          "Yes": "Space Invaders(hard)"
+          "Yes": "Space Invaders"
         },
         "PreferredGamesHard[game02]": {
-          "Yes": "Racing Game(hard)"
-}
+          "Yes": "Racing Game"
+        }
       }
     }
 }

@@ -14,7 +14,7 @@ class GUI:
         self.tooltip = tooltip
         self.font_settings = ("Helvetica", 11)
         self.attribute_label_font = ("Helvetica", 11)
-        self.max_emphasis = 2
+        self.max_emphasis = 4
 
         # Set the title of the main window
         self.root.title("Hackathon Group Former")
