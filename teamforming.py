@@ -104,6 +104,7 @@ class TeamForming:
                     name = self.df.loc[member, 'Name']
                     group_importance = self.df.loc[member, 'GroupImportance']
                     known_participants = self.df.loc[member, 'KnownParticipants']
+                    motivations = self.df.loc[member, 'Motivations']
 
                     if isinstance(known_participants, str):
                         known_participants = known_participants.split(', ')
@@ -112,7 +113,7 @@ class TeamForming:
 
                     print(f"{known_participants} are known participants for {name}")
 
-                    if group_importance.lower() == 'completely':
+                    if group_importance.lower() == 'completely' and 'joining friends that participate: completely' in motivations.lower():
                         # Place the member in a team with known participants
                         for participant in known_participants:
                             for other_team in teams:
@@ -124,7 +125,8 @@ class TeamForming:
                                             print(f"Placing {name} in team with known participants {other_team}")
                                             break
 
-                    else:
+                    elif 'meeting new people: completely' in motivations.lower() or 'meeting new people: to a large extent' in motivations.lower():
+                        print(f"For {name}, motivations are {motivations}")
                         current_team = team
                         best_team = current_team
                         best_score = self.calculate_total_scores(current_team, individual_scores, compatibility_scores)
