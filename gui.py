@@ -110,7 +110,7 @@ class GUI:
             text=(f"Welcome to the Hackathon Group Former! This program helps you form teams based on various attributes.\n"
                  f"Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
                  f"Select whether the following attributes should be homogenous or heterogenous within teams. "
-                 f"You can remove attributes by unchecking the remove box or emphasize {self.max_emphasis} of them, all with the corresponding buttons.\n"
+                 f"You can remove attributes by unchecking the remove box. Or you can emphasize up to {self.max_emphasis} of them, all with the corresponding buttons.\n"
                  f"You can also adjust the desired teamsizes. Click 'Generate Teams' to create teams based on the current configuration."),
             background=self.main_color,
             foreground='white',

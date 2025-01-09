@@ -28,10 +28,18 @@ Hackathon Group Former is a Python-based application designed to help form teams
 - Visualize the generated teams and their attributes.
 - Save and load custom weights for attributes, if a necessary file is not in the storage it will be created.
 
-## Dependencies
-The application is deployed as a docker container but the underlying dependencies and libraries are:
+## Libraries
+Underlying libraries are:
 - [Python 3](https://www.python.org/)
+- [sys](https://docs.python.org/3/library/sys.html)
+- [os](https://docs.python.org/3/library/os.html)
+- [re](https://docs.python.org/3/library/re.html)
+- [json](https://docs.python.org/3/library/json.html)
+- [itertools](https://docs.python.org/3/library/itertools.html)
 - [Tkinter](https://docs.python.org/3/library/tkinter.html)
+
+## Dependencies
+The application is deployed as a docker but requirements are:
 - [NetworkX](https://networkx.org/)
 - [Matplotlib](https://matplotlib.org/)
 - [pandas](https://pandas.pydata.org/)
