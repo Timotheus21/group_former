@@ -12,12 +12,12 @@ Hackathon Group Former is a Python-based application designed to help form teams
 
 ## Visuals
 1. After selecting a csv file with the survey results the main window opens.
-![](screen_shots\mainwindow.png)
+![Group Former](screen_shots/mainwindow.png)
 
 2. When the teams are formed to your liking the visualization is ready to be openend from the main window.
-![](screen_shots\visualize.png)
+![Visualization](screen_shots/visualize.png)
 
-![](screen_shots\config.png)
+3. ![Configuration](screen_shots/config.png)
 
 ## Features
 - Load survey data from a CSV file.
