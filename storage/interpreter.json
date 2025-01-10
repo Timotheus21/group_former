@@ -179,12 +179,12 @@
           "Yes": "Pacman"
         },
         "PreferredGamesMedium[game02]": {
-          "Yes": "Pinball"
+          "Yes": "Space Invaders"
         }
       },
       "PreferredGamesHard": {
         "PreferredGamesHard[game01]": {
-          "Yes": "Space Invaders"
+          "Yes": "Pinball"
         },
         "PreferredGamesHard[game02]": {
           "Yes": "Racing Game"

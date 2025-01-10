@@ -39,14 +39,11 @@ class DataProcessor:
         self.project_attributes = [
             'PreferredChallenge', 'PreferredGamesEasy', 'PreferredGamesMedium', 'PreferredGamesHard'
         ]
-        self.familiarity_attributes = [
-            'GroupImportance', 'KnownParticipants'
-        ]
         self.background_attributes = [
             'EducationLevel', 'StudyField', 'Gender', 'CulturalBackground'
         ]
-        self.homogenous_attributes = self.flatten_lists([self.skill_attributes, self.motivation_attributes, self.project_attributes, 'GroupImportance'])
-        self.heterogenous_attributes = self.flatten_lists([self.background_attributes, 'KnownParticipants'])
+        self.homogenous_attributes = self.flatten_lists([self.skill_attributes, self.motivation_attributes, self.project_attributes])
+        self.heterogenous_attributes = self.flatten_lists([self.background_attributes])
         self.emphasized_attributes_type = {}
         self.emphasized_attributes = []
 
@@ -309,17 +306,13 @@ class DataProcessor:
         # Return the project attributes
         return self.project_attributes
 
-    def get_familiarity_attributes(self):
-        # Return the familiarity attributes
-        return self.familiarity_attributes
-
     def get_background_attributes(self):
         # Return the background attributes
         return self.background_attributes
 
     def get_other_attributes(self):
         # Return all the attributes except the skill attributes
-        return self.motivation_attributes + self.project_attributes + self.familiarity_attributes + self.background_attributes
+        return self.motivation_attributes + self.project_attributes + self.background_attributes
 
     def get_homogenous_attributes(self):
         # Return the flattened homogenous attributes
@@ -344,6 +337,6 @@ class DataProcessor:
 
     def get_removed_attributes(self):
         # Return the removed attributes
-        all_attributes = set(self.flatten_lists([self.skill_attributes, self.motivation_attributes, self.project_attributes, self.familiarity_attributes, self.background_attributes]))
+        all_attributes = set(self.flatten_lists([self.skill_attributes, self.motivation_attributes, self.project_attributes, self.background_attributes]))
         current_attributes = set(self.get_homogenous_attributes() + self.get_heterogenous_attributes())
         return list(all_attributes - current_attributes)

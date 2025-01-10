@@ -68,11 +68,23 @@ class Visualization:
                 experience_years = self.df.loc[member, 'ExperienceYears']
                 git = self.df.loc[member, 'GitFamiliarity']
                 python = self.df.loc[member, 'PythonProficiency']
+
                 learning = self.df.loc[member, 'PreferredLearning']
                 learning_entries = [entry.strip() for entry in learning.split(',') if entry.strip().lower() != 'no']
                 if len(learning_entries) > 4:
                     learning_entries = learning_entries[:2] + ['...'] + learning_entries[-2:]
+
                 preferred_challenge = self.df.loc[member, 'PreferredChallenge']
+                if preferred_challenge.lower() == 'easy':
+                    preferred_games = self.df.loc[member, 'PreferredGamesEasy']
+                elif preferred_challenge.lower() == 'medium':
+                    preferred_games = self.df.loc[member, 'PreferredGamesMedium']
+                elif preferred_challenge.lower() == 'hard':
+                    preferred_games = self.df.loc[member, 'PreferredGamesHard']
+                
+                preferred_games = [entry.strip() for entry in preferred_games.split(',') if entry.strip().lower() != 'no']
+                preferred_games = ', '.join(preferred_games)
+
                 study_field = self.df.loc[member, 'StudyField']
                 is_student = self.df.loc[member, 'IsStudent']
 
@@ -80,8 +92,8 @@ class Visualization:
                 profile_text = f"{name}, {age} ({pronouns}),\n"
                 profile_text += f"{coding_experience} in {primary_language} with {experience_years} years of experience." + "\n"
                 profile_text += f"Git Familiarity: {git} and in Python they are {python}." + "\n"
-                profile_text += f"They prefer a {preferred_challenge} challenge." + "\n"
-                if learning_entries and learning_entries not in ['none', 'no', 'n/a']:
+                profile_text += f"They prefer a {preferred_challenge} challenge and would like to work on {preferred_games}." + "\n"
+                if learning_entries and learning_entries not in ['none', 'no', 'n/a', 'nan']:
                     profile_text += f"They hope to learn {', '.join(learning_entries)}." + "\n"
                 if is_student.lower() == 'yes' and study_field is not None:
                     profile_text += f"Their field of study is {study_field}."

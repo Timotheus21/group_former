@@ -111,9 +111,8 @@ class TeamForming:
                     else:
                         known_participants = []
 
-                    print(f"{known_participants} are known participants for {name}")
-
                     if group_importance.lower() == 'completely' and 'joining friends that participate: completely' in motivations.lower():
+                        specific_motivation = 'Group Importance: Completely and Joining Friends: Completely' if 'joining friends that participate: completely' in motivations.lower() and group_importance.lower() == 'completely' else 'Group Importance: Completely'
                         # Place the member in a team with known participants
                         for participant in known_participants:
                             for other_team in teams:
@@ -122,11 +121,11 @@ class TeamForming:
                                         if len(team) > min_size:
                                             team.remove(member)
                                             other_team.append(member)
-                                            print(f"Placing {name} in team with known participants {other_team}")
+                                            print(f"Placing {name} in team with {participant}, because of {specific_motivation}")
                                             break
 
                     elif 'meeting new people: completely' in motivations.lower() or 'meeting new people: to a large extent' in motivations.lower():
-                        print(f"For {name}, motivations are {motivations}")
+                        specific_motivation = 'meeting new people: completely' if 'meeting new people: completely' in motivations.lower() else 'meeting new people: to a large extent'
                         current_team = team
                         best_team = current_team
                         best_score = self.calculate_total_scores(current_team, individual_scores, compatibility_scores)
@@ -145,8 +144,7 @@ class TeamForming:
                                                 best_team = other_team
 
                                 if best_team != current_team and len(current_team) > min_size:
-                                    print(f"Placing {name} in other team with no known participants {best_team}")
-
+                                    print(f"Placing {name} in other team without known participants, because of {specific_motivation}")
                                     current_team.remove(member)
                                     best_team.append(member)
                                     break
