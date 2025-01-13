@@ -88,9 +88,13 @@ hackathon-group-former/
 ├── teamforming.py
 ├── tooltip.py
 ├── visualization.py
+├── .dockerignore
 ├── .gitattributes
 ├── .gitignore
-└── README.md
+├── compose.yaml
+├── Dockerfile
+├── README.md
+└── requirements.txt
 ```
 
 ## Files
