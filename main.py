@@ -16,29 +16,37 @@ def on_closing(root):
 
 def select_file():
     # Create a temporary file dialog to select a file
-    temp_root = tk.Tk()
-    temp_root.withdraw()
-    file_path = askopenfilename(title="Select a Questionnaire CSV file", filetypes=[("CSV files", "*.csv")])
-    temp_root.destroy()
-    return file_path
+    try:
+        temp_root = tk.Tk()
+        temp_root.withdraw()
+        file_path = askopenfilename(title="Select a Questionnaire CSV file", filetypes=[("CSV files", "*.csv")])
+        temp_root.destroy()
+        return file_path
+    except Exception as e:
+        print(f"Error selecting file: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
-    filepath = select_file()
-    if not filepath:
-        print("No file selected. Exiting...")
-        sys.exit()
+    try:
+        filepath = select_file()
+        if not filepath:
+            print("No file selected. Exiting...")
+            sys.exit()
 
-    root = tk.Tk()
+        root = tk.Tk()
 
-    data_processor = DataProcessor(filepath)
-    teamforming = TeamForming(data_processor)
-    visualization = Visualization(data_processor)
-    tooltip = Tooltip
-    config = Config
+        data_processor = DataProcessor(filepath)
+        teamforming = TeamForming(data_processor)
+        visualization = Visualization(data_processor)
+        tooltip = Tooltip
+        config = Config
 
-    # Set protocol for closing the window
-    root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root))
+        # Set protocol for closing the window
+        root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root))
     
-    # Initialize and run the GUI
-    gui = GUI(root, data_processor, teamforming, visualization, tooltip)
-    root.mainloop()
+        # Initialize and run the GUI
+        gui = GUI(root, data_processor, teamforming, visualization, tooltip)
+        root.mainloop()
+    except Exception as e:
+        print(f"Error initializing: {e}")
+        sys.exit(1)
