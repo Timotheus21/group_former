@@ -65,6 +65,10 @@ class Visualization:
                 age = self.df.loc[member, 'Age']
                 coding_experience = self.df.loc[member, 'CodingExperience']
                 primary_language = self.df.loc[member, 'PrimaryLanguage']
+                primary_language_other = self.df.loc[member, 'PrimaryLanguageOther']
+                if primary_language.lower() == 'other':
+                    primary_language = primary_language_other
+
                 experience_years = self.df.loc[member, 'ExperienceYears']
                 git = self.df.loc[member, 'GitFamiliarity']
                 python = self.df.loc[member, 'PythonProficiency']

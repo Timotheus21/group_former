@@ -225,6 +225,7 @@ class DataProcessor:
                 "CodingExperience": "CodingExperience",
                 "PeersGroup": "PeersGroup",
                 "PrimaryLanguage": "PrimaryLanguage",
+                "PrimaryLanguage[other]": "PrimaryLanguageOther",
                 "PythonProficiency": "PythonProficiency",
                 "ExperienceYears": "ExperienceYears",
                 "ProgrammingContext": "ProgrammingContext",
