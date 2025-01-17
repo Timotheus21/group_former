@@ -2,6 +2,9 @@ import tkinter as tk
 import re
 from tkinter import ttk
 from config import Config
+from teamforming import TeamForming
+from visualization import Visualization
+from selector import select_file
 
 class GUI:
     def __init__(self, root, data_processor, teamforming, visualization, tooltip):
@@ -346,6 +349,7 @@ class GUI:
         load_std_weights_button.grid(row=0, column=3, padx=10, pady=10, sticky=tk.W)
         self.tooltip(load_std_weights_button, "Load standard weights from a file.")
 
+        # Button to show the current configuration
         show_config_button = ttk.Button(
             buttons_frame,
             text="Show Current Configuration",
@@ -353,6 +357,15 @@ class GUI:
             command=lambda: Config(self.root, self.data_processor, self))
         show_config_button.grid(row=0, column=4, padx=10, pady=10, sticky=tk.W)
         self.tooltip(show_config_button, "Show the current configuration of the data processor.")
+
+        # Button to load a different survey
+        load_survey_button = ttk.Button(
+            buttons_frame,
+            text="Load Different Survey",
+            style='Custom.TButton',
+            command=lambda: self.load_different_survey())
+        load_survey_button.grid(row=0, column=5, padx=10, pady=10, sticky=tk.W)
+        self.tooltip(load_survey_button, "Load a different survey to form teams.")
 
     def create_checkbutton(self, row, attribute):
         # Create BooleanVar for the Checkbutton
@@ -553,6 +566,22 @@ class GUI:
 
     def update_remaining_members_label(self, remaining_members):
         self.remaining_members_label.config(text=f"Remaining Members: {remaining_members}")
+
+    def load_different_survey(self):
+        try:
+            filepath = select_file()
+            if filepath:
+                self.data_processor.reload_survey(filepath)
+                self.teamforming = TeamForming(self.data_processor)
+                self.visualization = Visualization(self.data_processor)
+                self.update_gui()
+        except Exception as e:
+            print(f"Error loading different survey: {e}")
+
+    def update_gui(self):
+        for widget in self.team_buttons_frame.winfo_children():
+                widget.destroy()
+        self.create_widgets()
 
     # Method to generate teams
     def generate_teams(self):

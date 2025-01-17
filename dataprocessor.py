@@ -271,6 +271,14 @@ class DataProcessor:
         except Exception as e:
             print(f"Error processing survey results: {e}")
             return pd.DataFrame()
+        
+    def reload_survey(self, filepath):
+        # Reload the survey results
+        self.results_survey = self.load_csv_file(filepath)
+        results_survey_transformed = self.process_survey_results(self.results_survey)
+        results_survey_transformed.to_csv('storage/transformed_results_survey.csv', index=False)
+        self.df = pd.read_csv('storage/transformed_results_survey.csv')
+        self.apply_interpreter()
 
     def get_data(self):
         # Return the loaded data

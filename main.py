@@ -7,24 +7,13 @@ from visualization import Visualization
 from tooltip import Tooltip
 from config import Config
 from gui import GUI
+from selector import select_file
 
 
 def on_closing(root):
     print("Exiting...")
     root.quit()
     root.destroy()
-
-def select_file():
-    # Create a temporary file dialog to select a file
-    try:
-        temp_root = tk.Tk()
-        temp_root.withdraw()
-        file_path = askopenfilename(title="Select a Questionnaire CSV file", filetypes=[("CSV files", "*.csv")])
-        temp_root.destroy()
-        return file_path
-    except Exception as e:
-        print(f"Error selecting file: {e}")
-        sys.exit(1)
 
 if __name__ == "__main__":
     try:
