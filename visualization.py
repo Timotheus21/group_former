@@ -90,6 +90,9 @@ class Visualization:
                 preferred_games = ', '.join(preferred_games)
 
                 study_field = self.df.loc[member, 'StudyField']
+                study_field_other = self.df.loc[member, 'StudyFieldOther']
+                if study_field.lower() == 'other':
+                    study_field = study_field_other
                 is_student = self.df.loc[member, 'IsStudent']
 
                 # Add name with pronouns and a line break

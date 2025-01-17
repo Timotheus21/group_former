@@ -241,6 +241,7 @@ class DataProcessor:
                 "EducationLevel": "EducationLevel",
                 "IsStudent": "IsStudent",
                 "StudyField": "StudyField",
+                "StudyField[other]": "StudyFieldOther",
                 "Semester": "Semester",
                 "CulturalBackground": "CulturalBackground",
                 "Name": "Name"
