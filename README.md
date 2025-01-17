@@ -46,13 +46,35 @@ Underlying libraries are:
 
 ## Dependencies
 
-The application is deployed as a docker but requirements are:
-
 - [NetworkX](https://networkx.org/)
 - [Matplotlib](https://matplotlib.org/)
 - [pandas](https://pandas.pydata.org/)
 
 ## Installation
+
+### Using Github
+
+1. Clone the Repository: Open your terminal and clone the repository using git with the following command in the directory u want:
+
+```sh
+git clone https://github.com/Timotheus21/group_former.git
+```
+
+2. Navigate to the Project Directory: Change your directory to the cloned repository.
+
+3. Install Dependencies: Install the required dependencies using pip:
+
+```sh
+python -m pip install -r requirements.txt
+```
+
+4. Run the application via the main.py file.
+
+```sh
+python main.py
+```
+
+### Using Docker
 
 ## Usage
 
