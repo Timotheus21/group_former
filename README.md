@@ -22,7 +22,7 @@ The application uses a graphical user interface (GUI) built with Tkinter and pro
 2. When the teams are formed to your liking the visualization is ready to be openend from the main window.
     ![Visualization](screen_shots/visualize.png)
 
-3. You can always check the current configuration in this window.
+3.
     ![Configuration](screen_shots/config.png)
 
 ## Features
@@ -60,7 +60,7 @@ The application uses a graphical user interface (GUI) built with Tkinter and pro
 
     ```
 
-2. **Navigate to the Project Directory**: For example change your directory to the cloned repository. Change the example path with your actually path.
+2. **Navigate to the Project Directory**: For example change your current directory inside your terminal to the cloned repository. Change the example path with your actually path.
 
     ```bash
 
