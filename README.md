@@ -36,7 +36,7 @@ Hackathon Group Former is a Python-based application designed to help form teams
 
 Underlying libraries are:
 
-- [Python 3](https://www.python.org/)
+- [Python 3](https://www.python.org/) Version: 3.13
 - [sys](https://docs.python.org/3/library/sys.html)
 - [os](https://docs.python.org/3/library/os.html)
 - [re](https://docs.python.org/3/library/re.html)
@@ -46,32 +46,38 @@ Underlying libraries are:
 
 ## Dependencies
 
-- [NetworkX](https://networkx.org/)
-- [Matplotlib](https://matplotlib.org/)
-- [pandas](https://pandas.pydata.org/)
+- [NetworkX](https://networkx.org/) Version: 3.3
+- [Matplotlib](https://matplotlib.org/) Version: 3.8.4
+- [pandas](https://pandas.pydata.org/) Version: 2.2.2
 
 ## Installation
 
 ### Using Github
 
-1. Clone the Repository: Open your terminal and clone the repository using git with the following command in the directory u want:
+1. Clone the Repository: Open your terminal and clone the repository using https and git with the following command in the directory u want:
 
-```sh
+```bash
+
 git clone https://github.com/Timotheus21/group_former.git
+
 ```
 
 2. Navigate to the Project Directory: Change your directory to the cloned repository.
 
 3. Install Dependencies: Install the required dependencies using pip:
 
-```sh
+```bash
+
 python -m pip install -r requirements.txt
+
 ```
 
 4. Run the application via the main.py file.
 
-```sh
+```bash
+
 python main.py
+
 ```
 
 ### Using Docker
@@ -86,11 +92,13 @@ python main.py
 6. Click "Generate Teams" to form teams based on the current configuration. If the teamsizes are invalid they will get adjusted.
 7. Visualize the generated teams by clicking the appearing "Visualize Team" buttons.
 8. Save the current weights to a file or load custom/standard weights using the respective buttons.
-9. View the current configuration by clicking the "Show Current Configuration" button.
+9. Load in a different survey file with the corresponding button if needed.
+10. View the current configuration by clicking the "Show Current Configuration" button.
 
 ## Folder structure
 
-```python
+```filenames
+
 hackathon-group-former/
 ├── screen_shots/
 │   ├── config.png
@@ -107,6 +115,7 @@ hackathon-group-former/
 ├── dataprocessor.py
 ├── gui.py
 ├── main.py
+├── selector.py
 ├── teamforming.py
 ├── tooltip.py
 ├── visualization.py
@@ -117,6 +126,7 @@ hackathon-group-former/
 ├── Dockerfile
 ├── README.md
 └── requirements.txt
+
 ```
 
 ## Files
@@ -141,3 +151,6 @@ hackathon-group-former/
 >
 > visualization.py
 > Contains the Visualization class, which handles visualizing the generated teams using Matplotlib and NetworkX.
+>
+> selector.py
+> Contains the select_file function, which creates the temporary file selection window.
