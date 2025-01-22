@@ -16,6 +16,7 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 - [Installation](#installation)
 - [Folder Structure](#folder-structure)
 - [Files](#files)
+- [Questionnaire](#questionnaire)
 
 ## Visuals
 

@@ -20,7 +20,7 @@ class GUI:
         self.max_emphasis = 4
 
         # Set the title of the main window
-        self.root.title("Hackathon Group Former")
+        self.root.title("Group Former")
 
         # Initialize weight variables from data processor
         self.weight_vars = {attribute: tk.DoubleVar(value=weight) for attribute, weight in self.data_processor.get_weights().items()}
@@ -110,7 +110,7 @@ class GUI:
         # Add a label for the overall program explanation
         program_explanation = ttk.Label(
             self.top_frame,
-            text=(f"Welcome to the Hackathon Group Former! This program helps you form teams based on various attributes.\n"
+            text=(f"Welcome to the Group Former! This program helps you form teams based on various attributes.\n"
                  f"Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
                  f"Select whether the following attributes should be homogenous or heterogenous within teams. "
                  f"You can remove attributes by unchecking the remove box. Or you can emphasize up to {self.max_emphasis} of them, all with the corresponding buttons.\n"
