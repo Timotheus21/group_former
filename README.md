@@ -44,7 +44,7 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 
 ## Libraries and Dependencies
 
-**Prerequisite**: [Python 3](https://www.python.org/) Version: 3.13
+[Python 3](https://www.python.org/) Version: 3.13
 
 **Standard Libraries**:
 
