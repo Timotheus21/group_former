@@ -5,10 +5,20 @@ class Tooltip:
         self.widget = widget
         self.text = text
         self.tooltip_window = None
-        self.widget.bind("<Enter>", self.show_tooltip)
+        self.showing = False
+        self.delay_id = None
+        self.widget.bind("<Enter>", self.delay_show_tooltip)
         self.widget.bind("<Leave>", self.hide_tooltip)
 
+
+    def delay_show_tooltip(self, event):
+        self.showing = True
+        self.delay_id = self.widget.after(1000, self.show_tooltip, event)
+
     def show_tooltip(self, event):
+        if not self.showing:
+            return
+        
         # Calculate position for the tooltip
         x, y, _, _ = self.widget.bbox("insert")
         x += self.widget.winfo_rootx() + 25
@@ -24,6 +34,10 @@ class Tooltip:
         label.pack(ipadx=1)
 
     def hide_tooltip(self, event):
+        self.showing = False
+        if self.delay_id:
+            self.widget.after_cancel(self.delay_id)
+            self.delay_id = None
         # Destroy the tooltip window
         if self.tooltip_window:
             self.tooltip_window.destroy()
