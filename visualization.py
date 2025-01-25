@@ -97,7 +97,7 @@ class Visualization:
 
                 # Add name with pronouns and a line break
                 profile_text = f"{name}, {age} ({pronouns}),\n"
-                profile_text += f"{coding_experience} in {primary_language} with {experience_years} years of experience." + "\n"
+                profile_text += f"{coding_experience} in {primary_language} and has {experience_years} years of experience." + "\n"
                 profile_text += f"Git Familiarity: {git} and in Python they are {python}." + "\n"
                 profile_text += f"They prefer a {preferred_challenge} challenge and would like to work on {preferred_games}." + "\n"
                 if learning_entries and learning_entries not in ['none', 'no', 'n/a', 'nan']:
