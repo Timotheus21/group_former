@@ -21,8 +21,8 @@ class Tooltip:
         
         # Calculate position for the tooltip
         x, y, _, _ = self.widget.bbox("insert")
-        x += self.widget.winfo_rootx() + 25
-        y += self.widget.winfo_rooty() + 25
+        x += self.widget.winfo_rootx() - 10
+        y += self.widget.winfo_rooty() - 20
         
         # Create tooltip window
         self.tooltip_window = tw = tk.Toplevel(self.widget)
@@ -30,7 +30,7 @@ class Tooltip:
         tw.wm_geometry(f"+{x}+{y}")
         
         # Create and pack the label in the tooltip window
-        label = tk.Label(tw, text=self.text, background="#ffffe0", relief="solid", borderwidth=1, font=("Helvetica", "8", "normal"))
+        label = tk.Label(tw, text=self.text, background="#d4c9ef", relief="solid", borderwidth=0.5, font=("Helvetica", "8", "normal"))
         label.pack(ipadx=1)
 
     def hide_tooltip(self, event):

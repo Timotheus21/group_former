@@ -148,6 +148,7 @@ class GUI:
             width=2
         )
         self.toogle_button.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
+        self.tooltip(self.toogle_button, "Toggle the program explanation.")
 
     def create_scrollable_area(self):
         # Create a frame to hold the weights and checkboxes
