@@ -21,13 +21,13 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 ## Visuals
 
 1. After selecting a csv file with the survey results the main window opens.
-    ![Group Former](screen_shots/mainwindow.png)
+    ![Group Former](images/mainwindow.png)
 
 2. When the teams are formed to your liking the visualization is ready to be openend from the main window.
-    ![Visualization](screen_shots/visualize.png)
+    ![Visualization](images/visualize.png)
 
 3.
-    ![Configuration](screen_shots/config.png)
+    ![Configuration](images/config.png)
 
 ## Usage
 

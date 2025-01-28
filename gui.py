@@ -9,7 +9,9 @@ from selector import select_file
 class GUI:
     def __init__(self, root, data_processor, teamforming, visualization, tooltip):
         self.root = root
-        self.main_color = '#5d33bd'
+        self.main_color = '#6f12c0'
+        self.secondary_color = '#d4c9ef'
+        self.scrollable_frame_color = '#f5f2fb'
         self.root.configure(bg=self.main_color)
         self.data_processor = data_processor
         self.teamforming = teamforming
@@ -18,6 +20,7 @@ class GUI:
         self.font_settings = ("Helvetica", 11)
         self.attribute_label_font = ("Helvetica", 11)
         self.max_emphasis = 4
+        self.program_explanation = None
 
         # Set the title of the main window
         self.root.title("Group Former")
@@ -66,6 +69,14 @@ class GUI:
                         anchor="center",
                         font=("Helvetica", 10)
                         )
+        style.configure('Toggle.TButton',
+                        foreground='black',
+                        background=self.main_color,
+                        padding=(6, 6),
+                        relief="raised",
+                        anchor="center",
+                        font=("Helvetica", 10)
+                        )
         style.configure('Diverse.TButton',
                         foreground=self.main_color,
                         padding=(6, 6),
@@ -96,53 +107,70 @@ class GUI:
                         font=("Helvetica", 10, 'overstrike')
                         )
         style.configure('Generate.TButton',
-                        foreground='#28a745',
+                        foreground='#6fa71d',
+                        background=self.secondary_color,
                         padding=(6, 6),
                         relief="raised",
                         anchor="center",
                         font=("Helvetica", 10)
                         )
+        style.configure('Buttonframe.TButton',
+                        foreground='black',
+                        background=self.secondary_color,
+                        padding=(6, 6),
+                        relief="raised",
+                        anchor="center",
+                        font=("Helvetica", 10)
+                        )
+        style.configure('Top.TFrame',
+                        background=self.main_color,
+                        )
+        style.configure('Scrollable.TFrame',
+                        background=self.scrollable_frame_color,
+                        )
+        style.configure('Button.TFrame',
+                        background=self.secondary_color,
+                        )
 
     def create_top_frame(self):
-        self.top_frame = ttk.Frame(self.root)
+        self.top_frame = ttk.Frame(self.root, style='Top.TFrame')
         self.top_frame.grid(row=0, column=0, columnspan=4, padx=10, pady=10, sticky="ew")
 
-        # Add a label for the overall program explanation
-        program_explanation = ttk.Label(
-            self.top_frame,
-            text=(f"Welcome to the Group Former! This program helps you form teams based on various attributes.\n"
-                 f"Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
-                 f"Select whether the following attributes should be homogenous or heterogenous within teams. "
-                 f"You can remove attributes by unchecking the remove box. Or you can emphasize up to {self.max_emphasis} of them, all with the corresponding buttons.\n"
-                 f"You can also adjust the desired teamsizes. Click 'Generate Teams' to create teams based on the current configuration."),
-            background=self.main_color,
-            foreground='white',
-            wraplength=800,
-            font=('Helvetica', 12, "bold")
+        self.root.grid_rowconfigure(1, weight=1)
+        self.top_frame.grid_rowconfigure(0, weight=1)
+        self.top_frame.grid_columnconfigure(0, weight=1)
+
+        self.toogle_button = ttk.Button(
+            self.root,
+            text="?",
+            style='Toggle.TButton',
+            command= self.toogle_top_frame,
+            width=2
         )
-        program_explanation.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
-        program_explanation.pack(fill="x", expand=True)
+        self.toogle_button.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
 
     def create_scrollable_area(self):
         # Create a frame to hold the weights and checkboxes
-        self.scrollable_frame = ttk.Frame(self.root, style='Custom.TFrame')
+        self.scrollable_frame = ttk.Frame(self.root, style='Scrollable.TFrame')
         self.scrollable_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
-        self.canvas = tk.Canvas(self.scrollable_frame, bg='#f0f0f0')
+        self.canvas = tk.Canvas(self.scrollable_frame, bg=self.scrollable_frame_color)
+        self.canvas.pack(side="left", fill="both", expand=True)
+
         scrollbar = ttk.Scrollbar(self.scrollable_frame, orient="vertical", command=self.canvas.yview)
+        scrollbar.pack(side="right", fill="y")
+
         self.canvas.configure(yscrollcommand=scrollbar.set)
 
         # Create a parent frame inside the canvas to hold both weights_frame and teamsizing_frame
         self.inner_frame = ttk.Frame(self.canvas)
-        self.canvas.create_window((0, 0), window=self.inner_frame, anchor="nw")
+        self.canvas.create_window((0, 0), window=self.inner_frame, anchor="n")
 
         self.weights_frame = ttk.LabelFrame(self.inner_frame, text="Adjust Weights and Attributes")
-        self.weights_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        self.weights_frame.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
 
         # Bind the canvas to the scrollbar
         self.inner_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
-        self.canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
 
         # Add labels and buttons for each weight attribute
         for index, (attribute, weight) in enumerate(self.data_processor.weights.items()):
@@ -301,70 +329,72 @@ class GUI:
         self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
 
         # Frame to hold team buttons on the right
-        self.team_buttons_frame = ttk.Frame(self.root)
+        self.team_buttons_frame = ttk.Frame(self.root, style='Top.TFrame')
         self.team_buttons_frame.grid(row=1, column=5, padx=10, pady=10, sticky=tk.NW)
 
     def create_button_frame(self):
-        self.bottom_frame = ttk.Frame(self.root)
+        self.bottom_frame = ttk.Frame(self.root, style='Button.TFrame')
         self.bottom_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky='ew')
 
-        self.bottom_frame.columnconfigure(0, weight=1)
-
-        buttons_frame = ttk.LabelFrame(self.bottom_frame, text="Actions")
-        buttons_frame.grid(row=0, column=0)
+        self.bottom_frame.columnconfigure(0, weight=1, minsize=150)
+        self.bottom_frame.columnconfigure(1, weight=1, minsize=150)
+        self.bottom_frame.columnconfigure(2, weight=1, minsize=150)
+        self.bottom_frame.columnconfigure(3, weight=1, minsize=150)
+        self.bottom_frame.columnconfigure(4, weight=1, minsize=150)
+        self.bottom_frame.columnconfigure(5, weight=1, minsize=150)
 
         # Button to generate teams
         self.generate_button = ttk.Button(
-            buttons_frame,
+            self.bottom_frame,
             text="Generate Teams",
             style='Generate.TButton',
             command=lambda: self.generate_teams())
-        self.generate_button.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
+        self.generate_button.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
         self.tooltip(self.generate_button, "Generate teams based on the current configuration.")
 
         # Button to save current weights
         save_weights_button = ttk.Button(
-            buttons_frame,
+            self.bottom_frame,
             text="Save Current Weights",
-            style='Custom.TButton',
+            style='Buttonframe.TButton',
             command=lambda: self.data_processor.save_weights())
-        save_weights_button.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
+        save_weights_button.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
         self.tooltip(save_weights_button, "Save the current weights to a file.")
 
         # Button to load custom weights
         load_custom_weights_button = ttk.Button(
-            buttons_frame,
+            self.bottom_frame,
             text="Load Custom Weights",
-            style='Custom.TButton',
+            style='Buttonframe.TButton',
             command=lambda: self.load_weights("custom"))
-        load_custom_weights_button.grid(row=0, column=2, padx=10, pady=10, sticky=tk.W)
+        load_custom_weights_button.grid(row=0, column=2, padx=10, pady=10, sticky='ew')
         self.tooltip(load_custom_weights_button, "Load custom weights from a file.")
 
         # Button to load standard weights
         load_std_weights_button = ttk.Button(
-            buttons_frame,
+            self.bottom_frame,
             text="Load Standard Weights",
-            style='Custom.TButton',
+            style='Buttonframe.TButton',
             command=lambda: self.load_weights("standard"))
-        load_std_weights_button.grid(row=0, column=3, padx=10, pady=10, sticky=tk.W)
+        load_std_weights_button.grid(row=0, column=3, padx=10, pady=10, sticky='ew')
         self.tooltip(load_std_weights_button, "Load standard weights from a file.")
 
         # Button to show the current configuration
         show_config_button = ttk.Button(
-            buttons_frame,
+            self.bottom_frame,
             text="Show Current Configuration",
-            style='Custom.TButton',
+            style='Buttonframe.TButton',
             command=lambda: Config(self.root, self.data_processor, self))
-        show_config_button.grid(row=0, column=4, padx=10, pady=10, sticky=tk.W)
+        show_config_button.grid(row=0, column=4, padx=10, pady=10, sticky='ew')
         self.tooltip(show_config_button, "Show the current configuration of the data processor.")
 
         # Button to load a different survey
         load_survey_button = ttk.Button(
-            buttons_frame,
+            self.bottom_frame,
             text="Load Different Survey",
-            style='Custom.TButton',
+            style='Buttonframe.TButton',
             command=lambda: self.load_different_survey())
-        load_survey_button.grid(row=0, column=5, padx=10, pady=10, sticky=tk.W)
+        load_survey_button.grid(row=0, column=5, padx=10, pady=10, sticky='ew')
         self.tooltip(load_survey_button, "Load a different survey to form teams.")
 
     def create_checkbutton(self, row, attribute):
@@ -527,6 +557,26 @@ class GUI:
         if attribute in self.decrease_buttons:
             self.decrease_buttons[attribute].config(state=state)
 
+    def toogle_top_frame(self):
+        if self.program_explanation and self.program_explanation.winfo_ismapped():
+            self.program_explanation.config(text="")
+            self.program_explanation = None
+        elif not self.program_explanation:
+            # Add a label for the overall program explanation
+            self.program_explanation = ttk.Label(
+                self.top_frame,
+                text=(f"Welcome to the Group Former! This program helps you form teams based on various attributes.\n"
+                    f"Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
+                    f"Select whether the following attributes should be homogenous or heterogenous within teams. "
+                    f"You can remove attributes by unchecking the remove box. Or you can emphasize up to {self.max_emphasis} of them, all with the corresponding buttons.\n"
+                    f"You can also adjust the desired teamsizes. Click 'Generate Teams' to create teams based on the current configuration."),
+                background=self.main_color,
+                foreground='white',
+                wraplength=900,
+                font=('Helvetica', 12, "bold")
+                )
+            self.program_explanation.grid(row=0, column=0)
+
     # Method to adjust weight
     def adjust_weight(self, attribute, delta=0):
         try:
@@ -636,7 +686,7 @@ class GUI:
             for idx, team in enumerate(self.teams):
                 button = ttk.Button(
                     self.team_buttons_frame,
-                    style='Custom.TButton',
+                    style='Toggle.TButton',
                     text=f"Visualize Team {idx + 1}",
                     command=lambda t=team: self.visualize_teams(t))
                 button.pack(fill="x", padx=5, pady=5)

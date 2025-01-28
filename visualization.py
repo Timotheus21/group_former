@@ -5,7 +5,8 @@ class Visualization:
     def __init__(self, data_processor):
         self.data_processor = data_processor
         self.df = data_processor.get_data()
-        self.main_color = '#5d33bd'
+        self.main_color = '#6f12c0'
+        self.secondary_color = '#d4c9ef'
 
     def get_pronouns(self, gender):
         gender = gender.lower()
@@ -42,8 +43,8 @@ class Visualization:
         edges = G.edges(data=True)
         weights = [edge[2]['weight'] for edge in edges]
 
-        plt.figure(figsize=(16, 12))
-        plt.subplot(1, 2, 2)  # Graph on the right
+        plt.figure(figsize=(16, 12), edgecolor=self.main_color)
+        plt.subplot(1, 2, 2, facecolor=self.secondary_color)  # Graph on the right
 
         # Draw nodes
         nx.draw_networkx_nodes(G, pos, node_color='lightblue')
