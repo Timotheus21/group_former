@@ -162,7 +162,10 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 ```filenames
 
 ┌── hackathon-group-former/
-│ ┌─ images/                      # Images for README documentation and buttons
+│ ├── fonts/                            # Custom fonts
+│ │ ┌── Pixeltype.ttf
+│ │ └── Helvetica.ttf
+│ ┌─ images/                            # Images for README documentation and buttons
 │ │ ┌── config.png
 │ │ ├── mainwindow.png
 │ │ ├── generate.png
@@ -191,8 +194,6 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 │ ├── compose.yaml
 │ ├── Dockerfile
 │ ├── README.md
-│ ├── Pixeltype.ttf
-│ ├── Helvetica.ttf
 │ └── requirements.txt
 
 ```

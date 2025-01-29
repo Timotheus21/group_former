@@ -1,6 +1,7 @@
 import tkinter as tk
 import re
-from tkinter import ttk, PhotoImage, font as tkFont
+from tkinter import ttk, PhotoImage
+from tkextrafont import Font
 from PIL import Image, ImageTk
 from config import Config
 from teamforming import TeamForming
@@ -41,10 +42,8 @@ class GUI:
         self.tooltip = tooltip
 
         # Set the font for the GUI
-        self.pixeltype = tkFont.Font(family= "Pixeltype", size = 22)
-        self.root.option_add("*Font", self.pixeltype)
-        self.helvetica = tkFont.Font(family= "Helvetica")
-        self.root.option_add("*Font", self.helvetica)
+        self.pixeltype = Font(file= "fonts/Pixeltype.ttf", family="Pixeltype", size=22)
+        self.helvetica = Font(file= "fonts/Helvetica.ttf", family="Helvetica")
 
         # Set the maximum number of emphasized attributes
         self.max_emphasis = 4
@@ -370,11 +369,11 @@ class GUI:
         self.bottom_frame = ttk.Frame(self.root, style='Button.TFrame')
         self.bottom_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky='ew')
 
-        self.bottom_frame.columnconfigure(1, weight=1, minsize=150)
-        self.bottom_frame.columnconfigure(2, weight=1, minsize=150)
-        self.bottom_frame.columnconfigure(3, weight=1, minsize=150)
-        self.bottom_frame.columnconfigure(4, weight=1, minsize=150)
-        self.bottom_frame.columnconfigure(5, weight=1, minsize=150)
+        self.bottom_frame.columnconfigure(1, weight=1, minsize=110)
+        self.bottom_frame.columnconfigure(2, weight=1, minsize=110)
+        self.bottom_frame.columnconfigure(3, weight=1, minsize=110)
+        self.bottom_frame.columnconfigure(4, weight=1, minsize=110)
+        self.bottom_frame.columnconfigure(5, weight=1, minsize=110)
 
         # Load the images for the buttons, first integer is width, second is height
         self.start_button = self.load_image("images/generate.png", 110, 40)
