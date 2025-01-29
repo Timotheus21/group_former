@@ -40,7 +40,7 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 7. Visualize the generated teams by clicking the appearing "Visualize Team" buttons.
 8. Save the current weights to a CSV file or load custom/standard weights CSV file using the respective buttons.
 9. Load in a different survey file with the corresponding button if needed.
-10. View the current configuration by clicking the "Show Current Configuration" button.
+10. View the current configuration by clicking the "Settings" button.
 
 ## Libraries and Dependencies
 
@@ -60,6 +60,8 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 - [NetworkX](https://networkx.org/) Version: 3.3
 - [Matplotlib](https://matplotlib.org/) Version: 3.8.4
 - [pandas](https://pandas.pydata.org/) Version: 2.2.2
+- [pillow](https://pypi.org/project/pillow/) Version: 11.1.0
+- [tkinterdnd2](https://pypi.org/project/tkinterdnd2/) Version: 0.4.2
 
 ## Installation
 
@@ -160,9 +162,11 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 ```filenames
 
 ┌── hackathon-group-former/
-│ ┌─ screen_shots/                      # Images for README documentation
+│ ┌─ images/                      # Images for README documentation and buttons
 │ │ ┌── config.png
 │ │ ├── mainwindow.png
+│ │ ├── generate.png
+│ │ ├── questionmark.png
 │ │ └── visualize.png
 │ ├── storage/                          # Storage for processed data and configuration files
 │ │ ┌── custom_weights.csv              # will be created on startup when not existing
@@ -187,6 +191,8 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 │ ├── compose.yaml
 │ ├── Dockerfile
 │ ├── README.md
+│ ├── Pixeltype.ttf
+│ ├── Helvetica.ttf
 │ └── requirements.txt
 
 ```
