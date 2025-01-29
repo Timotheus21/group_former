@@ -62,6 +62,7 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 - [pandas](https://pandas.pydata.org/) Version: 2.2.2
 - [pillow](https://pypi.org/project/pillow/) Version: 11.1.0
 - [tkinterdnd2](https://pypi.org/project/tkinterdnd2/) Version: 0.4.2
+- [tkextrafont](https://github.com/TkinterEP/python-tkextrafont) Version: 0.6.3
 
 ## Installation
 
