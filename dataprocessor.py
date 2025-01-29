@@ -3,6 +3,26 @@ import os
 import pandas as pd
 import json
 
+"""
+    The DataProcessor class is responsible for handling and processing the data used in the Group Former application.
+    It loads survey results, weights, and questionnaire interpreters, processes the data, and provides various methods
+    to retrieve and manipulate the data.
+
+    Key Responsibilities:
+    - Load survey results from a CSV file.
+    - Load and save weights from/to CSV files.
+    - Load questionnaire interpreter from a JSON file.
+    - Process survey results to transform and map the data according to the questionnaire interpreter.
+    - Normalize weights to ensure they sum up to 1 and fall within the range 0 to 1.
+    - Provide methods to retrieve various attributes and weights.
+    - Manage homogenous, heterogenous, and emphasized attributes.
+    - Apply the questionnaire interpreter to the survey results to map and scale the data.
+    - Handle user interactions such as reloading survey results and adjusting weights.
+
+    The class interacts with the GUI and Config classes to provide the necessary data for displaying and managing the
+    graphical user interface. It ensures that the data is processed and formatted correctly for use in the application.
+"""
+
 class DataProcessor:
     # File paths for standard weights, custom weights, and questionnaire interpreter
     STD_WEIGHT_FILE = 'storage/std_weights.csv'
@@ -11,7 +31,7 @@ class DataProcessor:
     QUESTIONNAIRE_EXAMPLE_FILE = 'storage/questionnaire_example.csv'
 
     def __init__(self, filepath):
-        # Load CSV file, weights, and questionnaire interpreter on initialization
+        # Load CSV files, weights, and questionnaire interpreter on initialization
         self.results_survey = self.load_csv_file(filepath)
         self.weights = self.load_weights(self.STD_WEIGHT_FILE)
         self.custom_weights = self.load_weights(self.CUSTOM_WEIGHT_FILE)
@@ -42,13 +62,15 @@ class DataProcessor:
         self.background_attributes = [
             'EducationLevel', 'StudyField', 'Gender', 'CulturalBackground'
         ]
+
+        # Define attribute lists for homogenous and heterogenous attributes and flatten lists
         self.homogenous_attributes = self.flatten_lists([self.skill_attributes, self.motivation_attributes, self.project_attributes])
         self.heterogenous_attributes = self.flatten_lists([self.background_attributes])
         self.emphasized_attributes_type = {}
         self.emphasized_attributes = []
 
+    # Load a CSV file from the given filepath
     def load_csv_file(self, filepath):
-        # Open file dialog to select a CSV file
         try:
             if not os.path.exists(filepath):
                 raise FileNotFoundError(f"File not found: {filepath}")
@@ -57,8 +79,8 @@ class DataProcessor:
             print(f"Error loading CSV file: {e}")
             sys.exit()
 
+    # Save custom weights to a CSV file and create a new file if it does not exist
     def save_weights(self):
-        # Save weights to a CSV file
         try:
             if not os.path.exists(self.CUSTOM_WEIGHT_FILE):
                 # Create a new file if it does not exist
@@ -88,7 +110,7 @@ class DataProcessor:
                 weights_csv = pd.DataFrame(list(default_weights.items()), columns=['attribute', 'weight'])
                 weights_csv.to_csv(filename, index=False)
                 return default_weights
-            
+
             weights_csv = pd.read_csv(filename)
 
             if weights_csv.empty:
@@ -98,25 +120,33 @@ class DataProcessor:
                 return default_weights
             
             weights = dict(zip(weights_csv['attribute'], weights_csv['weight']))
+
             return weights
+        
         except Exception as e:
             print(f"Error loading weights: {e}")
             return {}
 
+    # Normalize weights to ensure they sum up to 1 and fall within the range 0 to 1
     def normalize_weights(self, weights):
-        # Normalize weights so that their sum equals 1 and they fall within the range 0 to 1
+
         total_weight = sum(weights.values())
+
         if total_weight == 0:
-            print("Total weight is zero, cannot normalize weights.")
+
             return weights
+        
         normalized_weights = {k: v / total_weight for k, v in weights.items()}
+
         # Ensure weights fall within the range 0 to 1
         min_weight = min(normalized_weights.values())
         max_weight = max(normalized_weights.values())
+
         if min_weight < 0 or max_weight > 1:
-            print("Weights out of range, adjusting to fit within 0 to 1.")
+
             range_weight = max_weight - min_weight
             normalized_weights = {k: (v - min_weight) / range_weight for k, v in normalized_weights.items()}
+
         return normalized_weights
 
     def load_questionnaire_interpreter(self):
@@ -157,6 +187,7 @@ class DataProcessor:
         except Exception as e:
             print(f"Error applying interpreter: {e}")
 
+    # Take a list of lists and flatten it into a single list by concatenating all sublists
     def flatten_lists(self, lists):
         # Flatten a list of lists
         return [item for sublist in lists for item in (sublist if isinstance(sublist, list) else [sublist])]
@@ -164,63 +195,58 @@ class DataProcessor:
     def add_homogenous_attribute(self, attribute):
         # Add a homogenous attribute to the list and remove it from the heterogenous list
         if attribute not in self.homogenous_attributes:
-            print(f"Adding {attribute} as homogenous attribute.")
             self.homogenous_attributes.append(attribute)
-            print(f"Homogenous: {self.homogenous_attributes}")
+
         if attribute in self.heterogenous_attributes:
             self.heterogenous_attributes.remove(attribute)
 
     def add_heterogenous_attribute(self, attribute):
         # Add a heterogenous attribute to the list and remove it from the homogenous list
         if attribute not in self.heterogenous_attributes:
-            print(f"Adding {attribute} as heterogenous attribute.")
             self.heterogenous_attributes.append(attribute)
-            print(f"Heterogenous: {self.heterogenous_attributes}")
+
         if attribute in self.homogenous_attributes:
             self.homogenous_attributes.remove(attribute)
 
     def add_emphasized_attribute(self, attribute):
         # Add an emphasized attribute to the list
         if attribute not in self.emphasized_attributes:
-            print(f"Adding emphasized attribute: {attribute}")
             self.emphasized_attributes.append(attribute)
-            print(f"Emphasized: {self.emphasized_attributes}")
+
 
     def remove_emphasized_attribute(self, attribute):
         # Remove an emphasized attribute from the list
         if attribute in self.emphasized_attributes:
-            print(f"Removing emphasized attribute: {attribute}")
             self.emphasized_attributes.remove(attribute)
-            print(f"Emphasized: {self.emphasized_attributes}")
+
             if attribute in self.emphasized_attributes_type:
                 del self.emphasized_attributes_type[attribute]
 
     def remove_attribute(self, attribute):
         # Remove an attribute from both lists
         if attribute in self.homogenous_attributes:
-            print(f"Removing homogenous attribute: {attribute}")
             self.homogenous_attributes.remove(attribute)
-            print(f"Homogenous: {self.homogenous_attributes}")
-        elif attribute in self.heterogenous_attributes:
-            print(f"Removing heterogenous attribute: {attribute}")
-            self.heterogenous_attributes.remove(attribute)
-            print(f"Heterogenous: {self.heterogenous_attributes}")
-        if attribute in self.emphasized_attributes:
-            print(f"Removing emphasized attribute: {attribute}")
-            self.emphasized_attributes.remove(attribute)
-            print(f"Emphasized: {self.emphasized_attributes}")
 
-    # Merge multiple columns into one
+        elif attribute in self.heterogenous_attributes:
+            self.heterogenous_attributes.remove(attribute)
+
+        if attribute in self.emphasized_attributes:
+            self.emphasized_attributes.remove(attribute)
+
+    # Merge multiple columns into one column and drop the original columns from the DataFrame
     def merge_columns(self, df, base_name):
         try:
             columns_to_merge = [col for col in df.columns if col.startswith(base_name)]
             df[base_name] = df[columns_to_merge].apply(lambda x: ', '.join(x.dropna().astype(str)), axis=1)
             df.drop(columns=columns_to_merge, inplace=True)
+
         except Exception as e:
             print(f"Error merging columns for {base_name}: {e}")
 
+    # Process survey results to transform and map the data according to the questionnaire interpreter and example questionnaire
     def process_survey_results(self, results_survey):
         try:
+            # Define column mappings for the survey results
             column_mapping = {
                 "CodingExperience": "CodingExperience",
                 "PeersGroup": "PeersGroup",
@@ -247,7 +273,7 @@ class DataProcessor:
                 "Name": "Name"
             }
 
-            # Merge specific columns
+            # Merge specific columns that have multiple entries
             self.merge_columns(results_survey, "ProgrammingCourses")
             self.merge_columns(results_survey, "PracticedConcepts")
             self.merge_columns(results_survey, "Motivations")
@@ -268,12 +294,13 @@ class DataProcessor:
             results_survey_transformed = results_survey_renamed[self.questionnaire_example.columns]
             
             return results_survey_transformed
+        
         except Exception as e:
             print(f"Error processing survey results: {e}")
             return pd.DataFrame()
         
     def reload_survey(self, filepath):
-        # Reload the survey results
+        # Reload the survey results and go through the processing steps again
         self.results_survey = self.load_csv_file(filepath)
         results_survey_transformed = self.process_survey_results(self.results_survey)
         results_survey_transformed.to_csv('storage/transformed_results_survey.csv', index=False)
@@ -288,14 +315,6 @@ class DataProcessor:
         # Return the loaded weights
         return self.weights
 
-    def get_custom_weights(self):
-        # Return the loaded custom weights
-        return self.custom_weights
-    
-    def get_current_weights(self):
-        # Return the current weights
-        return self.current_weights
-
     def get_normalized_current_weights(self):
         # Return the normalized current weights
         return self.normalize_weights(self.current_weights)
@@ -307,18 +326,6 @@ class DataProcessor:
     def get_skill_attributes(self):
         # Return the skill attributes
         return self.skill_attributes
-
-    def get_motivation_attributes(self):
-        # Return the motivation attributes
-        return self.motivation_attributes
-
-    def get_project_attributes(self):
-        # Return the project attributes
-        return self.project_attributes
-
-    def get_background_attributes(self):
-        # Return the background attributes
-        return self.background_attributes
 
     def get_other_attributes(self):
         # Return all the attributes except the skill attributes

@@ -1,15 +1,33 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 
+"""
+    The Visualization class is responsible for creating visual representations of the teams formed by the Group Former application.
+    It uses the matplotlib and networkx libraries to generate graphs that show the relationships and similarities between team members.
+
+    Key Responsibilities:
+    - Initialize with data from the DataProcessor.
+    - Retrieve pronouns based on gender.
+    - Visualize teams by creating a graph with nodes representing team members and edges representing similarities.
+    - Calculate similarity scores between team members based on homogenous attributes.
+    - Generate and display the graph using a spring layout.
+
+    The class interacts with the DataProcessor to retrieve the necessary data and attributes, and uses this information
+    to create a visual representation of the teams. It ensures that the graph is displayed with the specified colors and layout.
+"""
+
 class Visualization:
     def __init__(self, data_processor):
         self.data_processor = data_processor
         self.df = data_processor.get_data()
+
         self.main_color = '#6f12c0'
         self.secondary_color = '#d4c9ef'
 
+    # Handle pronouns based on the given gender pro member
     def get_pronouns(self, gender):
         gender = gender.lower()
+
         if gender == 'male':
             return 'He/him/his'
         elif gender == 'female':
@@ -17,10 +35,11 @@ class Visualization:
         else:
             return 'They/them/their'
 
+    # Visualize the teams formed by the Group Former application
     def visualize(self, teams):
         G = nx.Graph()
 
-        # Add nodes with labels
+        # Add nodes with labels containing team members' names
         for team in teams:
             for member in team:
                 name = self.df.loc[member, 'Name']
@@ -43,6 +62,7 @@ class Visualization:
         edges = G.edges(data=True)
         weights = [edge[2]['weight'] for edge in edges]
 
+        # Create a figure with two subplots: one for the graph and one for the team profiles
         plt.figure(figsize=(16, 12), edgecolor=self.main_color)
         plt.subplot(1, 2, 2, facecolor=self.secondary_color)  # Graph on the right
 
@@ -58,12 +78,19 @@ class Visualization:
 
         plt.subplot(1, 2, 1)  # Profiles on the left
         y_offset = 1.0
+
         plt.axis('off')
+
+        # Display team profiles with relevant information
         for index, team in enumerate(teams):
             for member in team:
+
+                # First line: Name, age, pronouns
                 name = self.df.loc[member, 'Name']
                 pronouns = self.get_pronouns(self.df.loc[member, 'Gender'])
                 age = self.df.loc[member, 'Age']
+
+                # Second line: Coding experience, primary language, experience years
                 coding_experience = self.df.loc[member, 'CodingExperience']
                 primary_language = self.df.loc[member, 'PrimaryLanguage']
                 primary_language_other = self.df.loc[member, 'PrimaryLanguageOther']
@@ -71,14 +98,12 @@ class Visualization:
                     primary_language = primary_language_other
 
                 experience_years = self.df.loc[member, 'ExperienceYears']
+
+                # Third line: Git familiarity, Python proficiency
                 git = self.df.loc[member, 'GitFamiliarity']
                 python = self.df.loc[member, 'PythonProficiency']
 
-                learning = self.df.loc[member, 'PreferredLearning']
-                learning_entries = [entry.strip() for entry in learning.split(',') if entry.strip().lower() != 'no']
-                if len(learning_entries) > 4:
-                    learning_entries = learning_entries[:2] + ['...'] + learning_entries[-2:]
-
+                # Fourth line: Preferred challenge, preferred games
                 preferred_challenge = self.df.loc[member, 'PreferredChallenge']
                 if preferred_challenge.lower() == 'easy':
                     preferred_games = self.df.loc[member, 'PreferredGamesEasy']
@@ -87,9 +112,17 @@ class Visualization:
                 elif preferred_challenge.lower() == 'hard':
                     preferred_games = self.df.loc[member, 'PreferredGamesHard']
                 
+                # Get the preferred games without 'no' entries and join them with a comma
                 preferred_games = [entry.strip() for entry in preferred_games.split(',') if entry.strip().lower() != 'no']
                 preferred_games = ', '.join(preferred_games)
 
+                # Fifth line: Preferred learning and display up to 4 entries
+                learning = self.df.loc[member, 'PreferredLearning']
+                learning_entries = [entry.strip() for entry in learning.split(',') if entry.strip().lower() != 'no']
+                if len(learning_entries) > 4:
+                    learning_entries = learning_entries[:2] + ['...'] + learning_entries[-2:]
+
+                # Sixth line: Study field and student status if is student
                 study_field = self.df.loc[member, 'StudyField']
                 study_field_other = self.df.loc[member, 'StudyFieldOther']
                 if study_field.lower() == 'other':
@@ -101,13 +134,17 @@ class Visualization:
                 profile_text += f"{coding_experience} in {primary_language} and has {experience_years} of experience." + "\n"
                 profile_text += f"Git Familiarity: {git} and in Python they are {python}." + "\n"
                 profile_text += f"They prefer a {preferred_challenge} challenge and would like to work on {preferred_games}." + "\n"
+
                 if learning_entries and learning_entries not in ['none', 'no', 'n/a', 'nan']:
                     profile_text += f"They hope to learn {', '.join(learning_entries)}." + "\n"
+
                 if is_student.lower() == 'yes' and study_field is not None:
                     profile_text += f"Their field of study is {study_field}."
 
                 lines = profile_text.split('\n')
+
                 for line in lines:
+                    # Highlight the team member's name
                     if line.startswith(name):
                         plt.text(0.02, y_offset, line, fontsize=13, fontweight='bold', verticalalignment='top', horizontalalignment='left', color=self.main_color)
                     else:

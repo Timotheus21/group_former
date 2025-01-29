@@ -7,6 +7,27 @@ from teamforming import TeamForming
 from visualization import Visualization
 from selector import select_file
 
+"""
+    The GUI class is responsible for creating and managing the graphical user interface of the Group Former application.
+    It uses the tkinter library to build the interface and provides various functionalities to interact with the user.
+
+    Key Responsibilities:
+    - Initialize the main window and configure its appearance.
+    - Set up fonts, colors, and styles for the GUI elements.
+    - Create and manage widgets such as labels, buttons, checkboxes, and entry fields.
+    - Handle user interactions and update the GUI accordingly.
+    - Load and display images.
+    - Provide tooltips for various elements to guide the user.
+    - Validate user inputs and provide feedback.
+    - Manage the weights and attributes used for team formation.
+    - Generate and visualize teams based on the current configuration.
+    - Load and save weights from/to CSV files.
+    - Load different surveys and update the GUI accordingly.
+
+    The class is designed to be modular and extensible, allowing for easy addition of new features and customization.
+    It interacts with other components such as the DataProcessor, TeamForming, and Visualization classes to perform its tasks.
+"""
+
 class GUI:
     def __init__(self, root, data_processor, teamforming, visualization, tooltip):
         self.root = root
@@ -134,12 +155,15 @@ class GUI:
                         )
 
     def create_top_frame(self):
+        # Create a frame to hold the top widgets
         self.top_frame = ttk.Frame(self.root, style='Top.TFrame')
         self.top_frame.grid(row=0, column=0, columnspan=4, padx=10, pady=10, sticky="ew")
 
+        # Configure grid weights for the top frame
         self.top_frame.grid_rowconfigure(0, weight=1)
         self.top_frame.grid_columnconfigure(0, weight=1)
 
+        # Load the questionmark image, first integer is width, second is height
         self.questionmark = self.load_image("images/questionmark.png", 20, 25)
 
         self.toogle_button = tk.Button(
@@ -159,9 +183,11 @@ class GUI:
         self.scrollable_frame = ttk.Frame(self.root, style='Scrollable.TFrame')
         self.scrollable_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
+        # Create a canvas to hold the weights and checkboxes
         self.canvas = tk.Canvas(self.scrollable_frame, bg=self.scrollable_frame_color)
         self.canvas.pack(side="left", fill="both", expand=True)
 
+        # Create a scrollbar for the canvas
         scrollbar = ttk.Scrollbar(self.scrollable_frame, orient="vertical", command=self.canvas.yview)
         scrollbar.pack(side="right", fill="y")
 
@@ -217,6 +243,7 @@ class GUI:
 
         start_row = len(self.data_processor.weights.items())
 
+        # Add labels and buttons for other attributes
         for index, attribute in enumerate(self.data_processor.get_other_attributes()):
             row = start_row + index
             display_attribute = self.format_attribute_for_display(attribute)
@@ -260,6 +287,7 @@ class GUI:
 
             self.create_emphasis_button(row_frame, row, 1, attribute)
 
+        # Create a frame for the team sizing
         self.teamsizing_frame = ttk.LabelFrame(self.inner_frame, text="Team Sizing")
         self.teamsizing_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
 
@@ -327,6 +355,7 @@ class GUI:
         self.tooltip(self.min_teams_entry, "Teams will not be smaller than this size.\n"+
                      "If the desired team size is smaller than this, the minimum team size will be adjusted.", self.helvetica)
         
+        # Label for the remaining members
         remaining_members = f"Remaining Members: "
         self.remaining_members_label = ttk.Label(self.teamsizing_frame, text=remaining_members, font=(self.helvetica, 11))
         self.remaining_members_label.grid(row=4, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W)
@@ -441,6 +470,7 @@ class GUI:
         self.checkbuttons[attribute] = checkbutton
         self.remove_checkbuttons[attribute] = remove_checkbutton
 
+    # Method to create emphasis button
     def create_emphasis_button(self, frame, row, column, attribute):
         self.emphasis_button = ttk.Button(
             frame,
@@ -452,22 +482,27 @@ class GUI:
 
         self.emphasis_buttons[attribute] = self.emphasis_button
 
+    # Method to handle mousewheel scrolling
     def on_mousewheel(self, event):
         self.canvas.yview_scroll(-1 * int(event.delta / 120), "units")
 
+    # Method to format attribute for display by inserting spaces before capital letters
     def format_attribute_for_display(self, attribute):
         return re.sub(r'(?<!^)(?=[A-Z])', ' ', attribute)
 
+    # Method to load an image and resize it
     def load_image(self, filepath, width, height):
         og_img = Image.open(filepath)
         resized_img = og_img.resize((width, height), Image.LANCZOS)
         return ImageTk.PhotoImage(resized_img)
 
+    # Method to show feedback when validating entries
     def show_feedback(self, widget, message, color):
         self.feedback_label = ttk.Label(self.teamsizing_frame, text=message, foreground=color, font=(self.helvetica, 10))
         self.feedback_label.grid(row=widget.grid_info()['row'], column=widget.grid_info()['column'] + 2, padx=5, pady=5, sticky=tk.W)
         self.feedback_labels[widget] = self.feedback_label
 
+    # Method to validate entries by checking if they are positive integers and enabling the generate button
     def validate_entries(self, *args):
         try:
             min_size = int(self.min_team_size_var.get())
@@ -486,6 +521,7 @@ class GUI:
         except:
             self.generate_button.config(state=tk.DISABLED)
 
+    # Method to validate the size entries by checking if they are positive integers
     def validate_size(self, size, action, entry_name):
         entry_widget = self.root.nametowidget(entry_name)
         if action == '1': # Insert
@@ -507,6 +543,7 @@ class GUI:
     def handle_checkbox_toggle(self, attribute):
         is_homogeneous = self.checkbox_vars[attribute].get()
         self.checkbox_vars[attribute].set(not is_homogeneous)
+
         # Update the text of the checkbutton based on the state
         if self.checkbox_vars[attribute].get():
             self.checkbuttons[attribute].config(text="Matched")
@@ -521,6 +558,7 @@ class GUI:
         emphasized_attributes = self.data_processor.get_emphasized_attributes()
         if attribute not in emphasized_attributes:
             if len(emphasized_attributes) >= self.max_emphasis:
+
                 # Remove the first emphasized attribute
                 first_attribute = emphasized_attributes[0]
                 self.data_processor.remove_emphasized_attribute(first_attribute)
@@ -538,10 +576,12 @@ class GUI:
     def handle_remove_toggle(self, attribute):
             if not self.remove_checkbox_vars[attribute].get():
                 self.data_processor.remove_attribute(attribute)
+
                 # Apply strike-through to the label
                 self.attribute_labels[attribute].config(foreground='gray', font=(self.helvetica, 11,'overstrike'))
                 self.checkbuttons[attribute].config(style='Removed.TButton')
                 self.emphasis_buttons[attribute].config(style='Removed.TButton')
+
                 if attribute in self.weight_labels:
                     self.weight_labels[attribute].config(foreground='gray', font=(self.helvetica, 11,'overstrike'))
                 self.set_attribute_button_state(attribute, state=tk.DISABLED)
@@ -550,6 +590,7 @@ class GUI:
                     self.data_processor.add_homogenous_attribute(attribute)
                 else:
                     self.data_processor.add_heterogenous_attribute(attribute)
+
                 # Remove strike-through from the label
                 self.attribute_labels[attribute].config(foreground='black', font=(self.helvetica, 11))
                 if attribute in self.weight_labels:
@@ -570,6 +611,7 @@ class GUI:
                         self.emphasis_buttons[attribute].config(style='Custom.TButton')
                         self.data_processor.remove_emphasized_attribute(attribute)
 
+    # Method to set the state of the attribute buttons based on the state
     def set_attribute_button_state(self, attribute, state):
         self.checkbuttons[attribute].config(state=state)
         self.emphasis_buttons[attribute].config(state=state)
@@ -578,6 +620,7 @@ class GUI:
         if attribute in self.decrease_buttons:
             self.decrease_buttons[attribute].config(state=state)
 
+    # Method to toogle the program explanation
     def toogle_top_frame(self):
         if self.program_explanation and self.program_explanation.winfo_ismapped():
             self.program_explanation.config(text="")
@@ -598,7 +641,7 @@ class GUI:
                 )
             self.program_explanation.grid(row=0, column=0)
 
-    # Method to adjust weight
+    # Method to adjust weight of an skill attribute
     def adjust_weight(self, attribute, delta=0):
         try:
             current_weight = self.weight_vars[attribute].get()
@@ -631,13 +674,15 @@ class GUI:
         except Exception as e:
             print(f"Error loading {weight_type} weights: {e}")
 
+    # Method to update the current weights in the DataProcessor based on the GUI
     def update_current_weights(self):
         self.data_processor.current_weights = {attribute: var.get() for attribute, var in self.weight_vars.items()}
-        print(f"Current weights: {self.data_processor.current_weights}")
 
+    # Method to update the remaining members label in the GUI based on the number of remaining members in the TeamForming
     def update_remaining_members_label(self, remaining_members):
         self.remaining_members_label.config(text=f"Remaining Members: {remaining_members}")
 
+    # Method to load a different survey and update the GUI
     def load_different_survey(self):
         try:
             filepath = select_file()
@@ -649,6 +694,7 @@ class GUI:
         except Exception as e:
             print(f"Error loading different survey: {e}")
 
+    # Method to update the GUI by removing and recreating the widgets
     def update_gui(self):
         for widget in self.team_buttons_frame.winfo_children():
                 widget.destroy()
@@ -664,13 +710,16 @@ class GUI:
 
             feedback_shown = False
 
+            # Clear the team buttons frame
             for widget in self.team_buttons_frame.winfo_children():
                 widget.destroy()
 
+            # Get the desired team size, minimum team size, and maximum team size
             min_size = int(self.min_team_size_var.get())
             max_size = int(self.max_team_size_var.get())
             desired_size = int(self.team_size_var.get())
 
+            # Check if the team sizes are as expected and adjust if necessary
             total_members = len(self.data_processor.get_data())
             if desired_size > total_members:
                 desired_size = total_members
@@ -700,21 +749,24 @@ class GUI:
                         del label
                     self.feedback_labels.clear()
 
+            # Generate teams based on the desired team size, minimum team size, and maximum team size
             self.teams, remaining_members = self.teamforming.generate_teams(desired_size, min_size, max_size)
             self.teamforming.set_teams(self.teams)  # Set teams attribute
             self.update_remaining_members_label(len(remaining_members))
-            self.teamforming.print_teams()  # Print teams with names
+
+            # Create buttons to visualize the teams
             for idx, team in enumerate(self.teams):
                 button = ttk.Button(
                     self.team_buttons_frame,
                     style='Toggle.TButton',
                     text=f"Visualize Team {idx + 1}",
-                    command=lambda t=team: self.visualize_teams(t))
+                    command=lambda t=team: self.visualize_teams(t)
+                    )
                 button.pack(fill="x", padx=5, pady=5)
         except Exception as e:
             print(f"Error generating teams: {e}")
 
-    # Method to visualize teams
+    # Method to visualize teams in the Visualization class
     def visualize_teams(self, team):
         try:
             self.visualization.visualize([team])

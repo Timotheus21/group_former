@@ -9,9 +9,7 @@ from config import Config
 from gui import GUI
 from selector import select_file
 
-
 def on_closing(root):
-    print("Exiting...")
     root.quit()
     root.destroy()
 
@@ -19,7 +17,6 @@ if __name__ == "__main__":
     try:
         filepath = select_file()
         if not filepath:
-            print("No file selected. Exiting...")
             sys.exit()
 
         root = tk.Tk()

@@ -9,7 +9,9 @@ def select_file():
         temp_root.withdraw()
         file_path = askopenfilename(title="Select a Questionnaire CSV file", filetypes=[("CSV files", "*.csv")])
         temp_root.destroy()
+        
         return file_path
+    
     except Exception as e:
         print(f"Error selecting file: {e}")
         sys.exit(1)

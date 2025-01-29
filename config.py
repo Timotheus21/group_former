@@ -2,6 +2,21 @@ import tkinter as tk
 from tkinter import ttk
 import re
 
+"""
+    The Config class is responsible for displaying the current configuration of the Group Former application.
+    It creates a new window using the tkinter library to show the configuration details.
+
+    Key Responsibilities:
+    - Initialize the configuration window and configure its appearance.
+    - Display the current configuration settings in a scrollable frame.
+    - Handle user interactions such as scrolling and closing the window.
+    - Format attribute names for display.
+    - Ensure smooth scrolling experience by binding mouse wheel events.
+
+    The class interacts with the DataProcessor to retrieve the current configuration settings and displays them in a user-friendly manner.
+    It also ensures that the main GUI's scrolling functionality is restored when the configuration window is closed.
+"""
+
 class Config:
     def __init__(self, root, data_processor, root_canvas, font_settings):
         self.root = root
@@ -10,12 +25,15 @@ class Config:
         self.font_settings = font_settings
         self.create_config_window()
 
+    # Format attribute names for display by adding spaces between words
     def format_attribute_for_display(self, attribute):
         return re.sub(r'(?<!^)(?=[A-Z])', ' ', attribute)
     
+    # Handle mouse wheel scrolling in the configuration window
     def on_mousewheel(self, event):
         self.canvas.yview_scroll(-1 * int(event.delta / 120), "units")
 
+    # Create the configuration window and display the current configuration settings from the DataProcessor
     def create_config_window(self):
         config_window = tk.Toplevel(self.root)
         config_window.title("Current Configuration")
@@ -37,6 +55,7 @@ class Config:
 
         self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
 
+        # Restore the main GUI's scrolling functionality when the configuration window is closed
         def on_close():
             self.canvas.unbind_all("<MouseWheel>")
             self.root_canvas.canvas.bind_all("<MouseWheel>", self.root_canvas.on_mousewheel)
