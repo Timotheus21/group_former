@@ -11,6 +11,7 @@ import networkx as nx
     - Visualize teams by creating a graph with nodes representing team members and edges representing similarities.
     - Calculate similarity scores between team members based on homogenous attributes.
     - Generate and display the graph using a spring layout.
+    - Display team profiles with relevant information in a separate subplot.
 
     The class interacts with the DataProcessor to retrieve the necessary data and attributes, and uses this information
     to create a visual representation of the teams. It ensures that the graph is displayed with the specified colors and layout.
