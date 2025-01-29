@@ -1,9 +1,10 @@
 import tkinter as tk
 
 class Tooltip:
-    def __init__(self, widget, text):
+    def __init__(self, widget, text, font_settings):
         self.widget = widget
         self.text = text
+        self.font_settings = font_settings
         self.tooltip_window = None
         self.showing = False
         self.delay_id = None
@@ -30,7 +31,7 @@ class Tooltip:
         tw.wm_geometry(f"+{x}+{y}")
         
         # Create and pack the label in the tooltip window
-        label = tk.Label(tw, text=self.text, background="#d4c9ef", relief="solid", borderwidth=0.5, font=("Helvetica", "8", "normal"))
+        label = tk.Label(tw, text=self.text, background="#d4c9ef", relief="solid", borderwidth=0.5, font=(self.font_settings, 9, "normal"))
         label.pack(ipadx=1)
 
     def hide_tooltip(self, event):

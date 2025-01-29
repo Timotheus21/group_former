@@ -3,10 +3,11 @@ from tkinter import ttk
 import re
 
 class Config:
-    def __init__(self, root, data_processor, root_canvas):
+    def __init__(self, root, data_processor, root_canvas, font_settings):
         self.root = root
         self.data_processor = data_processor
         self.root_canvas = root_canvas
+        self.font_settings = font_settings
         self.create_config_window()
 
     def format_attribute_for_display(self, attribute):
@@ -49,7 +50,7 @@ class Config:
         normalized_weights = self.data_processor.get_normalized_current_weights()
         emphasized_attributes = self.data_processor.get_emphasized_attributes()
 
-        font_settings = ("Helvetica", 11)
+        font_settings = (self.font_settings, 11)
         main_color = '#6f12c0'
 
         homogenous_label = ttk.Label(scrollable_frame, text="Homogenous Attributes:", foreground=main_color, font=font_settings)
