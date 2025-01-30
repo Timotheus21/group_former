@@ -34,8 +34,9 @@ class Tooltip:
 
     # Delay showing the tooltip after 1 second and change the widget's background color for visual feedback
     def delay_show_tooltip(self, event):
+        print(self.widget.winfo_name())
         if self.widget['state'] == tk.NORMAL:
-            if str(self.widget.winfo_name()) == "!button":
+            if str(self.widget.winfo_name()).startswith("!button"):
                 if self.widget['background'] == self.main_color:
                     self.widget.config(background=self.secondary_color)
 
@@ -67,7 +68,7 @@ class Tooltip:
     # Hide the tooltip window when the user moves the cursor away from the widget and cancel the delay
     def hide_tooltip(self, event):
         if self.widget['state'] == tk.NORMAL:
-            if str(self.widget.winfo_name()) == "!button":
+            if str(self.widget.winfo_name()).startswith("!button"):
                 if self.widget['background'] == self.secondary_color:
                     self.widget.config(background=self.main_color)
 

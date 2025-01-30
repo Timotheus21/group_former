@@ -371,29 +371,36 @@ class GUI:
         self.drag_frame = ttk.Frame(self.inner_frame, style='Button.TFrame')
         self.drag_frame.grid(row=0, column=2, padx=10, pady=10, sticky="ne")
 
+        # Load the drop image, first integer is width, second is height
+        self.drop_image = self.load_image("images/drop.png", 25, 40)
+
         # Create a Label for the Drag and Drop area
-        self.drag_label = ttk.Label(self.drag_frame, text="Drag and Drop a CSV file here", font=(self.helvetica, 11))
-        self.drag_label.pack(padx=10, pady=10)
+        self.drag_label = ttk.Label(self.drag_frame, image=self.drop_image, background=self.secondary_color)
+        self.drag_label.pack(padx=20, pady=10)
+        self.tooltip(self.drag_label, "Drag and drop a survey file here to load it.", self.helvetica)
 
         # Enable Drag and Drop functionality for the Frame
         self.drag_frame.drop_target_register(DND_FILES)
         self.drag_frame.dnd_bind('<<Drop>>', self.dnd_different_survey)
 
+        # Load the select image, first integer is width, second is height
+        self.select = self.load_image("images/select.png", 20, 30)
+
         # Button to load a different survey
-        load_survey_button = ttk.Button(
+        self.select_button = tk.Button(
             self.drag_frame,
-            text="Select Survey",
-            style='Buttonframe.TButton',
+            image=self.select,
+            borderwidth=0,
+            background=self.secondary_color,
+            width=20,
+            height=30,
+            relief="raised",
             command=lambda: self.load_different_survey()
             )
-        load_survey_button.pack(padx=10, pady=10)
-        self.tooltip(load_survey_button, "Load a different survey to form teams.", self.helvetica)
+        self.select_button.pack(padx=10, pady=10)
+        self.tooltip(self.select_button, "Load a different survey to form teams.", self.helvetica)
 
-
-
-
-
-
+        # Bind the canvas to the mousewheel for scrolling
         self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
 
         # Frame to hold team buttons on the right
@@ -710,7 +717,7 @@ class GUI:
     def load_different_survey(self):
         try:
             filepath = select_file()
-            if filepath:
+            if filepath.endswith('.csv'):
                 self.data_processor.reload_survey(filepath)
                 self.teamforming = TeamForming(self.data_processor)
                 self.visualization = Visualization(self.data_processor)
@@ -724,7 +731,7 @@ class GUI:
     def dnd_different_survey(self, event):
         try:
             filepath = event.data.strip('{}')
-            if filepath:
+            if filepath.endswith('.csv'):
                 self.data_processor.reload_survey(filepath)
                 self.teamforming = TeamForming(self.data_processor)
                 self.visualization = Visualization(self.data_processor)
