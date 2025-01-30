@@ -74,9 +74,20 @@ class DataProcessor:
         try:
             if not os.path.exists(filepath):
                 raise FileNotFoundError(f"File not found: {filepath}")
-            
-            return pd.read_csv(filepath)
-        
+
+            with open(filepath, 'r') as file:
+                sample = file.read(1024)
+                delimiter = ',' if ',' in sample else ';'
+                file.seek(0)
+
+            csv = pd.read_csv(filepath, delimiter=delimiter, dtype=str)
+
+            if csv.columns[0].startswith('Column'):
+                csv.columns = csv.iloc[0]
+                csv = csv[1:]
+
+            return csv
+
         except Exception as e:
             print(f"Error loading CSV file: {e}")
             sys.exit()

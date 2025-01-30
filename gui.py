@@ -35,7 +35,7 @@ class GUI:
         self.root = root
         self.main_color = '#6f12c0'
         self.secondary_color = '#d4c9ef'
-        self.scrollable_frame_color = '#f5f2fb'
+        self.scrollable_frame_color = '#f0f0f0'
         self.root.configure(bg=self.main_color)
         self.data_processor = data_processor
         self.teamforming = teamforming
