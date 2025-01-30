@@ -21,6 +21,8 @@ class Tooltip:
         self.widget = widget
         self.text = text
         self.font_settings = font_settings
+        self.main_color = '#6f12c0'
+        self.secondary_color = '#d4c9ef'
 
         self.tooltip_window = None
         self.showing = False
@@ -30,8 +32,16 @@ class Tooltip:
         self.widget.bind("<Enter>", self.delay_show_tooltip)
         self.widget.bind("<Leave>", self.hide_tooltip)
 
-    # Delay showing the tooltip after 1 second
+    # Delay showing the tooltip after 1 second and change the widget's background color for visual feedback
     def delay_show_tooltip(self, event):
+        if self.widget['state'] == tk.NORMAL:
+            if str(self.widget.winfo_name()) == "!button":
+                if self.widget['background'] == self.main_color:
+                    self.widget.config(background=self.secondary_color)
+
+                elif self.widget['background'] == self.secondary_color:
+                    self.widget.config(background=self.main_color)
+
         self.showing = True
         self.delay_id = self.widget.after(1000, self.show_tooltip, event)
 
@@ -56,6 +66,14 @@ class Tooltip:
 
     # Hide the tooltip window when the user moves the cursor away from the widget and cancel the delay
     def hide_tooltip(self, event):
+        if self.widget['state'] == tk.NORMAL:
+            if str(self.widget.winfo_name()) == "!button":
+                if self.widget['background'] == self.secondary_color:
+                    self.widget.config(background=self.main_color)
+
+                elif self.widget['background'] == self.main_color:
+                    self.widget.config(background=self.secondary_color)
+
         self.showing = False
         if self.delay_id:
             self.widget.after_cancel(self.delay_id)

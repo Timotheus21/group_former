@@ -2,6 +2,7 @@ import tkinter as tk
 import re
 from tkinter import ttk, PhotoImage
 from tkextrafont import Font
+from tkinterdnd2 import DND_FILES, TkinterDnD
 from PIL import Image, ImageTk
 from config import Config
 from teamforming import TeamForming
@@ -163,19 +164,20 @@ class GUI:
         self.top_frame.grid_columnconfigure(0, weight=1)
 
         # Load the questionmark image, first integer is width, second is height
-        self.questionmark = self.load_image("images/questionmark.png", 20, 25)
+        self.questionmark = self.load_image("images/questionmark.png", 15, 20)
 
-        self.toogle_button = tk.Button(
+        self.help_button = tk.Button(
             self.root,
             image=self.questionmark,
             borderwidth=0,
             background=self.main_color,
-            width=20,
-            height=25,
+            width=15,
+            height=20,
+            relief="raised",
             command= self.toogle_top_frame
         )
-        self.toogle_button.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
-        self.tooltip(self.toogle_button, "Toggle the program explanation.", self.helvetica)
+        self.help_button.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
+        self.tooltip(self.help_button, "Toggle the program explanation.", self.helvetica)
 
     def create_scrollable_area(self):
         # Create a frame to hold the weights and checkboxes
@@ -392,6 +394,7 @@ class GUI:
             background=self.secondary_color,
             width=110,
             height=40,
+            relief="raised",
             command=lambda: self.generate_teams()
             )
         self.generate_button.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
@@ -455,7 +458,7 @@ class GUI:
         checkbutton = ttk.Button(
             self.weights_frame,
             style='Custom.TButton' if self.checkbox_vars[attribute].get() else 'Diverse.TButton',
-            text="Matched" if self.checkbox_vars[attribute].get() else "Diverse",
+            text="Match" if self.checkbox_vars[attribute].get() else "Diverse",
             command=lambda: self.handle_checkbox_toggle(attribute))
         checkbutton.grid(row=row, column=5, padx=5, pady=5)
         self.tooltip(checkbutton, "Toggle between matching and differentiating this attribute.", self.helvetica)
@@ -504,7 +507,7 @@ class GUI:
     # Method to show feedback when validating entries
     def show_feedback(self, widget, message, color):
         self.feedback_label = ttk.Label(self.teamsizing_frame, text=message, foreground=color, font=(self.helvetica, 10))
-        self.feedback_label.grid(row=widget.grid_info()['row'], column=widget.grid_info()['column'] + 2, padx=5, pady=5, sticky=tk.W)
+        self.feedback_label.grid(row=widget.grid_info()['row'], column=widget.grid_info()['column'] + 2, sticky=tk.W)
         self.feedback_labels[widget] = self.feedback_label
 
     # Method to validate entries by checking if they are positive integers and enabling the generate button
@@ -536,7 +539,7 @@ class GUI:
                     del self.feedback_labels[entry_widget]
                 return True
             else:
-                self.show_feedback(entry_widget, "Please enter a positive integer.", 'red')
+                self.show_feedback(entry_widget, "Positive numbers only", 'red')
                 return False
 
         if entry_widget in self.feedback_labels:
@@ -551,7 +554,7 @@ class GUI:
 
         # Update the text of the checkbutton based on the state
         if self.checkbox_vars[attribute].get():
-            self.checkbuttons[attribute].config(text="Matched")
+            self.checkbuttons[attribute].config(text="Match")
             self.checkbuttons[attribute].config(style='Custom.TButton')
             self.data_processor.add_homogenous_attribute(attribute)
         else:
@@ -729,13 +732,13 @@ class GUI:
             if desired_size > total_members:
                 desired_size = total_members
                 self.team_size_var.set(desired_size)
-                self.show_feedback(self.team_size_entry, "Value decreased to accommodate total number of members.", self.main_color)
+                self.show_feedback(self.team_size_entry, "Value decreased", self.main_color)
                 feedback_shown = True
 
             if max_size < desired_size:
                 max_size = desired_size + 1
                 self.max_team_size_var.set(max_size)
-                self.show_feedback(self.max_teams_entry, "Value increased to accommodate desired team size.", self.main_color)
+                self.show_feedback(self.max_teams_entry, "Value increased", self.main_color)
                 feedback_shown = True
 
             if min_size > desired_size:
@@ -743,7 +746,7 @@ class GUI:
                 if min_size <= 1:
                     min_size = desired_size
                 self.min_team_size_var.set(min_size)
-                self.show_feedback(self.min_teams_entry, "Value decreased to accommodate desired team size.", self.main_color)
+                self.show_feedback(self.min_teams_entry, "Value decreased", self.main_color)
                 feedback_shown = True
 
             if not feedback_shown:

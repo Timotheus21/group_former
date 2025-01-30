@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinterdnd2 import DND_FILES, TkinterDnD
 import sys
 from dataprocessor import DataProcessor
 from teamforming import TeamForming
@@ -18,7 +19,7 @@ if __name__ == "__main__":
         if not filepath:
             sys.exit()
 
-        root = tk.Tk()
+        root = TkinterDnD.Tk()
 
         data_processor = DataProcessor(filepath)
         teamforming = TeamForming(data_processor)
@@ -32,7 +33,7 @@ if __name__ == "__main__":
         # Initialize and run the GUI
         gui = GUI(root, data_processor, teamforming, visualization, tooltip)
         root.mainloop()
-        
+
     except Exception as e:
         print(f"Error initializing: {e}")
         sys.exit(1)
