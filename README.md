@@ -39,7 +39,7 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 6. Click "Generate Teams" to form teams based on the current configuration. If the teamsizes are invalid they will get adjusted.
 7. Visualize the generated teams by clicking the appearing "Visualize Team" buttons.
 8. Save the current weights to a CSV file or load custom/standard weights CSV file using the respective buttons.
-9. Load in a different survey file with the corresponding button if needed.
+9. Load in a different survey file with the corresponding button or drag and drop.
 10. View the current configuration by clicking the "Settings" button.
 
 ## Libraries and Dependencies
@@ -171,6 +171,8 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 │ │ ├── mainwindow.png
 │ │ ├── generate.png
 │ │ ├── questionmark.png
+│ │ ├── drop.png
+│ │ ├── select.png
 │ │ └── visualize.png
 │ ├── storage/                          # Storage for processed data and configuration files
 │ │ ┌── custom_weights.csv              # will be created on startup when not existing
