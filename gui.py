@@ -164,15 +164,15 @@ class GUI:
         self.top_frame.grid_columnconfigure(0, weight=1)
 
         # Load the questionmark image, first integer is width, second is height
-        self.questionmark = self.load_image("images/questionmark.png", 15, 20)
+        self.questionmark = self.load_image("images/questionmark.png", 20, 25)
 
         self.help_button = tk.Button(
             self.root,
             image=self.questionmark,
             borderwidth=0,
             background=self.main_color,
-            width=15,
-            height=20,
+            width=20,
+            height=25,
             relief="raised",
             command= self.toogle_top_frame
         )
@@ -372,7 +372,7 @@ class GUI:
         self.drag_frame.grid(row=0, column=2, padx=10, pady=10, sticky="ne")
 
         # Load the drop image, first integer is width, second is height
-        self.drop_image = self.load_image("images/drop.png", 25, 40)
+        self.drop_image = self.load_image("images/drop.png", 30, 45)
 
         # Create a Label for the Drag and Drop area
         self.drag_label = ttk.Label(self.drag_frame, image=self.drop_image, background=self.secondary_color)
@@ -384,7 +384,7 @@ class GUI:
         self.drag_frame.dnd_bind('<<Drop>>', self.dnd_different_survey)
 
         # Load the select image, first integer is width, second is height
-        self.select = self.load_image("images/select.png", 20, 30)
+        self.select = self.load_image("images/select.png", 30, 35)
 
         # Button to load a different survey
         self.select_button = tk.Button(
@@ -392,8 +392,8 @@ class GUI:
             image=self.select,
             borderwidth=0,
             background=self.secondary_color,
-            width=20,
-            height=30,
+            width=30,
+            height=35,
             relief="raised",
             command=lambda: self.load_different_survey()
             )
