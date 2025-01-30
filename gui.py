@@ -1,8 +1,8 @@
 import tkinter as tk
 import re
-from tkinter import ttk, PhotoImage
+from tkinter import ttk
 from tkextrafont import Font
-from tkinterdnd2 import DND_FILES, TkinterDnD
+from tkinterdnd2 import DND_FILES
 from PIL import Image, ImageTk
 from config import Config
 from teamforming import TeamForming

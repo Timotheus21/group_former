@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import networkx as nx
-from matplotlib.widgets import Slider
 
 """
     The Visualization class is responsible for creating visual representations of the teams formed by the Group Former application.

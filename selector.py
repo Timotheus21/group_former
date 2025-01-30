@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
-from tkinterdnd2 import DND_FILES, TkinterDnD
 import sys
 
 def select_file():

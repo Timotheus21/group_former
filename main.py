@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinterdnd2 import DND_FILES, TkinterDnD
+from tkinterdnd2 import TkinterDnD
 import sys
 from dataprocessor import DataProcessor
 from teamforming import TeamForming
