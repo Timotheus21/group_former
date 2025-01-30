@@ -265,7 +265,7 @@ class GUI:
             self.checkbutton = ttk.Button(
                 row_frame,
                 style='Custom.TButton' if self.checkbox_vars[attribute].get() else 'Diverse.TButton',
-                text="Matched" if self.checkbox_vars[attribute].get() else "Diverse",
+                text="Match" if self.checkbox_vars[attribute].get() else "Diverse",
                 command=lambda a=attribute: self.handle_checkbox_toggle(a))
             self.checkbutton.grid(row=row, column=0, padx=5, pady=5, sticky=tk.W)
             self.tooltip(self.checkbutton, "Toggle between matching and differentiating this attribute.", self.helvetica)
@@ -301,8 +301,11 @@ class GUI:
 
         # Entry for the desired team size
         self.team_size_var = tk.StringVar(value=4)
+
+        # Validate the team size entry with a custom validation method and trace the variable for changes
         self.team_size_var.trace_add("write", self.validate_entries)
         validate_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
+
         self.team_size_entry = ttk.Entry(
             self.teamsizing_frame,
             textvariable=self.team_size_var,
@@ -340,8 +343,11 @@ class GUI:
 
         # Entry for the minimum number of team members
         self.min_team_size_var = tk.StringVar(value=3)
+
+        # Validate the minimum team size entry with a custom validation method and trace the variable for changes
         self.min_team_size_var.trace_add("write", self.validate_entries)
         validate_min_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
+
         self.min_teams_entry = ttk.Entry(
             self.teamsizing_frame,
             textvariable=self.min_team_size_var,
@@ -404,7 +410,7 @@ class GUI:
         # Button to load custom weights
         load_custom_weights_button = ttk.Button(
             self.bottom_frame,
-            text="Load Custom Weights",
+            text="Load Weights",
             style='Buttonframe.TButton',
             command=lambda: self.load_weights("custom")
             )
@@ -414,7 +420,7 @@ class GUI:
         # Button to load standard weights
         load_std_weights_button = ttk.Button(
             self.bottom_frame,
-            text="Load Standard Weights",
+            text="Reset Weights",
             style='Buttonframe.TButton',
             command=lambda: self.load_weights("standard")
             )

@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter.filedialog import askopenfilename
 import sys
 from dataprocessor import DataProcessor
 from teamforming import TeamForming
@@ -33,6 +32,7 @@ if __name__ == "__main__":
         # Initialize and run the GUI
         gui = GUI(root, data_processor, teamforming, visualization, tooltip)
         root.mainloop()
+        
     except Exception as e:
         print(f"Error initializing: {e}")
         sys.exit(1)
