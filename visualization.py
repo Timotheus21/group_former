@@ -27,7 +27,7 @@ class Visualization:
 
     # Handle pronouns based on the given gender pro member
     def get_pronouns(self, gender):
-        gender = gender.lower()
+        gender = str(gender.lower())
 
         if gender == 'male':
             return 'He/him/his'
@@ -95,7 +95,7 @@ class Visualization:
                 coding_experience = self.df.loc[member, 'CodingExperience']
                 primary_language = self.df.loc[member, 'PrimaryLanguage']
                 primary_language_other = self.df.loc[member, 'PrimaryLanguageOther']
-                if primary_language.lower() == 'other':
+                if str(primary_language.lower()) == 'other':
                     primary_language = primary_language_other
 
                 experience_years = self.df.loc[member, 'ExperienceYears']
@@ -106,21 +106,21 @@ class Visualization:
 
                 # Fourth line: Preferred challenge, preferred games
                 preferred_challenge = self.df.loc[member, 'PreferredChallenge']
-                if preferred_challenge.lower() == 'easy':
+                if str(preferred_challenge.lower()) == 'easy':
                     preferred_games = self.df.loc[member, 'PreferredGamesEasy']
-                elif preferred_challenge.lower() == 'medium':
+                elif str(preferred_challenge.lower()) == 'medium':
                     preferred_games = self.df.loc[member, 'PreferredGamesMedium']
-                elif preferred_challenge.lower() == 'hard':
+                elif str(preferred_challenge.lower()) == 'hard':
                     preferred_games = self.df.loc[member, 'PreferredGamesHard']
                 
                 # Get the preferred games without 'no' entries and join them with a comma
-                preferred_games = [entry.strip() for entry in preferred_games.split(',') if entry.strip().lower() != 'no']
+                preferred_games = [entry.strip() for entry in preferred_games.split(',') if str(entry.strip().lower()) != 'no']
                 preferred_games = ', '.join(preferred_games)
 
                 # Sixth line: Study field and student status if is student
                 study_field = self.df.loc[member, 'StudyField']
                 study_field_other = self.df.loc[member, 'StudyFieldOther']
-                if study_field.lower() == 'other':
+                if str(study_field.lower()) == 'other':
                     study_field = study_field_other
                 is_student = self.df.loc[member, 'IsStudent']
 
@@ -130,7 +130,7 @@ class Visualization:
                 profile_text += f"Git Familiarity: {git} and in Python they are {python}." + "\n"
                 profile_text += f"They prefer a {preferred_challenge} challenge and would like to work on {preferred_games}." + "\n"
 
-                if is_student.lower() == 'yes' and study_field is not None:
+                if str(is_student.lower()) == 'yes' and study_field is not None:
                     profile_text += f"Their field of study is {study_field}."
 
                 lines = profile_text.split('\n')
