@@ -717,7 +717,7 @@ class GUI:
     def load_different_survey(self):
         try:
             filepath = select_file()
-            if filepath.endswith('.csv'):
+            if filepath and filepath.endswith('.csv'):
                 self.data_processor.reload_survey(filepath)
                 self.teamforming = TeamForming(self.data_processor)
                 self.visualization = Visualization(self.data_processor)
@@ -731,7 +731,7 @@ class GUI:
     def dnd_different_survey(self, event):
         try:
             filepath = event.data.strip('{}')
-            if filepath.endswith('.csv'):
+            if filepath and filepath.endswith('.csv'):
                 self.data_processor.reload_survey(filepath)
                 self.teamforming = TeamForming(self.data_processor)
                 self.visualization = Visualization(self.data_processor)

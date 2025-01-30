@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
-import sys
 
 def select_file():
     # Create a temporary file dialog to select a file
@@ -10,9 +9,8 @@ def select_file():
         file_path = askopenfilename(title="Select a Questionnaire CSV file", filetypes=[("CSV files", "*.csv")])
         temp_root.destroy()
 
-        if file_path.endswith('.csv'):
+        if file_path != None and file_path.endswith('.csv'):
             return file_path
 
     except Exception as e:
         print(f"Error selecting file: {e}")
-        sys.exit(1)

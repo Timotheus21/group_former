@@ -136,7 +136,6 @@ class TeamForming:
         for team in teams:
             for member in team[:]:
                 try:
-                    name = self.df.loc[member, 'Name']
                     group_importance = self.df.loc[member, 'GroupImportance']
                     known_participants = self.df.loc[member, 'KnownParticipants']
                     motivations = self.df.loc[member, 'Motivations']
@@ -148,7 +147,7 @@ class TeamForming:
                         known_participants = []
 
                     # Check for high GroupImportance values and KnownParticipants
-                    if group_importance.lower() == 'completely' and 'joining friends that participate: completely' in motivations.lower():
+                    if str(group_importance.lower()) == 'completely' and 'joining friends that participate: completely' in str(motivations.lower()):
 
                         # Place the member in a team with known participants
                         for participant in known_participants:
@@ -161,7 +160,7 @@ class TeamForming:
                                             break
 
                     # Check for the other extreme when they want to meet new people
-                    elif 'meeting new people: completely' in motivations.lower() or 'meeting new people: to a large extent' in motivations.lower():
+                    elif 'meeting new people: completely' in str(motivations.lower()) or 'meeting new people: to a large extent' in str(motivations.lower()):
                         
                         current_team = team
                         best_team = current_team
@@ -194,6 +193,7 @@ class TeamForming:
     def generate_teams(self, desired_size, min_size, max_size):
         # Calculate individual scores for all members
         individual_scores = self.calculate_individual_scores()
+
         # Get a list of all members
         members = list(self.df.index)
 
