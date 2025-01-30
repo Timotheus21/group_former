@@ -196,10 +196,10 @@ class GUI:
 
         # Create a parent frame inside the canvas to hold both weights_frame and teamsizing_frame
         self.inner_frame = ttk.Frame(self.canvas)
-        self.canvas.create_window((0, 0), window=self.inner_frame, anchor="n")
+        self.canvas.create_window((0, 0), window=self.inner_frame, anchor="nw")
 
         self.weights_frame = ttk.LabelFrame(self.inner_frame, text="Adjust Weights and Attributes")
-        self.weights_frame.grid(row=0, column=0, padx=10, pady=10, sticky="ew")
+        self.weights_frame.grid(row=0, column=0, padx=10, pady=10, sticky="ne")
 
         # Bind the canvas to the scrollbar
         self.inner_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
@@ -290,7 +290,7 @@ class GUI:
 
         # Create a frame for the team sizing
         self.teamsizing_frame = ttk.LabelFrame(self.inner_frame, text="Team Sizing")
-        self.teamsizing_frame.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
+        self.teamsizing_frame.grid(row=0, column=1, padx=10, pady=10, sticky="ne")
 
         total_members = f"Total Members: {len(self.data_processor.get_data())}"
 
@@ -367,6 +367,33 @@ class GUI:
         self.remaining_members_label = ttk.Label(self.teamsizing_frame, text=remaining_members, font=(self.helvetica, 11))
         self.remaining_members_label.grid(row=4, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W)
 
+        # Create a Frame for the Drag and Drop area
+        self.drag_frame = ttk.Frame(self.inner_frame, style='Button.TFrame')
+        self.drag_frame.grid(row=0, column=2, padx=10, pady=10, sticky="ne")
+
+        # Create a Label for the Drag and Drop area
+        self.drag_label = ttk.Label(self.drag_frame, text="Drag and Drop a CSV file here", font=(self.helvetica, 11))
+        self.drag_label.pack(padx=10, pady=10)
+
+        # Enable Drag and Drop functionality for the Frame
+        self.drag_frame.drop_target_register(DND_FILES)
+        self.drag_frame.dnd_bind('<<Drop>>', self.dnd_different_survey)
+
+        # Button to load a different survey
+        load_survey_button = ttk.Button(
+            self.drag_frame,
+            text="Select Survey",
+            style='Buttonframe.TButton',
+            command=lambda: self.load_different_survey()
+            )
+        load_survey_button.pack(padx=10, pady=10)
+        self.tooltip(load_survey_button, "Load a different survey to form teams.", self.helvetica)
+
+
+
+
+
+
         self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
 
         # Frame to hold team buttons on the right
@@ -381,7 +408,6 @@ class GUI:
         self.bottom_frame.columnconfigure(2, weight=1, minsize=110)
         self.bottom_frame.columnconfigure(3, weight=1, minsize=110)
         self.bottom_frame.columnconfigure(4, weight=1, minsize=110)
-        self.bottom_frame.columnconfigure(5, weight=1, minsize=110)
 
         # Load the images for the buttons, first integer is width, second is height
         self.start_button = self.load_image("images/generate.png", 110, 40)
@@ -439,16 +465,6 @@ class GUI:
             )
         show_config_button.grid(row=0, column=4, padx=10, pady=10, sticky='ew')
         self.tooltip(show_config_button, "Show the current configuration of the data processor.", self.helvetica)
-
-        # Button to load a different survey
-        load_survey_button = ttk.Button(
-            self.bottom_frame,
-            text="Load Survey",
-            style='Buttonframe.TButton',
-            command=lambda: self.load_different_survey()
-            )
-        load_survey_button.grid(row=0, column=5, padx=10, pady=10, sticky='ew')
-        self.tooltip(load_survey_button, "Load a different survey to form teams.", self.helvetica)
 
     def create_checkbutton(self, row, attribute):
         # Create BooleanVar for the Checkbutton
@@ -690,7 +706,7 @@ class GUI:
     def update_remaining_members_label(self, remaining_members):
         self.remaining_members_label.config(text=f"Remaining Members: {remaining_members}")
 
-    # Method to load a different survey and update the GUI
+    # Method to load a different survey via select and update the GUI
     def load_different_survey(self):
         try:
             filepath = select_file()
@@ -698,7 +714,23 @@ class GUI:
                 self.data_processor.reload_survey(filepath)
                 self.teamforming = TeamForming(self.data_processor)
                 self.visualization = Visualization(self.data_processor)
+
                 self.update_gui()
+
+        except Exception as e:
+            print(f"Error loading different survey: {e}")
+
+    # Method to load a different survey via drag and drop and update the GUI
+    def dnd_different_survey(self, event):
+        try:
+            filepath = event.data.strip('{}')
+            if filepath:
+                self.data_processor.reload_survey(filepath)
+                self.teamforming = TeamForming(self.data_processor)
+                self.visualization = Visualization(self.data_processor)
+
+                self.update_gui()
+
         except Exception as e:
             print(f"Error loading different survey: {e}")
 

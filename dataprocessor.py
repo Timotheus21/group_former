@@ -74,7 +74,9 @@ class DataProcessor:
         try:
             if not os.path.exists(filepath):
                 raise FileNotFoundError(f"File not found: {filepath}")
+            
             return pd.read_csv(filepath)
+        
         except Exception as e:
             print(f"Error loading CSV file: {e}")
             sys.exit()
