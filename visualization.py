@@ -63,22 +63,22 @@ class Visualization:
 
         # Generate layout and draw the graph
         pos = nx.spring_layout(G)
-        edges = G.edges(data=True)
+        edges = G.edges(data = True)
         weights = [edge[2]['weight'] for edge in edges]
 
         # Create a figure with two subplots: one for the graph and one for the team profiles
-        plt.figure(figsize=(16, 12), edgecolor=self.main_color)
-        plt.subplot(1, 2, 2, facecolor=self.secondary_color)  # Graph on the right
+        plt.figure(figsize = (16, 12), edgecolor = self.main_color)
+        plt.subplot(1, 2, 2, facecolor = self.secondary_color)  # Graph on the right
 
         # Draw nodes
-        nx.draw_networkx_nodes(G, pos, node_color='lightblue')
+        nx.draw_networkx_nodes(G, pos, node_color = 'lightblue')
 
         # Draw edges
-        nx.draw_networkx_edges(G, pos, edge_color=weights, edge_cmap=plt.cm.Blues, width=2)
+        nx.draw_networkx_edges(G, pos, edge_color = weights, edge_cmap = plt.cm.Blues, width = 2)
 
         # Draw labels
         for node, (x, y) in pos.items():
-            plt.text(x, y, node, fontsize=14, fontweight='bold', ha='center')
+            plt.text(x, y, node, fontsize = 14, fontweight = 'bold', ha = 'center')
 
         plt.subplot(1, 2, 1)  # Profiles on the left
         y_offset = 1.0
@@ -141,9 +141,9 @@ class Visualization:
                 for line in lines:
                     # Highlight the team member's name
                     if line.startswith(name):
-                        plt.text(0.02, y_offset, line, fontsize=13, fontweight='bold', verticalalignment='top', horizontalalignment='left', color=self.main_color)
+                        plt.text(0.02, y_offset, line, fontsize = 13, fontweight = 'bold', verticalalignment = 'top', horizontalalignment = 'left', color = self.main_color)
                     else:
-                        plt.text(0.02, y_offset, line, fontsize=12, verticalalignment='top', horizontalalignment='left')
+                        plt.text(0.02, y_offset, line, fontsize = 12, verticalalignment = 'top', horizontalalignment = 'left')
                     y_offset -= 0.04  # Adjust spacing
                 y_offset -= 0.06  # Space between teams
 
@@ -154,7 +154,7 @@ class Visualization:
     def calculate_similarity(member1, member2, homogenous_attributes):
         # Calculate similarity based on common answers
         common_entries = 0
-        
+
         for attr in homogenous_attributes:
             if member1[attr] == member2[attr]:
                 common_entries += 1

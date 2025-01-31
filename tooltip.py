@@ -62,7 +62,7 @@ class Tooltip:
         tw.wm_geometry(f"+{x}+{y}")
         
         # Create and pack the label in the tooltip window
-        label = tk.Label(tw, text=self.text, background="#d4c9ef", relief="solid", borderwidth=0.5, font=(self.font_settings, 9, "normal"))
+        label = tk.Label(tw, text = self.text, background = "#d4c9ef", relief = "solid", borderwidth = 0.5, font = (self.font_settings, 9, "normal"))
         label.pack(ipadx=1)
 
     # Hide the tooltip window when the user moves the cursor away from the widget and cancel the delay
