@@ -48,13 +48,16 @@ class Visualization:
 
         # Add edges based on similar answers
         for team in teams:
-            for i, member in enumerate(team):
+            for member_index, member in enumerate(team):
                 name = self.df.loc[member, 'Name']
-                for j, other_member in enumerate(team):
-                    if i >= j:
+
+                for other_member_index, other_member in enumerate(team):
+                    if member_index >= other_member_index:
                         continue
+
                     other_name = self.df.loc[other_member, 'Name']
                     similarity = Visualization.calculate_similarity(self.df.loc[member], self.df.loc[other_member], self.data_processor.get_homogenous_attributes())
+
                     if similarity > 0:  # Adjust threshold as needed
                         G.add_edge(name, other_name, weight=similarity)
 
@@ -151,7 +154,9 @@ class Visualization:
     def calculate_similarity(member1, member2, homogenous_attributes):
         # Calculate similarity based on common answers
         common_entries = 0
+        
         for attr in homogenous_attributes:
             if member1[attr] == member2[attr]:
                 common_entries += 1
+
         return common_entries

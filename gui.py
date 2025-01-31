@@ -33,14 +33,15 @@ from selector import select_file
 class GUI:
     def __init__(self, root, data_processor, teamforming, visualization, tooltip):
         self.root = root
-        self.main_color = '#6f12c0'
-        self.secondary_color = '#d4c9ef'
-        self.scrollable_frame_color = '#f0f0f0'
-        self.root.configure(bg=self.main_color)
         self.data_processor = data_processor
         self.teamforming = teamforming
         self.visualization = visualization
         self.tooltip = tooltip
+
+        self.main_color = '#6f12c0'
+        self.secondary_color = '#d4c9ef'
+        self.scrollable_frame_color = '#f0f0f0'
+        self.root.configure(bg=self.main_color)
 
         # Set the font for the GUI
         self.pixeltype = Font(file= "fonts/Pixeltype.ttf", family="Pixeltype", size=22)
@@ -66,6 +67,7 @@ class GUI:
         self.create_widgets()
 
     def create_widgets(self):
+        # Initialize dictionaries to store GUI elements for later updates
         self.checkbox_vars = {} # Store the checkbox variables for later updates
         self.checkbuttons = {} # Store the checkbuttons for later updates
         self.emphasis_buttons = {} # Store the emphasis buttons for later updates
@@ -168,13 +170,13 @@ class GUI:
 
         self.help_button = tk.Button(
             self.root,
-            image=self.questionmark,
-            borderwidth=0,
-            background=self.main_color,
-            width=20,
-            height=25,
-            relief="raised",
-            command= self.toogle_top_frame
+            image = self.questionmark,
+            borderwidth = 0,
+            background = self.main_color,
+            width = 20,
+            height = 25,
+            relief = "raised",
+            command = self.toogle_top_frame
         )
         self.help_button.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
         self.tooltip(self.help_button, "Toggle the program explanation.", self.helvetica)
@@ -219,9 +221,10 @@ class GUI:
             # Button to increase weight
             increase_button = ttk.Button(
                 self.weights_frame,
-                text="+",
-                style='Adjust.TButton',
-                command=lambda a=attribute: self.adjust_weight(a, 1))
+                text = "+",
+                style = 'Adjust.TButton',
+                command = lambda a=attribute: self.adjust_weight(a, 1)
+                )
             increase_button.grid(row=index, column=3, padx=5, pady=5)
             self.tooltip(increase_button, "Increase the weight of this attribute.", self.helvetica)
 
@@ -230,9 +233,10 @@ class GUI:
             # Button to decrease weight
             decrease_button = ttk.Button(
                 self.weights_frame,
-                text="-",
-                style='Adjust.TButton',
-                command=lambda a=attribute: self.adjust_weight(a, -1))
+                text = "-",
+                style = 'Adjust.TButton',
+                command = lambda a=attribute: self.adjust_weight(a, -1)
+                )
             decrease_button.grid(row=index, column=4, padx=5, pady=5)
             self.tooltip(decrease_button, "Decrease the weight of this attribute.", self.helvetica)
 
@@ -266,9 +270,10 @@ class GUI:
             # Create Checkbuttons for the homogenous and heterogenous attributes
             self.checkbutton = ttk.Button(
                 row_frame,
-                style='Custom.TButton' if self.checkbox_vars[attribute].get() else 'Diverse.TButton',
-                text="Match" if self.checkbox_vars[attribute].get() else "Diverse",
-                command=lambda a=attribute: self.handle_checkbox_toggle(a))
+                style = 'Custom.TButton' if self.checkbox_vars[attribute].get() else 'Diverse.TButton',
+                text = "Match" if self.checkbox_vars[attribute].get() else "Diverse",
+                command = lambda a=attribute: self.handle_checkbox_toggle(a)
+                )
             self.checkbutton.grid(row=row, column=0, padx=5, pady=5, sticky=tk.W)
             self.tooltip(self.checkbutton, "Toggle between matching and differentiating this attribute.", self.helvetica)
 
@@ -276,10 +281,11 @@ class GUI:
 
             self.remove_checkbutton = ttk.Checkbutton(
                 self.weights_frame,
-                variable=self.remove_checkbox_vars[attribute],
-                onvalue=True,
-                offvalue=False,
-                command=lambda a=attribute: self.handle_remove_toggle(a))
+                variable = self.remove_checkbox_vars[attribute],
+                onvalue = True,
+                offvalue = False,
+                command = lambda a=attribute: self.handle_remove_toggle(a)
+                )
             self.remove_checkbutton.grid(row=row, column=0, padx=5, pady=5, sticky=tk.W)
             self.tooltip(self.remove_checkbutton, "Toggle between removing and adding this attribute.", self.helvetica)
 
@@ -310,12 +316,13 @@ class GUI:
 
         self.team_size_entry = ttk.Entry(
             self.teamsizing_frame,
-            textvariable=self.team_size_var,
-            justify=tk.CENTER,
-            font=(self.helvetica, 11),
-            width=5,
-            validate='key',
-            validatecommand=validate_team_size)
+            textvariable = self.team_size_var,
+            justify = tk.CENTER,
+            font = (self.helvetica, 11),
+            width = 5,
+            validate = 'key',
+            validatecommand = validate_team_size
+            )
         self.team_size_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
         self.tooltip(self.team_size_entry, "The first teams will be generated with this size.", self.helvetica)
 
@@ -325,16 +332,20 @@ class GUI:
 
         # Entry for the maximum number of team members
         self.max_team_size_var = tk.StringVar(value=5)
+
+        # Validate the maximum team size entry with a custom validation method and trace the variable for changes
         self.max_team_size_var.trace_add("write", self.validate_entries)
         validate_max_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
+
         self.max_teams_entry = ttk.Entry(
             self.teamsizing_frame,
-            textvariable=self.max_team_size_var,
-            justify=tk.CENTER,
-            font=(self.helvetica, 11),
-            width=5,
-            validate='key',
-            validatecommand=validate_max_team_size)
+            textvariable = self.max_team_size_var,
+            justify = tk.CENTER,
+            font = (self.helvetica, 11),
+            width = 5,
+            validate = 'key',
+            validatecommand = validate_max_team_size
+            )
         self.max_teams_entry.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
         self.tooltip(self.max_teams_entry, "Teams will not exceed this size. Adding remaining members to teams below this size.\n"+
                      "If the desired team size is greater than this, the maximum team size will be adjusted.", self.helvetica)
@@ -352,12 +363,13 @@ class GUI:
 
         self.min_teams_entry = ttk.Entry(
             self.teamsizing_frame,
-            textvariable=self.min_team_size_var,
-            justify=tk.CENTER,
-            font=(self.helvetica, 11),
-            width=5,
-            validate='key',
-            validatecommand=validate_min_team_size)
+            textvariable = self.min_team_size_var,
+            justify = tk.CENTER,
+            font = (self.helvetica, 11),
+            width = 5,
+            validate = 'key',
+            validatecommand = validate_min_team_size
+            )
         self.min_teams_entry.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
         self.tooltip(self.min_teams_entry, "Teams will not be smaller than this size.\n"+
                      "If the desired team size is smaller than this, the minimum team size will be adjusted.", self.helvetica)
@@ -389,13 +401,13 @@ class GUI:
         # Button to load a different survey
         self.select_button = tk.Button(
             self.drag_frame,
-            image=self.select,
-            borderwidth=0,
-            background=self.secondary_color,
-            width=30,
-            height=35,
-            relief="raised",
-            command=lambda: self.load_different_survey()
+            image = self.select,
+            borderwidth = 0,
+            background = self.secondary_color,
+            width = 30,
+            height = 35,
+            relief = "raised",
+            command = lambda: self.load_different_survey()
             )
         self.select_button.pack(padx=10, pady=10)
         self.tooltip(self.select_button, "Load a different survey to form teams.", self.helvetica)
@@ -422,13 +434,13 @@ class GUI:
         # Button to generate teams
         self.generate_button = tk.Button(
             self.bottom_frame,
-            image=self.start_button,
-            borderwidth=0,
-            background=self.secondary_color,
-            width=110,
-            height=40,
-            relief="raised",
-            command=lambda: self.generate_teams()
+            image = self.start_button,
+            borderwidth = 0,
+            background = self.secondary_color,
+            width = 110,
+            height = 40,
+            relief = "raised",
+            command = lambda: self.generate_teams()
             )
         self.generate_button.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
         self.tooltip(self.generate_button, "Generate teams based on the current configuration.", self.helvetica)
@@ -436,9 +448,9 @@ class GUI:
         # Button to save current weights
         save_weights_button = ttk.Button(
             self.bottom_frame,
-            text="Save Weights",
-            style='Buttonframe.TButton',
-            command=lambda: self.data_processor.save_weights()
+            text = "Save Weights",
+            style = 'Buttonframe.TButton',
+            command = lambda: self.data_processor.save_weights()
             )
         save_weights_button.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
         self.tooltip(save_weights_button, "Save the current weights to a CSV file.", self.helvetica)
@@ -446,9 +458,9 @@ class GUI:
         # Button to load custom weights
         load_custom_weights_button = ttk.Button(
             self.bottom_frame,
-            text="Load Weights",
-            style='Buttonframe.TButton',
-            command=lambda: self.load_weights("custom")
+            text = "Load Weights",
+            style = 'Buttonframe.TButton',
+            command = lambda: self.load_weights("custom")
             )
         load_custom_weights_button.grid(row=0, column=2, padx=10, pady=10, sticky='ew')
         self.tooltip(load_custom_weights_button, "Load custom weights from a CSV file.", self.helvetica)
@@ -456,9 +468,9 @@ class GUI:
         # Button to load standard weights
         load_std_weights_button = ttk.Button(
             self.bottom_frame,
-            text="Reset Weights",
-            style='Buttonframe.TButton',
-            command=lambda: self.load_weights("standard")
+            text = "Reset Weights",
+            style = 'Buttonframe.TButton',
+            command = lambda: self.load_weights("standard")
             )
         load_std_weights_button.grid(row=0, column=3, padx=10, pady=10, sticky='ew')
         self.tooltip(load_std_weights_button, "Load standard weights from a CSV file.", self.helvetica)
@@ -466,9 +478,9 @@ class GUI:
         # Button to show the current configuration
         show_config_button = ttk.Button(
             self.bottom_frame,
-            text="Settings",
-            style='Buttonframe.TButton',
-            command=lambda: Config(self.root, self.data_processor, self, self.helvetica)
+            text = "Settings",
+            style = 'Buttonframe.TButton',
+            command = lambda: Config(self.root, self.data_processor, self, self.helvetica)
             )
         show_config_button.grid(row=0, column=4, padx=10, pady=10, sticky='ew')
         self.tooltip(show_config_button, "Show the current configuration of the data processor.", self.helvetica)
@@ -480,9 +492,10 @@ class GUI:
         # Create and configure the Checkbutton
         checkbutton = ttk.Button(
             self.weights_frame,
-            style='Custom.TButton' if self.checkbox_vars[attribute].get() else 'Diverse.TButton',
-            text="Match" if self.checkbox_vars[attribute].get() else "Diverse",
-            command=lambda: self.handle_checkbox_toggle(attribute))
+            style = 'Custom.TButton' if self.checkbox_vars[attribute].get() else 'Diverse.TButton',
+            text = "Match" if self.checkbox_vars[attribute].get() else "Diverse",
+            command = lambda: self.handle_checkbox_toggle(attribute)
+            )
         checkbutton.grid(row=row, column=5, padx=5, pady=5)
         self.tooltip(checkbutton, "Toggle between matching and differentiating this attribute.", self.helvetica)
 
@@ -490,10 +503,11 @@ class GUI:
 
         remove_checkbutton = ttk.Checkbutton(
             self.weights_frame,
-            variable=self.remove_checkbox_vars[attribute],
-            onvalue=True,
-            offvalue=False,
-            command=lambda a=attribute: self.handle_remove_toggle(a))
+            variable = self.remove_checkbox_vars[attribute],
+            onvalue = True,
+            offvalue = False,
+            command = lambda a=attribute: self.handle_remove_toggle(a)
+            )
         remove_checkbutton.grid(row=row, column=0, padx=5, pady=5)
         self.tooltip(remove_checkbutton, "Toggle between removing and adding this attribute.", self.helvetica)
 
@@ -505,9 +519,10 @@ class GUI:
     def create_emphasis_button(self, frame, row, column, attribute):
         self.emphasis_button = ttk.Button(
             frame,
-            text="Emphasize",
-            style='Custom.TButton',
-            command=lambda: self.handle_emphasis_toggle(attribute))
+            text = "Emphasize",
+            style = 'Custom.TButton',
+            command = lambda: self.handle_emphasis_toggle(attribute)
+            )
         self.emphasis_button.grid(row=row, column=column, padx=5, pady=5)
         self.tooltip(self.emphasis_button, "Emphasize this attribute in team formation.", self.helvetica)
 
@@ -525,6 +540,7 @@ class GUI:
     def load_image(self, filepath, width, height):
         og_img = Image.open(filepath)
         resized_img = og_img.resize((width, height), Image.LANCZOS)
+
         return ImageTk.PhotoImage(resized_img)
 
     # Method to show feedback when validating entries
@@ -542,6 +558,7 @@ class GUI:
 
             if not min_size or not max_size or not desired_size:
                 self.generate_button.config(state=tk.DISABLED)
+
                 return
 
             if min_size > 0 and max_size > 0 and desired_size > 0:
@@ -560,9 +577,11 @@ class GUI:
                 if entry_widget in self.feedback_labels:
                     self.feedback_labels[entry_widget].grid_forget()
                     del self.feedback_labels[entry_widget]
+
                 return True
             else:
                 self.show_feedback(entry_widget, "Positive numbers only", 'red')
+
                 return False
 
         if entry_widget in self.feedback_labels:
@@ -571,6 +590,7 @@ class GUI:
 
         return True
 
+    # Method to change styles of the matching and diverse buttons and update the data processor
     def handle_checkbox_toggle(self, attribute):
         is_homogeneous = self.checkbox_vars[attribute].get()
         self.checkbox_vars[attribute].set(not is_homogeneous)
@@ -585,8 +605,10 @@ class GUI:
             self.checkbuttons[attribute].config(style='Diverse.TButton')
             self.data_processor.add_heterogenous_attribute(attribute)
 
+    # Method to change the style and add the emphasized attribute to the data processor
     def handle_emphasis_toggle(self, attribute):
         emphasized_attributes = self.data_processor.get_emphasized_attributes()
+
         if attribute not in emphasized_attributes:
             if len(emphasized_attributes) >= self.max_emphasis:
 
@@ -604,6 +626,7 @@ class GUI:
             self.emphasis_buttons[attribute].config(style='Custom.TButton')
             self.emphasis_attributes[attribute] = False
 
+    # Method to change the style and state of the buttons when removing an attribute
     def handle_remove_toggle(self, attribute):
             if not self.remove_checkbox_vars[attribute].get():
                 self.data_processor.remove_attribute(attribute)
@@ -615,7 +638,9 @@ class GUI:
 
                 if attribute in self.weight_labels:
                     self.weight_labels[attribute].config(foreground='gray', font=(self.helvetica, 11,'overstrike'))
+
                 self.set_attribute_button_state(attribute, state=tk.DISABLED)
+
             else:
                 if self.checkbox_vars[attribute].get():
                     self.data_processor.add_homogenous_attribute(attribute)
@@ -626,7 +651,9 @@ class GUI:
                 self.attribute_labels[attribute].config(foreground='black', font=(self.helvetica, 11))
                 if attribute in self.weight_labels:
                     self.weight_labels[attribute].config(foreground='black', font=(self.helvetica, 11))
+
                 self.set_attribute_button_state(attribute, state=tk.NORMAL)
+
                 if self.checkbox_vars[attribute].get():
                     self.checkbuttons[attribute].config(style='Custom.TButton')
                 else:
@@ -646,6 +673,7 @@ class GUI:
     def set_attribute_button_state(self, attribute, state):
         self.checkbuttons[attribute].config(state=state)
         self.emphasis_buttons[attribute].config(state=state)
+
         if attribute in self.increase_buttons:
             self.increase_buttons[attribute].config(state=state)
         if attribute in self.decrease_buttons:
@@ -656,36 +684,40 @@ class GUI:
         if self.program_explanation and self.program_explanation.winfo_ismapped():
             self.program_explanation.config(text="")
             self.program_explanation = None
+
         elif not self.program_explanation:
             # Add a label for the overall program explanation
             self.program_explanation = ttk.Label(
                 self.top_frame,
-                text=(f"Welcome to the Group Former! This program helps you form teams based on various attributes.\n"
+                text = (f"Welcome to the Group Former! This program helps you form teams based on various attributes.\n"
                     f"Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
                     f"Select whether the following attributes should be homogenous or heterogenous within teams. "
                     f"You can remove attributes by unchecking the remove box. Or you can emphasize up to {self.max_emphasis} of them, all with the corresponding buttons.\n"
                     f"You can also adjust the desired teamsizes. Click 'Generate Teams' to create teams based on the current configuration."),
-                background=self.main_color,
-                foreground='white',
-                wraplength=900,
-                font=(self.helvetica, 12, "bold")
+                background = self.main_color,
+                foreground = 'white',
+                wraplength = 900,
+                font = (self.helvetica, 12, "bold")
                 )
             self.program_explanation.grid(row=0, column=0)
 
-    # Method to adjust weight of an skill attribute
+    # Method to adjust weight of an skill attribute and update in GUI and DataProcessor
     def adjust_weight(self, attribute, delta=0):
         try:
             current_weight = self.weight_vars[attribute].get()
             new_weight = current_weight + delta
+
             if new_weight < 0:
                 new_weight = 0
             self.weight_vars[attribute].set(new_weight)
             self.weight_labels[attribute].config(text=int(new_weight))
             self.data_processor.custom_weights[attribute] = new_weight
             self.update_current_weights()
+
         except Exception as e:
             print(f"Error adjusting weight for {attribute}: {e}")
 
+    # Method to load weights from the DataProcessor and update the GUI depending on the weight type
     def load_weights(self, weight_type):
         try:
             if weight_type == 'standard':
@@ -693,6 +725,7 @@ class GUI:
                 self.data_processor.weights = self.data_processor.load_weights(self.data_processor.STD_WEIGHT_FILE)
                 # Update the custom weights to match the standard weights
                 self.data_processor.custom_weights = self.data_processor.weights.copy()
+
             elif weight_type == 'custom':
                 # Load custom weights from the DataProcessor
                 self.data_processor.custom_weights = self.data_processor.load_weights(self.data_processor.CUSTOM_WEIGHT_FILE)
@@ -702,6 +735,7 @@ class GUI:
                 self.weight_vars[attribute].set(weight)
                 self.weight_labels[attribute].config(text=int(weight))
             self.update_current_weights()
+
         except Exception as e:
             print(f"Error loading {weight_type} weights: {e}")
 
@@ -753,8 +787,8 @@ class GUI:
             for label in self.feedback_labels.values():
                 label.grid_forget()
                 del label
-            self.feedback_labels.clear()
 
+            self.feedback_labels.clear()
             feedback_shown = False
 
             # Clear the team buttons frame
@@ -805,11 +839,12 @@ class GUI:
             for idx, team in enumerate(self.teams):
                 button = ttk.Button(
                     self.team_buttons_frame,
-                    style='Toggle.TButton',
-                    text=f"Visualize Team {idx + 1}",
-                    command=lambda t=team: self.visualize_teams(t)
+                    style = 'Toggle.TButton',
+                    text = f"Visualize Team {idx + 1}",
+                    command = lambda t=team: self.visualize_teams(t)
                     )
                 button.pack(fill="x", padx=5, pady=5)
+
         except Exception as e:
             print(f"Error generating teams: {e}")
 
@@ -817,5 +852,6 @@ class GUI:
     def visualize_teams(self, team):
         try:
             self.visualization.visualize([team])
+            
         except Exception as e:
             print(f"Error visualizing teams: {e}")
