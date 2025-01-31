@@ -40,8 +40,8 @@ class Config:
         config_window.geometry("400x300")
 
         self.canvas = tk.Canvas(config_window)
-        scrollbar = ttk.Scrollbar(config_window, orient="vertical", command=self.canvas.yview)
-        scrollable_frame = ttk.Frame(self.canvas, style='Custom.TFrame', padding="3 3 12 12")
+        scrollbar = ttk.Scrollbar(config_window, orient = "vertical", command = self.canvas.yview)
+        scrollable_frame = ttk.Frame(self.canvas, style = 'Custom.TFrame', padding = "3 3 12 12")
 
         scrollable_frame.bind(
             "<Configure>",
@@ -50,8 +50,8 @@ class Config:
             )
         )
 
-        self.canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        self.canvas.configure(yscrollcommand=scrollbar.set)
+        self.canvas.create_window((0, 0), window = scrollable_frame, anchor = "nw")
+        self.canvas.configure(yscrollcommand = scrollbar.set)
 
         self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
 
@@ -63,70 +63,75 @@ class Config:
 
         config_window.protocol("WM_DELETE_WINDOW", on_close)
 
-        homogenous_attributes = self.data_processor.get_homogenous_attributes()
-        heterogenous_attributes = self.data_processor.get_heterogenous_attributes()
-        removed_attributes = self.data_processor.get_removed_attributes()
+        homogenous_attributes = sorted(self.data_processor.get_homogenous_attributes())
+        heterogenous_attributes = sorted(self.data_processor.get_heterogenous_attributes())
+        removed_attributes = sorted(self.data_processor.get_removed_attributes())
         normalized_weights = self.data_processor.get_normalized_current_weights()
-        emphasized_attributes = self.data_processor.get_emphasized_attributes()
+        emphasized_attributes = sorted(self.data_processor.get_emphasized_attributes())
 
         font_settings = (self.font_settings, 11)
         main_color = '#6f12c0'
 
-        homogenous_label = ttk.Label(scrollable_frame, text="Homogenous Attributes:", foreground=main_color, font=font_settings)
-        homogenous_label.pack(anchor='w', padx=10, pady=5)
+        # Display the current homogeneous attributes
+        homogenous_label = ttk.Label(scrollable_frame, text = "Homogenous Attributes:", foreground = main_color, font = font_settings)
+        homogenous_label.pack(anchor = 'w', padx = 10, pady = 5)
 
         for attribute in homogenous_attributes:
             display_attribute = self.format_attribute_for_display(attribute)
-            attribute_label = ttk.Label(scrollable_frame, text=display_attribute, foreground=main_color, font=font_settings)
-            attribute_label.pack(anchor='w', padx=20)
+            attribute_label = ttk.Label(scrollable_frame, text = display_attribute, foreground = main_color, font = font_settings)
+            attribute_label.pack(anchor = 'w', padx = 20)
 
         if not homogenous_attributes:
-            empty_label = ttk.Label(scrollable_frame, text="No homogenous attributes found", foreground=main_color, font=font_settings)
-            empty_label.pack(anchor='w', padx=20)
+            empty_label = ttk.Label(scrollable_frame, text = "No homogenous attributes found", foreground = main_color, font = font_settings)
+            empty_label.pack(anchor = 'w', padx = 20)
 
-        heterogenous_label = ttk.Label(scrollable_frame, text="Heterogenous Attributes:", foreground=main_color, font=font_settings)
-        heterogenous_label.pack(anchor='w', padx=10, pady=5)
+        # Display the current heterogenous attributes
+        heterogenous_label = ttk.Label(scrollable_frame, text = "Heterogenous Attributes:", foreground = main_color, font = font_settings)
+        heterogenous_label.pack(anchor = 'w', padx = 10, pady = 5)
 
         for attribute in heterogenous_attributes:
             display_attribute = self.format_attribute_for_display(attribute)
-            attribute_label = ttk.Label(scrollable_frame, text=display_attribute, foreground=main_color, font=font_settings)
-            attribute_label.pack(anchor='w', padx=20)
+            attribute_label = ttk.Label(scrollable_frame, text = display_attribute, foreground = main_color, font = font_settings)
+            attribute_label.pack(anchor = 'w', padx = 20)
 
         if not heterogenous_attributes:
-            empty_label = ttk.Label(scrollable_frame, text="No heterogenous attributes found", foreground=main_color, font=font_settings)
-            empty_label.pack(anchor='w', padx=20)
+            empty_label = ttk.Label(scrollable_frame, text = "No heterogenous attributes found", foreground=main_color, font=font_settings)
+            empty_label.pack(anchor = 'w', padx = 20)
 
-        emphasized_label = ttk.Label(scrollable_frame, text="Emphasized Attributes:", foreground=main_color, font=font_settings)
-        emphasized_label.pack(anchor='w', padx=10, pady=5)
+        # Display the current emphasized attributes
+        emphasized_label = ttk.Label(scrollable_frame, text = "Emphasized Attributes:", foreground = main_color, font = font_settings)
+        emphasized_label.pack(anchor = 'w', padx = 10, pady = 5)
 
         for attribute in emphasized_attributes:
             display_attribute = self.format_attribute_for_display(attribute)
-            attribute_label = ttk.Label(scrollable_frame, text=display_attribute, foreground=main_color, font=font_settings)
-            attribute_label.pack(anchor='w', padx=20)
+            attribute_label = ttk.Label(scrollable_frame, text=display_attribute, foreground = main_color, font = font_settings)
+            attribute_label.pack(anchor = 'w', padx = 20)
 
         if not emphasized_attributes:
-            empty_label = ttk.Label(scrollable_frame, text="No emphasized attributes found", foreground=main_color, font=font_settings)
-            empty_label.pack(anchor='w', padx=20)
+            empty_label = ttk.Label(scrollable_frame, text = "No emphasized attributes found", foreground = main_color, font = font_settings)
+            empty_label.pack(anchor = 'w', padx = 20)
 
-        removed_label = ttk.Label(scrollable_frame, text="Removed Attributes:", foreground=main_color, font=font_settings)
-        removed_label.pack(anchor='w', padx=10, pady=5)
+        # Display the current removed attributes
+        removed_label = ttk.Label(scrollable_frame, text = "Removed Attributes:", foreground = main_color, font = font_settings)
+        removed_label.pack(anchor = 'w', padx = 10, pady = 5)
 
         for attribute in removed_attributes:
             display_attribute = self.format_attribute_for_display(attribute)
-            attribute_label = ttk.Label(scrollable_frame, text=display_attribute, foreground=main_color, font=font_settings)
-            attribute_label.pack(anchor='w', padx=20)
+            attribute_label = ttk.Label(scrollable_frame, text = display_attribute, foreground = main_color, font = font_settings)
+            attribute_label.pack(anchor = 'w', padx = 20)
 
         if not removed_attributes:
-            empty_label = ttk.Label(scrollable_frame, text="No removed attributes found", foreground=main_color, font=font_settings)
-            empty_label.pack(anchor='w', padx=20)
+            empty_label = ttk.Label(scrollable_frame, text = "No removed attributes found", foreground = main_color, font = font_settings)
+            empty_label.pack(anchor = 'w', padx = 20)
 
-        weights_label = ttk.Label(scrollable_frame, text="Normalized Weights:", foreground=main_color, font=font_settings)
-        weights_label.pack(anchor='w', padx=10, pady=5)
-        
+        # Display the current normalized weights
+        weights_label = ttk.Label(scrollable_frame, text = "Normalized Weights:", foreground = main_color, font = font_settings)
+        weights_label.pack(anchor = 'w', padx = 10, pady = 5)
+
         for attribute, weight in normalized_weights.items():
             display_attribute = self.format_attribute_for_display(attribute)
-            weight_label = ttk.Label(scrollable_frame, text=f"{display_attribute}: {weight:.4f}", foreground=main_color, font=font_settings)
-            weight_label.pack(anchor='w', padx=20)
+            weight_label = ttk.Label(scrollable_frame, text = f"{display_attribute}: {weight:.4f}", foreground = main_color, font=font_settings)
+            weight_label.pack(anchor = 'w', padx = 20)
 
-        self.canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
+        self.canvas.pack(side = "left", fill = "both", expand = True)
+        scrollbar.pack(side = "right", fill = "y")
