@@ -44,8 +44,8 @@ class GUI:
         self.root.configure(bg=self.main_color)
 
         # Set the font for the GUI
-        self.pixeltype = Font(file= "fonts/Pixeltype.ttf", family="Pixeltype", size=22)
-        self.helvetica = Font(file= "fonts/Helvetica.ttf", family="Helvetica")
+        self.pixeltype = Font(file = "fonts/Pixeltype.ttf", family = "Pixeltype", size = 22)
+        self.helvetica = Font(file = "fonts/Helvetica.ttf", family = "Helvetica")
 
         # Set the maximum number of emphasized attributes
         self.max_emphasis = 4
@@ -57,11 +57,11 @@ class GUI:
         self.root.title("Group Former")
 
         # Initialize weight variables from data processor
-        self.weight_vars = {attribute: tk.DoubleVar(value=weight) for attribute, weight in self.data_processor.get_weights().items()}
+        self.weight_vars = {attribute: tk.DoubleVar(value = weight) for attribute, weight in self.data_processor.get_weights().items()}
 
         # Configure grid weights for the root window
-        self.root.grid_rowconfigure(1, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
+        self.root.grid_rowconfigure(1, weight = 1)
+        self.root.grid_columnconfigure(0, weight = 1)
 
         # Create the GUI widgets
         self.create_widgets()
@@ -159,7 +159,7 @@ class GUI:
     def create_top_frame(self):
         # Create a frame to hold the top widgets
         self.top_frame = ttk.Frame(self.root, style='Top.TFrame')
-        self.top_frame.grid(row=0, column=0, columnspan=4, padx=10, pady=10, sticky="ew")
+        self.top_frame.grid(row = 0, column = 0, columnspan = 4, padx = 10, pady = 10, sticky="ew")
 
         # Configure grid weights for the top frame
         self.top_frame.grid_rowconfigure(0, weight=1)
@@ -178,44 +178,44 @@ class GUI:
             relief = "raised",
             command = self.toogle_top_frame
         )
-        self.help_button.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
+        self.help_button.grid(row = 0, column = 0, padx = (15, 10), pady = 10, sticky = "nw")
         self.tooltip(self.help_button, "Toggle the program explanation.", self.helvetica)
 
     def create_scrollable_area(self):
         # Create a frame to hold the weights and checkboxes
-        self.scrollable_frame = ttk.Frame(self.root, style='Scrollable.TFrame')
-        self.scrollable_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+        self.scrollable_frame = ttk.Frame(self.root, style = 'Scrollable.TFrame')
+        self.scrollable_frame.grid(row = 1, column = 0, columnspan = 2, padx = 10, pady = 10, sticky = "nsew")
 
         # Create a canvas to hold the weights and checkboxes
-        self.canvas = tk.Canvas(self.scrollable_frame, bg=self.scrollable_frame_color)
-        self.canvas.pack(side="left", fill="both", expand=True)
+        self.canvas = tk.Canvas(self.scrollable_frame, bg = self.scrollable_frame_color)
+        self.canvas.pack(side = "left", fill = "both", expand = True)
 
         # Create a scrollbar for the canvas
-        scrollbar = ttk.Scrollbar(self.scrollable_frame, orient="vertical", command=self.canvas.yview)
-        scrollbar.pack(side="right", fill="y")
+        scrollbar = ttk.Scrollbar(self.scrollable_frame, orient = "vertical", command = self.canvas.yview)
+        scrollbar.pack(side = "right", fill = "y")
 
         self.canvas.configure(yscrollcommand=scrollbar.set)
 
-        # Create a parent frame inside the canvas to hold both weights_frame and teamsizing_frame
+        # Create a parent frame inside the canvas to hold both weights_frame and settings_frame
         self.inner_frame = ttk.Frame(self.canvas)
-        self.canvas.create_window((0, 0), window=self.inner_frame, anchor="nw")
+        self.canvas.create_window((0, 0), window = self.inner_frame, anchor = "nw")
 
-        self.weights_frame = ttk.LabelFrame(self.inner_frame, text="Adjust Weights and Attributes")
-        self.weights_frame.grid(row=0, column=0, padx=10, pady=10, sticky="ne")
+        self.weights_frame = ttk.LabelFrame(self.inner_frame, text = "Adjust Weights and Attributes")
+        self.weights_frame.grid(row = 0, column = 0, padx = 10, pady = 10, sticky = "ne")
 
         # Bind the canvas to the scrollbar
-        self.inner_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+        self.inner_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion = self.canvas.bbox("all")))
 
         # Add labels and buttons for each weight attribute
         for index, (attribute, weight) in enumerate(self.data_processor.weights.items()):
             display_attribute = self.format_attribute_for_display(attribute)
 
-            label = ttk.Label(self.weights_frame, text=display_attribute, font=(self.helvetica, 11))
-            label.grid(row=index, column=1, padx=5, pady=5, sticky=tk.W)
+            label = ttk.Label(self.weights_frame, text = display_attribute, font = (self.helvetica, 11))
+            label.grid(row = index, column = 1, padx = 5, pady = 5, sticky = tk.W)
             self.attribute_labels[attribute] = label # Store the label for later updates
 
-            label_weight = ttk.Label(self.weights_frame, text=int(weight), font=(self.helvetica, 11))
-            label_weight.grid(row=index, column=2, padx=6, pady=6, sticky=tk.E)
+            label_weight = ttk.Label(self.weights_frame, text = int(weight), font = (self.helvetica, 11))
+            label_weight.grid(row = index, column = 2, padx = 6, pady = 6, sticky = tk.E)
             self.weight_labels[attribute] = label_weight # Store the label for later updates
 
             # Button to increase weight
@@ -223,9 +223,9 @@ class GUI:
                 self.weights_frame,
                 text = "+",
                 style = 'Adjust.TButton',
-                command = lambda a=attribute: self.adjust_weight(a, 1)
+                command = lambda attribute = attribute: self.adjust_weight(attribute, 1)
                 )
-            increase_button.grid(row=index, column=3, padx=5, pady=5)
+            increase_button.grid(row = index, column = 3, padx = 5, pady = 5)
             self.tooltip(increase_button, "Increase the weight of this attribute.", self.helvetica)
 
             self.increase_buttons[attribute] = increase_button
@@ -235,9 +235,9 @@ class GUI:
                 self.weights_frame,
                 text = "-",
                 style = 'Adjust.TButton',
-                command = lambda a=attribute: self.adjust_weight(a, -1)
+                command = lambda attribute = attribute: self.adjust_weight(attribute, -1)
                 )
-            decrease_button.grid(row=index, column=4, padx=5, pady=5)
+            decrease_button.grid(row = index, column = 4, padx = 5, pady = 5)
             self.tooltip(decrease_button, "Decrease the weight of this attribute.", self.helvetica)
 
             self.decrease_buttons[attribute] = decrease_button
@@ -254,16 +254,16 @@ class GUI:
             display_attribute = self.format_attribute_for_display(attribute)
 
             row_frame = ttk.Frame(self.weights_frame)
-            row_frame.grid(row=row, column=3, columnspan=4, padx=5, pady=5, sticky=tk.W)
+            row_frame.grid(row = row, column = 3, columnspan = 4, padx = 5, pady = 5, sticky = tk.W)
 
             label = ttk.Label(self.weights_frame, text=display_attribute, font=(self.helvetica, 11))
-            label.grid(row=row, column=1, padx=5, pady=5, sticky=tk.W)
+            label.grid(row = row, column = 1, padx = 5, pady = 5, sticky = tk.W)
 
             self.attribute_labels[attribute] = label
 
             # Create BooleanVars for the homogenous and heterogenous attributes
             is_homogeneous = attribute in self.data_processor.get_homogenous_attributes()
-            checkbox_var = tk.BooleanVar(value=is_homogeneous)
+            checkbox_var = tk.BooleanVar(value = is_homogeneous)
 
             self.checkbox_vars[attribute] = checkbox_var
 
@@ -272,21 +272,21 @@ class GUI:
                 row_frame,
                 style = 'Custom.TButton' if self.checkbox_vars[attribute].get() else 'Diverse.TButton',
                 text = "Match" if self.checkbox_vars[attribute].get() else "Diverse",
-                command = lambda a=attribute: self.handle_checkbox_toggle(a)
+                command = lambda attribute = attribute: self.handle_checkbox_toggle(attribute)
                 )
-            self.checkbutton.grid(row=row, column=0, padx=5, pady=5, sticky=tk.W)
+            self.checkbutton.grid(row = row, column = 0, padx = 5, pady = 5, sticky = tk.W)
             self.tooltip(self.checkbutton, "Toggle between matching and differentiating this attribute.", self.helvetica)
 
-            self.remove_checkbox_vars[attribute] = tk.BooleanVar(value=True)
+            self.remove_checkbox_vars[attribute] = tk.BooleanVar(value = True)
 
             self.remove_checkbutton = ttk.Checkbutton(
                 self.weights_frame,
                 variable = self.remove_checkbox_vars[attribute],
                 onvalue = True,
                 offvalue = False,
-                command = lambda a=attribute: self.handle_remove_toggle(a)
+                command = lambda attribute = attribute: self.handle_remove_toggle(attribute)
                 )
-            self.remove_checkbutton.grid(row=row, column=0, padx=5, pady=5, sticky=tk.W)
+            self.remove_checkbutton.grid(row = row, column = 0, padx = 5, pady = 5, sticky = tk.W)
             self.tooltip(self.remove_checkbutton, "Toggle between removing and adding this attribute.", self.helvetica)
 
             self.checkbuttons[attribute] = self.checkbutton
@@ -294,113 +294,37 @@ class GUI:
 
             self.create_emphasis_button(row_frame, row, 1, attribute)
 
-        # Create a frame for the team sizing
-        self.teamsizing_frame = ttk.LabelFrame(self.inner_frame, text="Team Sizing")
-        self.teamsizing_frame.grid(row=0, column=1, padx=10, pady=10, sticky="ne")
+        # Create a frame for the team sizing and drag and drop frame
+        self.settings_frame = ttk.Frame(self.inner_frame, style = 'Scrollable.TFrame')
+        self.settings_frame.grid(row = 0, column = 1, padx = 10, pady = 10, sticky = "ne")
 
-        total_members = f"Total Members: {len(self.data_processor.get_data())}"
+        # Create a frame for the file selection area within the settings frame
+        self.file_select_frame = ttk.Frame(self.settings_frame, style = 'Button.TFrame')
+        self.file_select_frame.grid(row = 0, column = 0, columnspan = 2, padx = 10, pady = (10, 30), sticky = "nw")
 
-        self.member_descriptive_label = ttk.Label(self.teamsizing_frame, text=total_members, font=(self.helvetica, 11))
-        self.member_descriptive_label.grid(row=0, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W)
-
-        # Label for the team size
-        team_size_label = ttk.Label(self.teamsizing_frame, text="Desired Team Size:", font=(self.helvetica, 11))
-        team_size_label.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
-
-        # Entry for the desired team size
-        self.team_size_var = tk.StringVar(value=4)
-
-        # Validate the team size entry with a custom validation method and trace the variable for changes
-        self.team_size_var.trace_add("write", self.validate_entries)
-        validate_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
-
-        self.team_size_entry = ttk.Entry(
-            self.teamsizing_frame,
-            textvariable = self.team_size_var,
-            justify = tk.CENTER,
-            font = (self.helvetica, 11),
-            width = 5,
-            validate = 'key',
-            validatecommand = validate_team_size
-            )
-        self.team_size_entry.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
-        self.tooltip(self.team_size_entry, "The first teams will be generated with this size.", self.helvetica)
-
-        # Label for the maximum number of team members
-        max_teams_label = ttk.Label(self.teamsizing_frame, text="Maximum Team Size:", font=(self.helvetica, 11))
-        max_teams_label.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
-
-        # Entry for the maximum number of team members
-        self.max_team_size_var = tk.StringVar(value=5)
-
-        # Validate the maximum team size entry with a custom validation method and trace the variable for changes
-        self.max_team_size_var.trace_add("write", self.validate_entries)
-        validate_max_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
-
-        self.max_teams_entry = ttk.Entry(
-            self.teamsizing_frame,
-            textvariable = self.max_team_size_var,
-            justify = tk.CENTER,
-            font = (self.helvetica, 11),
-            width = 5,
-            validate = 'key',
-            validatecommand = validate_max_team_size
-            )
-        self.max_teams_entry.grid(row=2, column=1, padx=5, pady=5, sticky=tk.W)
-        self.tooltip(self.max_teams_entry, "Teams will not exceed this size. Adding remaining members to teams below this size.\n"+
-                     "If the desired team size is greater than this, the maximum team size will be adjusted.", self.helvetica)
-
-        # Label for the minimum number of team members
-        min_teams_label = ttk.Label(self.teamsizing_frame, text="Minimum Team Size:", font=(self.helvetica, 11))
-        min_teams_label.grid(row=3, column=0, padx=5, pady=5, sticky=tk.W)
-
-        # Entry for the minimum number of team members
-        self.min_team_size_var = tk.StringVar(value=3)
-
-        # Validate the minimum team size entry with a custom validation method and trace the variable for changes
-        self.min_team_size_var.trace_add("write", self.validate_entries)
-        validate_min_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
-
-        self.min_teams_entry = ttk.Entry(
-            self.teamsizing_frame,
-            textvariable = self.min_team_size_var,
-            justify = tk.CENTER,
-            font = (self.helvetica, 11),
-            width = 5,
-            validate = 'key',
-            validatecommand = validate_min_team_size
-            )
-        self.min_teams_entry.grid(row=3, column=1, padx=5, pady=5, sticky=tk.W)
-        self.tooltip(self.min_teams_entry, "Teams will not be smaller than this size.\n"+
-                     "If the desired team size is smaller than this, the minimum team size will be adjusted.", self.helvetica)
-        
-        # Label for the remaining members
-        remaining_members = f"Remaining Members: "
-        self.remaining_members_label = ttk.Label(self.teamsizing_frame, text=remaining_members, font=(self.helvetica, 11))
-        self.remaining_members_label.grid(row=4, column=0, columnspan=2, padx=5, pady=5, sticky=tk.W)
-
-        # Create a Frame for the Drag and Drop area
-        self.drag_frame = ttk.Frame(self.inner_frame, style='Button.TFrame')
-        self.drag_frame.grid(row=0, column=2, padx=10, pady=10, sticky="ne")
+        # Label to describe the file selection area
+        self.file_select_label = ttk.Label(self.file_select_frame, text = "Select a CSV File", font = (self.helvetica, 11))
+        self.file_select_label.grid(row = 0, column = 0, padx = 5, pady = 5, sticky = tk.W)
+        self.file_select_label.configure(background = self.secondary_color)
 
         # Load the drop image, first integer is width, second is height
         self.drop_image = self.load_image("images/drop.png", 30, 45)
 
         # Create a Label for the Drag and Drop area
-        self.drag_label = ttk.Label(self.drag_frame, image=self.drop_image, background=self.secondary_color)
-        self.drag_label.pack(padx=20, pady=10)
+        self.drag_label = ttk.Label(self.file_select_frame, image = self.drop_image, background = self.secondary_color)
+        self.drag_label.grid(row = 1, column = 0, columnspan = 2, padx = 10, pady = 10)
         self.tooltip(self.drag_label, "Drag and drop a survey file here to load it.", self.helvetica)
 
         # Enable Drag and Drop functionality for the Frame
-        self.drag_frame.drop_target_register(DND_FILES)
-        self.drag_frame.dnd_bind('<<Drop>>', self.dnd_different_survey)
+        self.file_select_frame.drop_target_register(DND_FILES)
+        self.file_select_frame.dnd_bind('<<Drop>>', self.dnd_different_survey)
 
         # Load the select image, first integer is width, second is height
         self.select = self.load_image("images/select.png", 30, 35)
 
         # Button to load a different survey
         self.select_button = tk.Button(
-            self.drag_frame,
+            self.file_select_frame,
             image = self.select,
             borderwidth = 0,
             background = self.secondary_color,
@@ -409,24 +333,110 @@ class GUI:
             relief = "raised",
             command = lambda: self.load_different_survey()
             )
-        self.select_button.pack(padx=10, pady=10)
-        self.tooltip(self.select_button, "Load a different survey to form teams.", self.helvetica)
+        self.select_button.grid(row = 2, column = 0, columnspan = 2, padx = 10, pady = 20)
+        self.tooltip(self.select_button, "Select a different survey to form teams.", self.helvetica)
+
+        # Label for the total number of members
+        total_members = f"Total Members: {len(self.data_processor.get_data())}"
+
+        self.member_descriptive_label = ttk.Label(self.settings_frame, text=total_members, font = (self.helvetica, 11))
+        self.member_descriptive_label.grid(row = 2, column = 0, columnspan = 2, padx = 5, pady = 5, sticky = tk.W)
+
+        # Label for the team size
+        team_size_label = ttk.Label(self.settings_frame, text = "Desired Team Size:", font = (self.helvetica, 11))
+        team_size_label.grid(row = 3, column = 0, padx = 5, pady = 5, sticky = tk.W)
+
+        # Entry for the desired team size
+        self.team_size_var = tk.StringVar(value = 4)
+
+        # Validate the team size entry with a custom validation method and trace the variable for changes
+        self.team_size_var.trace_add("write", self.validate_entries)
+
+        # %P (the value of the entry), %d (the action that triggered the validation), and %W (the name of the entry widget)
+        validate_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
+
+        self.team_size_entry = ttk.Entry(
+            self.settings_frame,
+            textvariable = self.team_size_var,
+            justify = tk.CENTER,
+            font = (self.helvetica, 11),
+            width = 5,
+            validate = 'key',
+            validatecommand = validate_team_size
+            )
+        self.team_size_entry.grid(row = 3, column = 1, padx = 5, pady = 5, sticky = tk.W)
+        self.tooltip(self.team_size_entry, "The first teams will be generated with this size.", self.helvetica)
+
+        # Label for the maximum number of team members
+        max_teams_label = ttk.Label(self.settings_frame, text = "Maximum Team Size:", font = (self.helvetica, 11))
+        max_teams_label.grid(row = 4, column = 0, padx = 5, pady = 5, sticky = tk.W)
+
+        # Entry for the maximum number of team members
+        self.max_team_size_var = tk.StringVar(value = 5)
+
+        # Validate the maximum team size entry with a custom validation method and trace the variable for changes
+        self.max_team_size_var.trace_add("write", self.validate_entries)
+
+        # %P (the value of the entry), %d (the action that triggered the validation), and %W (the name of the entry widget)
+        validate_max_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
+
+        self.max_teams_entry = ttk.Entry(
+            self.settings_frame,
+            textvariable = self.max_team_size_var,
+            justify = tk.CENTER,
+            font = (self.helvetica, 11),
+            width = 5,
+            validate = 'key',
+            validatecommand = validate_max_team_size
+            )
+        self.max_teams_entry.grid(row = 4, column = 1, padx = 5, pady = 5, sticky = tk.W)
+        self.tooltip(self.max_teams_entry, "Teams will not exceed this size. Adding remaining members to teams below this size.\n"+
+                     "If the desired team size is greater than this, the maximum team size will be adjusted.", self.helvetica)
+
+        # Label for the minimum number of team members
+        min_teams_label = ttk.Label(self.settings_frame, text = "Minimum Team Size:", font = (self.helvetica, 11))
+        min_teams_label.grid(row = 5, column = 0, padx = 5, pady = 5, sticky = tk.W)
+
+        # Entry for the minimum number of team members
+        self.min_team_size_var = tk.StringVar(value = 3)
+
+        # Validate the minimum team size entry with a custom validation method and trace the variable for changes
+        self.min_team_size_var.trace_add("write", self.validate_entries)
+        validate_min_team_size = (self.root.register(self.validate_size),'%P', '%d', '%W')
+
+        self.min_teams_entry = ttk.Entry(
+            self.settings_frame,
+            textvariable = self.min_team_size_var,
+            justify = tk.CENTER,
+            font = (self.helvetica, 11),
+            width = 5,
+            validate = 'key',
+            validatecommand = validate_min_team_size
+            )
+        self.min_teams_entry.grid(row = 5, column = 1, padx = 5, pady = 5, sticky = tk.W)
+        self.tooltip(self.min_teams_entry, "Teams will not be smaller than this size.\n"+
+                     "If the desired team size is smaller than this, the minimum team size will be adjusted.", self.helvetica)
+        
+        # Label for the remaining members
+        remaining_members = f"Remaining Members: "
+        self.remaining_members_label = ttk.Label(self.settings_frame, text = remaining_members, font = (self.helvetica, 11))
+        self.remaining_members_label.grid(row = 6, column = 0, columnspan = 2, padx = 5, pady = 5, sticky = tk.W)
 
         # Bind the canvas to the mousewheel for scrolling
         self.canvas.bind_all("<MouseWheel>", self.on_mousewheel)
 
         # Frame to hold team buttons on the right
-        self.team_buttons_frame = ttk.Frame(self.root, style='Top.TFrame')
-        self.team_buttons_frame.grid(row=1, column=5, padx=10, pady=10, sticky=tk.NW)
+        self.team_buttons_frame = ttk.Frame(self.root, style = 'Top.TFrame')
+        self.team_buttons_frame.grid(row = 1, column = 5, padx = 10, pady = 10, sticky = tk.NW)
 
     def create_button_frame(self):
-        self.bottom_frame = ttk.Frame(self.root, style='Button.TFrame')
-        self.bottom_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky='ew')
+        self.bottom_frame = ttk.Frame(self.root, style = 'Button.TFrame')
+        self.bottom_frame.grid(row = 2, column = 0, columnspan = 2, padx = 10, pady = 10, sticky = 'ew')
 
-        self.bottom_frame.columnconfigure(1, weight=1, minsize=110)
-        self.bottom_frame.columnconfigure(2, weight=1, minsize=110)
-        self.bottom_frame.columnconfigure(3, weight=1, minsize=110)
-        self.bottom_frame.columnconfigure(4, weight=1, minsize=110)
+        self.bottom_frame.columnconfigure(1, weight = 1, minsize = 110)
+        self.bottom_frame.columnconfigure(2, weight = 1, minsize = 110)
+        self.bottom_frame.columnconfigure(3, weight = 1, minsize = 110)
+        self.bottom_frame.columnconfigure(4, weight = 1, minsize = 110)
 
         # Load the images for the buttons, first integer is width, second is height
         self.start_button = self.load_image("images/generate.png", 110, 40)
@@ -442,7 +452,7 @@ class GUI:
             relief = "raised",
             command = lambda: self.generate_teams()
             )
-        self.generate_button.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
+        self.generate_button.grid(row = 0, column = 0, padx = (30, 10), pady = 10, sticky = 'ew')
         self.tooltip(self.generate_button, "Generate teams based on the current configuration.", self.helvetica)
 
         # Button to save current weights
@@ -452,7 +462,7 @@ class GUI:
             style = 'Buttonframe.TButton',
             command = lambda: self.data_processor.save_weights()
             )
-        save_weights_button.grid(row=0, column=1, padx=10, pady=10, sticky='ew')
+        save_weights_button.grid(row = 0, column = 1, padx = 10, pady = 10, sticky = 'ew')
         self.tooltip(save_weights_button, "Save the current weights to a CSV file.", self.helvetica)
 
         # Button to load custom weights
@@ -462,7 +472,7 @@ class GUI:
             style = 'Buttonframe.TButton',
             command = lambda: self.load_weights("custom")
             )
-        load_custom_weights_button.grid(row=0, column=2, padx=10, pady=10, sticky='ew')
+        load_custom_weights_button.grid(row = 0, column = 2, padx = 10, pady = 10, sticky = 'ew')
         self.tooltip(load_custom_weights_button, "Load custom weights from a CSV file.", self.helvetica)
 
         # Button to load standard weights
@@ -472,7 +482,7 @@ class GUI:
             style = 'Buttonframe.TButton',
             command = lambda: self.load_weights("standard")
             )
-        load_std_weights_button.grid(row=0, column=3, padx=10, pady=10, sticky='ew')
+        load_std_weights_button.grid(row = 0, column = 3, padx = 10, pady = 10, sticky = 'ew')
         self.tooltip(load_std_weights_button, "Load standard weights from a CSV file.", self.helvetica)
 
         # Button to show the current configuration
@@ -482,33 +492,33 @@ class GUI:
             style = 'Buttonframe.TButton',
             command = lambda: Config(self.root, self.data_processor, self, self.helvetica)
             )
-        show_config_button.grid(row=0, column=4, padx=10, pady=10, sticky='ew')
+        show_config_button.grid(row = 0, column = 4, padx = (10, 30), pady = 10, sticky = 'ew')
         self.tooltip(show_config_button, "Show the current configuration of the data processor.", self.helvetica)
 
     def create_checkbutton(self, row, attribute):
         # Create BooleanVar for the Checkbutton
-        self.checkbox_vars[attribute] = tk.BooleanVar(value=True)
+        self.checkbox_vars[attribute] = tk.BooleanVar(value = True)
 
         # Create and configure the Checkbutton
         checkbutton = ttk.Button(
             self.weights_frame,
             style = 'Custom.TButton' if self.checkbox_vars[attribute].get() else 'Diverse.TButton',
             text = "Match" if self.checkbox_vars[attribute].get() else "Diverse",
-            command = lambda: self.handle_checkbox_toggle(attribute)
+            command = lambda : self.handle_checkbox_toggle(attribute)
             )
-        checkbutton.grid(row=row, column=5, padx=5, pady=5)
+        checkbutton.grid(row = row, column = 5, padx = 5, pady = 5)
         self.tooltip(checkbutton, "Toggle between matching and differentiating this attribute.", self.helvetica)
 
-        self.remove_checkbox_vars[attribute] = tk.BooleanVar(value=True)
+        self.remove_checkbox_vars[attribute] = tk.BooleanVar(value = True)
 
         remove_checkbutton = ttk.Checkbutton(
             self.weights_frame,
             variable = self.remove_checkbox_vars[attribute],
             onvalue = True,
             offvalue = False,
-            command = lambda a=attribute: self.handle_remove_toggle(a)
+            command = lambda attribute = attribute: self.handle_remove_toggle(attribute)
             )
-        remove_checkbutton.grid(row=row, column=0, padx=5, pady=5)
+        remove_checkbutton.grid(row = row, column = 0, padx = 5, pady = 5)
         self.tooltip(remove_checkbutton, "Toggle between removing and adding this attribute.", self.helvetica)
 
         # Store Checkbutton for reference
@@ -519,11 +529,11 @@ class GUI:
     def create_emphasis_button(self, frame, row, column, attribute):
         self.emphasis_button = ttk.Button(
             frame,
-            text = "Emphasize",
+            text = "Focus",
             style = 'Custom.TButton',
             command = lambda: self.handle_emphasis_toggle(attribute)
             )
-        self.emphasis_button.grid(row=row, column=column, padx=5, pady=5)
+        self.emphasis_button.grid(row = row, column = column, padx = 5, pady = 5)
         self.tooltip(self.emphasis_button, "Emphasize this attribute in team formation.", self.helvetica)
 
         self.emphasis_buttons[attribute] = self.emphasis_button
@@ -545,8 +555,8 @@ class GUI:
 
     # Method to show feedback when validating entries
     def show_feedback(self, widget, message, color):
-        self.feedback_label = ttk.Label(self.teamsizing_frame, text=message, foreground=color, font=(self.helvetica, 10))
-        self.feedback_label.grid(row=widget.grid_info()['row'], column=widget.grid_info()['column'] + 2, sticky=tk.W)
+        self.feedback_label = ttk.Label(self.settings_frame, text = message, foreground = color, font = (self.helvetica, 10))
+        self.feedback_label.grid(row = widget.grid_info()['row'], column = widget.grid_info()['column'] + 2, sticky = tk.W)
         self.feedback_labels[widget] = self.feedback_label
 
     # Method to validate entries by checking if they are positive integers and enabling the generate button
@@ -557,17 +567,17 @@ class GUI:
             desired_size = int(self.team_size_var.get())
 
             if not min_size or not max_size or not desired_size:
-                self.generate_button.config(state=tk.DISABLED)
+                self.generate_button.config(state = tk.DISABLED)
 
                 return
 
             if min_size > 0 and max_size > 0 and desired_size > 0:
-                self.generate_button.config(state=tk.NORMAL)
+                self.generate_button.config(state = tk.NORMAL)
             else:
-                self.generate_button.config(state=tk.DISABLED)
+                self.generate_button.config(state = tk.DISABLED)
 
         except:
-            self.generate_button.config(state=tk.DISABLED)
+            self.generate_button.config(state = tk.DISABLED)
 
     # Method to validate the size entries by checking if they are positive integers
     def validate_size(self, size, action, entry_name):
@@ -597,12 +607,12 @@ class GUI:
 
         # Update the text of the checkbutton based on the state
         if self.checkbox_vars[attribute].get():
-            self.checkbuttons[attribute].config(text="Match")
-            self.checkbuttons[attribute].config(style='Custom.TButton')
+            self.checkbuttons[attribute].config(text = "Match")
+            self.checkbuttons[attribute].config(style = 'Custom.TButton')
             self.data_processor.add_homogenous_attribute(attribute)
         else:
-            self.checkbuttons[attribute].config(text="Diverse")
-            self.checkbuttons[attribute].config(style='Diverse.TButton')
+            self.checkbuttons[attribute].config(text = "Diverse")
+            self.checkbuttons[attribute].config(style = 'Diverse.TButton')
             self.data_processor.add_heterogenous_attribute(attribute)
 
     # Method to change the style and add the emphasized attribute to the data processor
@@ -615,15 +625,15 @@ class GUI:
                 # Remove the first emphasized attribute
                 first_attribute = emphasized_attributes[0]
                 self.data_processor.remove_emphasized_attribute(first_attribute)
-                self.emphasis_buttons[first_attribute].config(style='Custom.TButton')
+                self.emphasis_buttons[first_attribute].config(style = 'Custom.TButton')
                 self.emphasis_attributes[first_attribute] = False
 
             self.data_processor.add_emphasized_attribute(attribute)
-            self.emphasis_buttons[attribute].config(style='Emphasized.TButton')
+            self.emphasis_buttons[attribute].config(style = 'Emphasized.TButton')
             self.emphasis_attributes[attribute] = True
         else:
             self.data_processor.remove_emphasized_attribute(attribute)
-            self.emphasis_buttons[attribute].config(style='Custom.TButton')
+            self.emphasis_buttons[attribute].config(style = 'Custom.TButton')
             self.emphasis_attributes[attribute] = False
 
     # Method to change the style and state of the buttons when removing an attribute
@@ -633,13 +643,13 @@ class GUI:
 
                 # Apply strike-through to the label
                 self.attribute_labels[attribute].config(foreground='gray', font=(self.helvetica, 11,'overstrike'))
-                self.checkbuttons[attribute].config(style='Removed.TButton')
-                self.emphasis_buttons[attribute].config(style='Removed.TButton')
+                self.checkbuttons[attribute].config(style = 'Removed.TButton')
+                self.emphasis_buttons[attribute].config(style = 'Removed.TButton')
 
                 if attribute in self.weight_labels:
-                    self.weight_labels[attribute].config(foreground='gray', font=(self.helvetica, 11,'overstrike'))
+                    self.weight_labels[attribute].config(foreground = 'gray', font = (self.helvetica, 11,'overstrike'))
 
-                self.set_attribute_button_state(attribute, state=tk.DISABLED)
+                self.set_attribute_button_state(attribute, state = tk.DISABLED)
 
             else:
                 if self.checkbox_vars[attribute].get():
@@ -648,41 +658,41 @@ class GUI:
                     self.data_processor.add_heterogenous_attribute(attribute)
 
                 # Remove strike-through from the label
-                self.attribute_labels[attribute].config(foreground='black', font=(self.helvetica, 11))
+                self.attribute_labels[attribute].config(foreground = 'black', font = (self.helvetica, 11))
                 if attribute in self.weight_labels:
-                    self.weight_labels[attribute].config(foreground='black', font=(self.helvetica, 11))
+                    self.weight_labels[attribute].config(foreground = 'black', font = (self.helvetica, 11))
 
-                self.set_attribute_button_state(attribute, state=tk.NORMAL)
+                self.set_attribute_button_state(attribute, state = tk.NORMAL)
 
                 if self.checkbox_vars[attribute].get():
-                    self.checkbuttons[attribute].config(style='Custom.TButton')
+                    self.checkbuttons[attribute].config(style = 'Custom.TButton')
                 else:
-                    self.checkbuttons[attribute].config(style='Diverse.TButton')
+                    self.checkbuttons[attribute].config(style = 'Diverse.TButton')
                 if attribute in self.emphasis_buttons:
                     if attribute not in self.emphasis_attributes:
-                        self.emphasis_buttons[attribute].config(style='Custom.TButton')
+                        self.emphasis_buttons[attribute].config(style = 'Custom.TButton')
                         self.emphasis_attributes[attribute] = False
                     if self.emphasis_attributes[attribute]:
-                        self.emphasis_buttons[attribute].config(style='Emphasized.TButton')
+                        self.emphasis_buttons[attribute].config(style = 'Emphasized.TButton')
                         self.data_processor.add_emphasized_attribute(attribute)
                     else:
-                        self.emphasis_buttons[attribute].config(style='Custom.TButton')
+                        self.emphasis_buttons[attribute].config(style = 'Custom.TButton')
                         self.data_processor.remove_emphasized_attribute(attribute)
 
     # Method to set the state of the attribute buttons based on the state
     def set_attribute_button_state(self, attribute, state):
-        self.checkbuttons[attribute].config(state=state)
-        self.emphasis_buttons[attribute].config(state=state)
+        self.checkbuttons[attribute].config(state = state)
+        self.emphasis_buttons[attribute].config(state = state)
 
         if attribute in self.increase_buttons:
-            self.increase_buttons[attribute].config(state=state)
+            self.increase_buttons[attribute].config(state = state)
         if attribute in self.decrease_buttons:
-            self.decrease_buttons[attribute].config(state=state)
+            self.decrease_buttons[attribute].config(state = state)
 
     # Method to toogle the program explanation
     def toogle_top_frame(self):
         if self.program_explanation and self.program_explanation.winfo_ismapped():
-            self.program_explanation.config(text="")
+            self.program_explanation.config(text = "")
             self.program_explanation = None
 
         elif not self.program_explanation:
@@ -699,10 +709,10 @@ class GUI:
                 wraplength = 900,
                 font = (self.helvetica, 12, "bold")
                 )
-            self.program_explanation.grid(row=0, column=0)
+            self.program_explanation.grid(row = 0, column = 0)
 
     # Method to adjust weight of an skill attribute and update in GUI and DataProcessor
-    def adjust_weight(self, attribute, delta=0):
+    def adjust_weight(self, attribute, delta = 0):
         try:
             current_weight = self.weight_vars[attribute].get()
             new_weight = current_weight + delta
@@ -733,7 +743,8 @@ class GUI:
             # Update the weight variables and labels in the GUI
             for attribute, weight in self.data_processor.custom_weights.items():
                 self.weight_vars[attribute].set(weight)
-                self.weight_labels[attribute].config(text=int(weight))
+                self.weight_labels[attribute].config(text = int(weight))
+
             self.update_current_weights()
 
         except Exception as e:
@@ -745,7 +756,7 @@ class GUI:
 
     # Method to update the remaining members label in the GUI based on the number of remaining members in the TeamForming
     def update_remaining_members_label(self, remaining_members):
-        self.remaining_members_label.config(text=f"Remaining Members: {remaining_members}")
+        self.remaining_members_label.config(text = f"Remaining Members: {remaining_members}")
 
     # Method to load a different survey via select and update the GUI
     def load_different_survey(self):
@@ -779,6 +790,7 @@ class GUI:
     def update_gui(self):
         for widget in self.team_buttons_frame.winfo_children():
                 widget.destroy()
+
         self.create_widgets()
 
     # Method to generate teams
@@ -843,7 +855,7 @@ class GUI:
                     text = f"Visualize Team {idx + 1}",
                     command = lambda t=team: self.visualize_teams(t)
                     )
-                button.pack(fill="x", padx=5, pady=5)
+                button.pack(fill = "x", padx = (5, 10), pady = 10)
 
         except Exception as e:
             print(f"Error generating teams: {e}")
