@@ -159,11 +159,11 @@ class GUI:
     def create_top_frame(self):
         # Create a frame to hold the top widgets
         self.top_frame = ttk.Frame(self.root, style='Top.TFrame')
-        self.top_frame.grid(row = 0, column = 0, columnspan = 4, padx = 10, pady = 10, sticky="ew")
+        self.top_frame.grid(row = 0, column = 0, columnspan = 4, padx = 10, pady = 10, sticky = "ew")
 
         # Configure grid weights for the top frame
-        self.top_frame.grid_rowconfigure(0, weight=1)
-        self.top_frame.grid_columnconfigure(0, weight=1)
+        self.top_frame.grid_columnconfigure(0, weight = 0)
+        self.top_frame.grid_columnconfigure(1, weight = 1)
 
         # Load the questionmark image, first integer is width, second is height
         self.questionmark = self.load_image("images/questionmark.png", 20, 25)
@@ -700,16 +700,15 @@ class GUI:
             self.program_explanation = ttk.Label(
                 self.top_frame,
                 text = (f"Welcome to the Group Former! This program helps you form teams based on various attributes.\n"
-                    f"Adjust the weights of the skill attributes below. Higher weights indicate more importance. "
-                    f"Select whether the following attributes should be homogenous or heterogenous within teams. "
+                    f"Adjust the weights of the skill attributes below. Higher weights indicate more importance.\n"
+                    f"Select whether the following attributes should be homogenous or heterogenous within teams.\n"
                     f"You can remove attributes by unchecking the remove box. Or you can emphasize up to {self.max_emphasis} of them, all with the corresponding buttons.\n"
                     f"You can also adjust the desired teamsizes. Click 'Generate Teams' to create teams based on the current configuration."),
                 background = self.main_color,
                 foreground = 'white',
-                wraplength = 900,
                 font = (self.helvetica, 12, "bold")
                 )
-            self.program_explanation.grid(row = 0, column = 0)
+            self.program_explanation.grid(row = 0, column = 1, padx = (30, 10), sticky = "ew")
 
     # Method to adjust weight of an skill attribute and update in GUI and DataProcessor
     def adjust_weight(self, attribute, delta = 0):
