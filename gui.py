@@ -696,16 +696,23 @@ class GUI:
             self.program_explanation = None
 
         elif not self.program_explanation:
+            # Get the width of the screen
+            screen_width = self.root.winfo_screenwidth()
+
             # Add a label for the overall program explanation
             self.program_explanation = ttk.Label(
                 self.top_frame,
                 text = (f"Welcome to the Group Former! This program helps you form teams based on various attributes.\n"
                     f"Adjust the weights of the skill attributes below. Higher weights indicate more importance.\n"
                     f"Select whether the following attributes should be homogenous or heterogenous within teams.\n"
-                    f"You can remove attributes by unchecking the remove box. Or you can emphasize up to {self.max_emphasis} of them, all with the corresponding buttons.\n"
-                    f"You can also adjust the desired teamsizes. Click 'Generate Teams' to create teams based on the current configuration."),
+                    f"You can remove attributes by unchecking the checkbox. Or you can emphasize up to {self.max_emphasis} of them, all with the corresponding buttons.\n"
+                    f"You can also adjust the desired teamsizes and load different CSV survey results within the program.\n" 
+                    f"Click 'Generate' to create teams based on the current configuration and afterwards you can visualize the team with the corresponding button.\n\n"
+                    f"Teams are formed by calculating individual and compatibility scores for each member based on the selected attributes and their weights. "
+                    f"The program then generates teams that optimize these scores, to form balanced and compatible groups."),
                 background = self.main_color,
                 foreground = 'white',
+                wraplength = screen_width // 2,
                 font = (self.helvetica, 12, "bold")
                 )
             self.program_explanation.grid(row = 0, column = 1, padx = (30, 10), sticky = "ew")
