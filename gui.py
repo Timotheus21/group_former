@@ -95,65 +95,65 @@ class GUI:
     def define_styles(self):
         style = ttk.Style()
         style.configure('Emphasized.TButton',
-                        foreground='red',
-                        padding=(6, 6),
-                        relief="raised",
-                        anchor="center",
-                        font=(self.helvetica, 10)
+                        foreground = 'red',
+                        padding = (6, 6),
+                        relief = "raised",
+                        anchor = "center",
+                        font = (self.helvetica, 10)
                         )
         style.configure('Toggle.TButton',
-                        foreground='black',
-                        background=self.main_color,
-                        padding=(6, 6),
-                        relief="raised",
-                        anchor="center",
-                        font=(self.helvetica, 10)
+                        foreground = 'black',
+                        background = self.main_color,
+                        padding = (6, 6),
+                        relief = "raised",
+                        anchor = "center",
+                        font = (self.helvetica, 10)
                         )
         style.configure('Diverse.TButton',
-                        foreground=self.main_color,
-                        padding=(6, 6),
-                        relief="raised",
-                        anchor="center",
-                        font=(self.helvetica, 10)
+                        foreground = self.main_color,
+                        padding = (6, 6),
+                        relief = "raised",
+                        anchor = "center",
+                        font = (self.helvetica, 10)
                         )
         style.configure('Custom.TButton',
-                        foreground='black',
-                        padding=(6, 6),
-                        relief="raised",
-                        anchor="center",
-                        font=(self.helvetica, 10)
+                        foreground = 'black',
+                        padding = (6, 6),
+                        relief = "raised",
+                        anchor = "center",
+                        font = (self.helvetica, 10)
                         )
         style.configure('Adjust.TButton',
-                        foreground='black',
-                        padding=(6, 6),
-                        relief="raised",
-                        anchor="center",
-                        width=3,
-                        font=(self.helvetica, 10)
+                        foreground = 'black',
+                        padding = (6, 6),
+                        relief = "raised",
+                        anchor = "center",
+                        width = 3,
+                        font = (self.helvetica, 10)
                         )
         style.configure('Removed.TButton',
-                        foreground='gray',
-                        padding=(6, 6),
-                        relief="raised",
-                        anchor="center",
-                        font=(self.helvetica, 10, 'overstrike')
+                        foreground = 'gray',
+                        padding = (6, 6),
+                        relief = "raised",
+                        anchor = "center",
+                        font = (self.helvetica, 10, 'overstrike')
                         )
         style.configure('Buttonframe.TButton',
-                        foreground='black',
-                        background=self.secondary_color,
-                        padding=(6, 6),
-                        relief="raised",
-                        anchor="center",
-                        font= self.pixeltype
+                        foreground = 'black',
+                        background = self.secondary_color,
+                        padding = (6, 6),
+                        relief = "raised",
+                        anchor = "center",
+                        font = self.pixeltype
                         )
         style.configure('Top.TFrame',
-                        background=self.main_color,
+                        background = self.main_color,
                         )
         style.configure('Scrollable.TFrame',
-                        background=self.scrollable_frame_color,
+                        background = self.scrollable_frame_color,
                         )
         style.configure('Button.TFrame',
-                        background=self.secondary_color,
+                        background = self.secondary_color,
                         )
 
     def create_top_frame(self):
@@ -852,6 +852,6 @@ class GUI:
     def visualize_teams(self, team):
         try:
             self.visualization.visualize([team])
-            
+
         except Exception as e:
             print(f"Error visualizing teams: {e}")
