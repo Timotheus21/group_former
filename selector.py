@@ -6,7 +6,7 @@ def select_file():
     try:
         temp_root = tk.Tk()
         temp_root.withdraw()
-        file_path = askopenfilename(title="Select a Questionnaire CSV file", filetypes=[("CSV files", "*.csv")])
+        file_path = askopenfilename(title = "Select a Questionnaire CSV file", filetypes = [("CSV files", "*.csv")])
         temp_root.destroy()
 
         if file_path != None and file_path.endswith('.csv'):

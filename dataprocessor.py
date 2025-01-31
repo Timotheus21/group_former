@@ -80,7 +80,7 @@ class DataProcessor:
                 delimiter = ',' if ',' in sample else ';'
                 file.seek(0)
 
-            csv = pd.read_csv(filepath, delimiter=delimiter, dtype=str)
+            csv = pd.read_csv(filepath, delimiter = delimiter, dtype = str)
 
             if csv.columns[0].startswith('Column'):
                 csv.columns = csv.iloc[0]
@@ -121,15 +121,17 @@ class DataProcessor:
             if not os.path.exists(filename) or os.path.getsize(filename) == 0:
                 # Create a new file if it does not exist
                 weights_csv = pd.DataFrame(list(default_weights.items()), columns=['attribute', 'weight'])
-                weights_csv.to_csv(filename, index=False)
+                weights_csv.to_csv(filename, index = False)
+
                 return default_weights
 
             weights_csv = pd.read_csv(filename)
 
             if weights_csv.empty:
                 # If the file is empty, write default weights to the file
-                weights_csv = pd.DataFrame(list(default_weights.items()), columns=['attribute', 'weight'])
-                weights_csv.to_csv(filename, index=False)
+                weights_csv = pd.DataFrame(list(default_weights.items()), columns = ['attribute', 'weight'])
+                weights_csv.to_csv(filename, index = False)
+
                 return default_weights
             
             weights = dict(zip(weights_csv['attribute'], weights_csv['weight']))
@@ -197,6 +199,7 @@ class DataProcessor:
                     self.df[column] = self.df[column].apply(
                         lambda x: ', '.join([scale.get(value.strip(), value.strip()) for value in x.split(', ')])
                     )
+
         except Exception as e:
             print(f"Error applying interpreter: {e}")
 
@@ -250,8 +253,8 @@ class DataProcessor:
     def merge_columns(self, df, base_name):
         try:
             columns_to_merge = [col for col in df.columns if col.startswith(base_name)]
-            df[base_name] = df[columns_to_merge].apply(lambda x: ', '.join(x.dropna().astype(str)), axis=1)
-            df.drop(columns=columns_to_merge, inplace=True)
+            df[base_name] = df[columns_to_merge].apply(lambda x: ', '.join(x.dropna().astype(str)), axis = 1)
+            df.drop(columns = columns_to_merge, inplace = True)
 
         except Exception as e:
             print(f"Error merging columns for {base_name}: {e}")
