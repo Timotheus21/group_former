@@ -57,12 +57,12 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 
 **External Libraries** Installed via the `requirements.txt`:
 
-- [NetworkX](https://networkx.org/) Version: 3.3
-- [Matplotlib](https://matplotlib.org/) Version: 3.8.4
-- [pandas](https://pandas.pydata.org/) Version: 2.2.2
+- [NetworkX](https://networkx.org/) Version: 3.4.2
+- [Matplotlib](https://matplotlib.org/) Version: 3.10.0
+- [pandas](https://pandas.pydata.org/) Version: 2.2.3
 - [pillow](https://pypi.org/project/pillow/) Version: 11.1.0
 - [tkinterdnd2](https://pypi.org/project/tkinterdnd2/) Version: 0.4.2
-- [tkextrafont](https://github.com/TkinterEP/python-tkextrafont) Version: 0.6.3
+- [tkextrafont](https://github.com/TkinterEP/python-tkextrafont) Version: 0.6.1
 
 ## Installation
 
@@ -132,12 +132,13 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 
    ```
 
-6. **Run the Application**: Start the Docker container and pass the necessary display information, mounting the directory containing the survey files to ensure the application can access them. Replace /path/to/surveys with the path to your survey files and host.docker.internal:0.0 with the appropriate value for your operating system:
+6. **Run the Application**: Start the Docker container and pass the necessary display information, mounting the directory containing the survey files to ensure the application can access them. Replace /path/to/surveys with the path to your survey files and host.docker.internal:0.0 with the appropriate value for your operating system. This gives now a folder inside the GUI which is named data where the files are mounted in:
     - Windows/macOS:
 
    ```bash
 
-   docker run -it --rm -e DISPLAY=host.docker.internal:0.0 -v /tmp/.X11-unix:/tmp/.X11-unix -v /path/to/surveys:/app/surveys timotheusbal/group_former
+    docker run -it --rm -e DISPLAY=host.docker.internal:0.0   -v /tmp/.X11-unix:/tmp/.X11-unix   -v "path/to/surveys":/app/data   group_former
+
 
    ```
 
@@ -145,7 +146,7 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 
    ```bash
 
-   docker run -it --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix timotheusbal/group_former
+   docker run -it --rm -e DISPLAY=host.docker.internal:0.0   -v /tmp/.X11-unix:/tmp/.X11-unix   -v "/mnt/path/to/surveys":/app/data   group_former
 
    ```
 
