@@ -4,10 +4,10 @@ from tkinter import ttk
 from tkextrafont import Font
 from tkinterdnd2 import DND_FILES
 from PIL import Image, ImageTk
-from config import Config
-from teamforming import TeamForming
-from visualization import Visualization
-from selector import select_file
+from src.config import Config
+from src.teamforming import TeamForming
+from src.visualization import Visualization
+from src.selector import select_file
 
 """
     The GUI class is responsible for creating and managing the graphical user interface of the Group Former application.
@@ -44,8 +44,8 @@ class GUI:
         self.root.configure(bg=self.main_color)
 
         # Set the font for the GUI
-        self.pixeltype = Font(file = "fonts/Pixeltype.ttf", family = "Pixeltype", size = 22)
-        self.helvetica = Font(file = "fonts/Helvetica.ttf", family = "Helvetica")
+        self.pixeltype = Font(file = "assets/fonts/Pixeltype.ttf", family = "Pixeltype", size = 22)
+        self.helvetica = Font(file = "assets/fonts/Helvetica.ttf", family = "Helvetica")
 
         # Set the maximum number of emphasized attributes
         self.max_emphasis = 4
@@ -166,7 +166,7 @@ class GUI:
         self.top_frame.grid_columnconfigure(1, weight = 1)
 
         # Load the questionmark image, first integer is width, second is height
-        self.questionmark = self.load_image("images/questionmark.png", 20, 25)
+        self.questionmark = self.load_image("assets/images/questionmark.png", 20, 25)
 
         self.help_button = tk.Button(
             self.root,
@@ -308,7 +308,7 @@ class GUI:
         self.file_select_label.configure(background = self.secondary_color)
 
         # Load the drop image, first integer is width, second is height
-        self.drop_image = self.load_image("images/drop.png", 30, 45)
+        self.drop_image = self.load_image("assets/images/drop.png", 30, 45)
 
         # Create a Label for the Drag and Drop area
         self.drag_label = ttk.Label(self.file_select_frame, image = self.drop_image, background = self.secondary_color)
@@ -320,7 +320,7 @@ class GUI:
         self.file_select_frame.dnd_bind('<<Drop>>', self.dnd_different_survey)
 
         # Load the select image, first integer is width, second is height
-        self.select = self.load_image("images/select.png", 30, 35)
+        self.select = self.load_image("assets/images/select.png", 30, 35)
 
         # Button to load a different survey
         self.select_button = tk.Button(
@@ -439,7 +439,7 @@ class GUI:
         self.bottom_frame.columnconfigure(4, weight = 1, minsize = 110)
 
         # Load the images for the buttons, first integer is width, second is height
-        self.start_button = self.load_image("images/generate.png", 110, 40)
+        self.start_button = self.load_image("assets/images/generate.png", 110, 40)
 
         # Button to generate teams
         self.generate_button = tk.Button(

@@ -1,13 +1,13 @@
 import tkinter as tk
 from tkinterdnd2 import TkinterDnD
 import sys
-from dataprocessor import DataProcessor
-from teamforming import TeamForming
-from visualization import Visualization
-from tooltip import Tooltip
-from config import Config
-from gui import GUI
-from selector import select_file
+from src.dataprocessor import DataProcessor
+from src.teamforming import TeamForming
+from src.visualization import Visualization
+from src.tooltip import Tooltip
+from src.config import Config
+from src.gui import GUI
+from src.selector import select_file
 
 def on_closing(root):
     root.quit()

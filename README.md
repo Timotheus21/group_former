@@ -21,13 +21,13 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 ## Visuals
 
 1. After selecting a csv file with the survey results the main window opens.
-    ![Group Former](images/mainwindow.png)
+    ![Group Former](assets/images/mainwindow.png)
 
 2. When the teams are formed to your liking the visualization is ready to be openend from the main window.
-    ![Visualization](images/visualize.png)
+    ![Visualization](assets/images/visualize.png)
 
 3.
-    ![Configuration](images/config.png)
+    ![Configuration](assets/images/config.png)
 
 ## Usage
 
@@ -164,17 +164,18 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 ```filenames
 
 ┌── hackathon-group-former/
-│ ├── fonts/                            # Custom fonts
-│ │ ┌── Pixeltype.ttf
-│ │ └── Helvetica.ttf
-│ ┌─ images/                            # Images for README documentation and buttons
-│ │ ┌── config.png
-│ │ ├── mainwindow.png
-│ │ ├── generate.png
-│ │ ├── questionmark.png
-│ │ ├── drop.png
-│ │ ├── select.png
-│ │ └── visualize.png
+│ ├── assets/
+│ │ ├── fonts/                          # Custom fonts
+│ │ │ ┌── Pixeltype.ttf
+│ │ │ └── Helvetica.ttf
+│ │ ├── images/                         # Images for README documentation and buttons
+│ │ │ ┌── config.png
+│ │ │ ├── mainwindow.png
+│ │ │ ├── generate.png
+│ │ │ ├── questionmark.png
+│ │ │ ├── drop.png
+│ │ │ ├── select.png
+│ │ └ └── visualize.png
 │ ├── storage/                          # Storage for processed data and configuration files
 │ │ ┌── custom_weights.csv              # will be created on startup when not existing
 │ │ ├── interpreter.json
@@ -184,17 +185,18 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 │ ├── surveys/                          # Pre-event survey templates
 │ │ ┌── Pre Event Survey.lss
 │ │ └── Pre Event Survey.txt
-│ ├── config.py
-│ ├── dataprocessor.py
-│ ├── gui.py
-│ ├── main.py                           # Main entry point for the application
-│ ├── selector.py
-│ ├── teamforming.py
-│ ├── tooltip.py
-│ ├── visualization.py
+│ ├── src/
+│ │ ┌── config.py
+│ │ ├── dataprocessor.py
+│ │ ├── gui.py
+│ │ ├── selector.py
+│ │ ├── teamforming.py
+│ │ ├── tooltip.py
+│ │ └── visualization.py
 │ ├── .dockerignore
 │ ├── .gitattributes
 │ ├── .gitignore
+│ ├── main.py                           # Main entry point for the application
 │ ├── compose.yaml
 │ ├── Dockerfile
 │ ├── README.md
