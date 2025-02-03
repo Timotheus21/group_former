@@ -137,7 +137,7 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 
    ```bash
 
-    docker run -it --rm -e DISPLAY=host.docker.internal:0.0   -v /tmp/.X11-unix:/tmp/.X11-unix   -v "path/to/surveys":/app/data   group_former
+    docker run -it --rm -e DISPLAY=host.docker.internal:0.0 -v "/tmp/.X11-unix:/tmp/.X11-unix" -v "path/to/surveys:/app/data" group_former
 
 
    ```
