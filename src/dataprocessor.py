@@ -38,13 +38,12 @@ class DataProcessor:
         self.current_weights = self.weights.copy()
         self.questionnaire_interpreter = self.load_questionnaire_interpreter()
 
-        # Define attribute lists for homogenous and heterogenous attributes
-        self.attributes = []
+        # Define attribute lists and dictionaries
         self.skill_attributes = []
         self.homogenous_attributes = []
         self.heterogenous_attributes = []
-        self.emphasized_attributes_type = {}
         self.emphasized_attributes = []
+        self.emphasized_attributes_type = {}
 
         # Process survey results
         results_survey_transformed = self.process_survey_results()
@@ -204,9 +203,13 @@ class DataProcessor:
             for attribute in all_attributes:
                 if attribute in skill_attributes_keys:
                     self.skill_attributes.append(str(attribute))
-                else:
-                    self.attributes.append(str(attribute))
 
+            for attribute in all_attributes:
+                if attribute in self.skill_attributes:
+                    self.add_homogenous_attribute(attribute)
+                else:
+                    self.add_heterogenous_attribute(attribute)
+                    
         except Exception as e:
             print(f"Error applying interpreter: {e}")
 
@@ -332,7 +335,7 @@ class DataProcessor:
 
     def get_other_attributes(self):
         # Return all the attributes except the skill attributes
-        return sorted(self.attributes)
+        return sorted(list(set(self.df.columns) - set(self.skill_attributes)))
 
     def get_homogenous_attributes(self):
         # Return the flattened homogenous attributes
@@ -357,6 +360,6 @@ class DataProcessor:
 
     def get_not_considered_attributes(self):
         # Return the removed attributes
-        all_attributes = set(self.flatten_lists([self.skill_attributes, self.attributes]))
+        all_attributes = set(self.flatten_lists([self.get_skill_attributes(), self.get_other_attributes()]))
         current_attributes = set(self.get_homogenous_attributes() + self.get_heterogenous_attributes())
         return list(all_attributes - current_attributes)
