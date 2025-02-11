@@ -49,9 +49,9 @@ class DataProcessor:
         results_survey_transformed = self.process_survey_results()
 
         # Sort the transformed survey results alphabetically, only columns
-        results_survey_transformed = results_survey_transformed.reindex(sorted(results_survey_transformed.columns), axis=1)
+        results_survey_transformed = results_survey_transformed.reindex(sorted(results_survey_transformed.columns), axis = 1)
 
-        results_survey_transformed.to_csv('storage/transformed_results_survey.csv', index=False)
+        results_survey_transformed.to_csv('storage/transformed_results_survey.csv', index = False)
 
         # Load the transformed survey results
         self.df = pd.read_csv('storage/transformed_results_survey.csv')
