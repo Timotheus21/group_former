@@ -2,6 +2,7 @@ import sys
 import os
 import pandas as pd
 import json
+import re
 
 """
     The DataProcessor class is responsible for handling and processing the data used in the Group Former application.
@@ -28,7 +29,6 @@ class DataProcessor:
     STD_WEIGHT_FILE = 'storage/std_weights.csv'
     CUSTOM_WEIGHT_FILE = 'storage/custom_weights.csv'
     INTERPRETER_FILE = 'storage/interpreter.json'
-    QUESTIONNAIRE_EXAMPLE_FILE = 'storage/questionnaire_example.csv'
 
     def __init__(self, filepath):
         # Load CSV files, weights, and questionnaire interpreter on initialization
@@ -37,37 +37,26 @@ class DataProcessor:
         self.custom_weights = self.load_weights(self.CUSTOM_WEIGHT_FILE)
         self.current_weights = self.weights.copy()
         self.questionnaire_interpreter = self.load_questionnaire_interpreter()
-        self.questionnaire_example = self.load_csv_file(self.QUESTIONNAIRE_EXAMPLE_FILE)
+
+        # Define attribute lists for homogenous and heterogenous attributes
+        self.attributes = []
+        self.skill_attributes = []
+        self.homogenous_attributes = []
+        self.heterogenous_attributes = []
+        self.emphasized_attributes_type = {}
+        self.emphasized_attributes = []
 
         # Process survey results
-        results_survey_transformed = self.process_survey_results(self.results_survey)
+        results_survey_transformed = self.process_survey_results()
+
+        # Sort the transformed survey results alphabetically, only columns
+        results_survey_transformed = results_survey_transformed.reindex(sorted(results_survey_transformed.columns), axis=1)
+
         results_survey_transformed.to_csv('storage/transformed_results_survey.csv', index=False)
 
         # Load the transformed survey results
         self.df = pd.read_csv('storage/transformed_results_survey.csv')
         self.apply_interpreter()
-
-        # Define attribute groups
-        self.skill_attributes = [
-            'CodingExperience', 'ProgrammingCourses', 
-            'PythonProficiency', 'ExperienceYears',
-            'ProgrammingContext', 'PracticedConcepts', 'GitFamiliarity'
-        ]
-        self.motivation_attributes = [
-            'Motivations', 'PreferredLearning'
-        ]
-        self.project_attributes = [
-            'PreferredChallenge', 'PreferredGamesEasy', 'PreferredGamesMedium', 'PreferredGamesHard'
-        ]
-        self.background_attributes = [
-            'EducationLevel', 'StudyField', 'Gender', 'CulturalBackground'
-        ]
-
-        # Define attribute lists for homogenous and heterogenous attributes and flatten lists
-        self.homogenous_attributes = self.flatten_lists([self.skill_attributes, self.motivation_attributes, self.project_attributes])
-        self.heterogenous_attributes = self.flatten_lists([self.background_attributes])
-        self.emphasized_attributes_type = {}
-        self.emphasized_attributes = []
 
     # Load a CSV file from the given filepath
     def load_csv_file(self, filepath):
@@ -101,6 +90,7 @@ class DataProcessor:
                     file.write("attribute,weight\n")
             weights_csv = pd.DataFrame(list(self.custom_weights.items()), columns=['attribute', 'weight'])
             weights_csv.to_csv(self.CUSTOM_WEIGHT_FILE, index=False)
+
         except Exception as e:
             print(f"Error saving weights: {e}")
 
@@ -108,12 +98,12 @@ class DataProcessor:
         # Default weights if the file does not exist
         default_weights = {
             'CodingExperience': 5.0,
+            'ExperienceYears': 6.0,
+            'GitFamiliarity': 6.0,
+            'PracticedConcepts': 7.0,
+            'ProgrammingContext': 10.0,
             'ProgrammingCourses': 5.0,
             'PythonProficiency': 10.0,
-            'ExperienceYears': 6.0,
-            'ProgrammingContext': 10.0,
-            'PracticedConcepts': 7.0,
-            'GitFamiliarity': 6.0,
         }
 
         # Load weights from a CSV file
@@ -168,10 +158,14 @@ class DataProcessor:
         # Load questionnaire interpreter from a JSON file
         try:
             with open(self.INTERPRETER_FILE, 'r') as file:
+
                 return json.load(file)
+            
         except json.JSONDecodeError as e:
             print(f"Error loading JSON file: {e}")
+
             return {}
+        
         except Exception as e:
             print(f"Error loading questionnaire interpreter: {e}")
             return {}
@@ -181,8 +175,10 @@ class DataProcessor:
             # Apply the entry mappings to specific columns
             for column, mappings in self.questionnaire_interpreter.get('entry_mapping', {}).items():
                 if column in self.df.columns:
+
                     # Ensure the column values are strings
                     self.df[column] = self.df[column].astype(str)
+
                     # Split the values in the column
                     self.df[column] = self.df[column].apply(
                         lambda x: ', '.join([
@@ -193,12 +189,23 @@ class DataProcessor:
             # Apply scale mappings for skill levels
             for column, scale_info in self.questionnaire_interpreter.get('SkillLevelAssessment', {}).items():
                 scale = scale_info.get('scale', {})
+
                 if column in self.df.columns and isinstance(scale, dict):
                     # Ensure the column values are strings and map the scale
                     self.df[column] = self.df[column].astype(str)
                     self.df[column] = self.df[column].apply(
                         lambda x: ', '.join([scale.get(value.strip(), value.strip()) for value in x.split(', ')])
                     )
+
+            all_attributes = self.df.columns
+
+            # Define skill attributes
+            skill_attributes_keys = self.questionnaire_interpreter.get('SkillLevelAssessment', {}).keys()
+            for attribute in all_attributes:
+                if attribute in skill_attributes_keys:
+                    self.skill_attributes.append(str(attribute))
+                else:
+                    self.attributes.append(str(attribute))
 
         except Exception as e:
             print(f"Error applying interpreter: {e}")
@@ -229,7 +236,6 @@ class DataProcessor:
         if attribute not in self.emphasized_attributes:
             self.emphasized_attributes.append(attribute)
 
-
     def remove_emphasized_attribute(self, attribute):
         # Remove an emphasized attribute from the list
         if attribute in self.emphasized_attributes:
@@ -249,77 +255,58 @@ class DataProcessor:
         if attribute in self.emphasized_attributes:
             self.emphasized_attributes.remove(attribute)
 
-    # Merge multiple columns into one column and drop the original columns from the DataFrame
-    def merge_columns(self, df, base_name):
+    # Process survey results to merge columns with same name and transform the data
+    def process_survey_results(self):
         try:
-            columns_to_merge = [col for col in df.columns if col.startswith(base_name)]
-            df[base_name] = df[columns_to_merge].apply(lambda x: ', '.join(x.dropna().astype(str)), axis = 1)
-            df.drop(columns = columns_to_merge, inplace = True)
+            column_groups = {}
+            other_columns = {}
 
-        except Exception as e:
-            print(f"Error merging columns for {base_name}: {e}")
+            for col in self.results_survey.columns:
 
-    # Process survey results to transform and map the data according to the questionnaire interpreter and example questionnaire
-    def process_survey_results(self, results_survey):
-        try:
-            # Define column mappings for the survey results
-            column_mapping = {
-                "CodingExperience": "CodingExperience",
-                "PeersGroup": "PeersGroup",
-                "PrimaryLanguage": "PrimaryLanguage",
-                "PrimaryLanguage[other]": "PrimaryLanguageOther",
-                "PythonProficiency": "PythonProficiency",
-                "ExperienceYears": "ExperienceYears",
-                "ProgrammingContext": "ProgrammingContext",
-                "GitFamiliarity": "GitFamiliarity",
-                "AdditionalMotivation": "AdditionalMotivation",
-                "OtherInterests": "OtherInterests",
-                "PreferredChallenge": "PreferredChallenge",
-                "GroupImportance": "GroupImportance",
-                "KnownParticipants": "KnownParticipants",
-                "FamiliarityOthers": "FamiliarityOthers",
-                "Age": "Age",
-                "Gender": "Gender",
-                "EducationLevel": "EducationLevel",
-                "IsStudent": "IsStudent",
-                "StudyField": "StudyField",
-                "StudyField[other]": "StudyFieldOther",
-                "Semester": "Semester",
-                "CulturalBackground": "CulturalBackground",
-                "Name": "Name"
-            }
+                # Match columns with the pattern 'base_name[suffix]'
+                match = re.match(r'(.+?)\[(.*?)\]$', col)
+                if match:
+                    base_name, suffix = match.groups()
 
-            # Merge specific columns that have multiple entries
-            self.merge_columns(results_survey, "ProgrammingCourses")
-            self.merge_columns(results_survey, "PracticedConcepts")
-            self.merge_columns(results_survey, "Motivations")
-            self.merge_columns(results_survey, "PreferredLearning")
-            self.merge_columns(results_survey, "PreferredGamesEasy")
-            self.merge_columns(results_survey, "PreferredGamesMedium")
-            self.merge_columns(results_survey, "PreferredGamesHard")
+                    # Check if the suffix is 'other' and group columns accordingly
+                    if suffix.lower() == 'other':
+                        other_columns[base_name + 'Other'] = col
+                    else:
+                        # Group columns with the same base name
+                        column_groups.setdefault(base_name, []).append(col)
+                else:
+                    # Group columns with the same name, without a suffix
+                    column_groups.setdefault(col, []).append(col)
 
-            # Rename columns in the results_survey DataFrame
-            results_survey_renamed = results_survey.rename(columns=column_mapping)
+            for base_name, cols in column_groups.items():
 
-            # Ensure all required columns are present
-            missing_columns = [col for col in self.questionnaire_example.columns if col not in results_survey_renamed.columns]
-            for col in missing_columns:
-                results_survey_renamed[col] = None
+                # The length of the columns should be greater than 1 to merge them
+                if len(cols) > 1:
 
-            # Ensure the colmns match the example questionnaire
-            results_survey_transformed = results_survey_renamed[self.questionnaire_example.columns]
-            
-            return results_survey_transformed
-        
+                    # Concatenate the values of the columns with the same base name
+                    self.results_survey[base_name] = self.results_survey[cols].apply(lambda x: ', '.join(x.dropna()), axis = 1)
+
+                    # Drop the original columns after merging
+                    self.results_survey.drop(columns = cols, inplace = True)
+
+            # Rename columns with 'other' suffix to match the base name
+            for new_name, old_name in other_columns.items():
+                self.results_survey.rename(columns = {old_name: new_name}, inplace = True)
+
+            return self.results_survey
+
         except Exception as e:
             print(f"Error processing survey results: {e}")
             return pd.DataFrame()
         
     def reload_survey(self, filepath):
         # Reload the survey results and go through the processing steps again
+        self.attributes = []
+        self.skill_attributes = []
+
         self.results_survey = self.load_csv_file(filepath)
-        results_survey_transformed = self.process_survey_results(self.results_survey)
-        results_survey_transformed.to_csv('storage/transformed_results_survey.csv', index=False)
+        results_survey_transformed = self.process_survey_results()
+        results_survey_transformed.to_csv('storage/transformed_results_survey.csv', index = False)
         self.df = pd.read_csv('storage/transformed_results_survey.csv')
         self.apply_interpreter()
 
@@ -345,7 +332,7 @@ class DataProcessor:
 
     def get_other_attributes(self):
         # Return all the attributes except the skill attributes
-        return self.motivation_attributes + self.project_attributes + self.background_attributes
+        return sorted(self.attributes)
 
     def get_homogenous_attributes(self):
         # Return the flattened homogenous attributes
@@ -368,8 +355,8 @@ class DataProcessor:
                 self.emphasized_attributes_type[attribute] = 'heterogenous'
         return self.emphasized_attributes_type
 
-    def get_removed_attributes(self):
+    def get_not_considered_attributes(self):
         # Return the removed attributes
-        all_attributes = set(self.flatten_lists([self.skill_attributes, self.motivation_attributes, self.project_attributes, self.background_attributes]))
+        all_attributes = set(self.flatten_lists([self.skill_attributes, self.attributes]))
         current_attributes = set(self.get_homogenous_attributes() + self.get_heterogenous_attributes())
         return list(all_attributes - current_attributes)
