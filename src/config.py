@@ -65,7 +65,7 @@ class Config:
 
         homogenous_attributes = sorted(self.data_processor.get_homogenous_attributes())
         heterogenous_attributes = sorted(self.data_processor.get_heterogenous_attributes())
-        removed_attributes = sorted(self.data_processor.get_removed_attributes())
+        removed_attributes = sorted(self.data_processor.get_not_considered_attributes())
         normalized_weights = self.data_processor.get_normalized_current_weights()
         emphasized_attributes = sorted(self.data_processor.get_emphasized_attributes())
 
@@ -112,7 +112,7 @@ class Config:
             empty_label.pack(anchor = 'w', padx = 20)
 
         # Display the current removed attributes
-        removed_label = ttk.Label(scrollable_frame, text = "Removed Attributes:", foreground = main_color, font = font_settings)
+        removed_label = ttk.Label(scrollable_frame, text = "Unconsidered Attributes:", foreground = main_color, font = font_settings)
         removed_label.pack(anchor = 'w', padx = 10, pady = 5)
 
         for attribute in removed_attributes:
@@ -121,7 +121,7 @@ class Config:
             attribute_label.pack(anchor = 'w', padx = 20)
 
         if not removed_attributes:
-            empty_label = ttk.Label(scrollable_frame, text = "No removed attributes found", foreground = main_color, font = font_settings)
+            empty_label = ttk.Label(scrollable_frame, text = "No unconsidered attributes found", foreground = main_color, font = font_settings)
             empty_label.pack(anchor = 'w', padx = 20)
 
         # Display the current normalized weights

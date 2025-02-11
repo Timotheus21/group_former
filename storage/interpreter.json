@@ -1,5 +1,6 @@
 {
     "SkillLevelAssessment": {
+      
       "CodingExperience": {
         "scale": {
           "1": "very inexperienced",
@@ -9,12 +10,14 @@
           "5": "very experienced"
         }
       },
+
       "ProgrammingCourses": {
         "scale": {
         "1": "GPT",
         "2": "FPT"
         }
       },
+
       "PythonProficiency": {
         "scale": {
           "1": "beginner", 
@@ -23,6 +26,7 @@
           "4": "expert"
           }
         },
+
       "ExperienceYears": {
         "scale": {
           "1": "1 - 6 months",
@@ -33,6 +37,7 @@
           "6": "more than 5 years"
           }
         },
+
       "ProgrammingContext": {
         "scale": {
           "1": "Exploring/Beginners. Just exploring programming or experimenting.",
@@ -41,12 +46,14 @@
           "4": "Work/Professional. As part of my job or for professional projects."
         }
       },
+
       "PracticedConcepts": {
         "scale": {
           "1": ["variables", "conditions (if-else)", "loops (for or while)"],
           "2": ["functions", "saving/reading data", "recursion", "OOP (Object Oriented Programming)"]
         }
       },
+
       "GitFamiliarity": {
         "scale": {
           "1": "not at all",
@@ -58,6 +65,7 @@
       }
     },
     "entry_mapping": {
+
       "ProgrammingCourses": {
         "ProgrammingCourses[Course01]": {
           "Yes": "GPT"
@@ -69,6 +77,7 @@
           "Yes": "Other"
         }
       },
+
       "PracticedConcepts": {
         "PracticedConcepts[Conc01]": {
           "Yes": "variables"
@@ -92,6 +101,7 @@
           "Yes": "OOP"
         }
       },
+
       "Motivations": {
         "Motivations[mot1]": {
           "Completely": "Having fun: completely",
@@ -143,6 +153,7 @@
           "Not at all": "Joining friends that participate: not at all"
         }
       },
+
       "PreferredLearning": {
         "PreferredLearning[lear1]": {
           "Yes": "variables"
@@ -166,6 +177,7 @@
           "Yes": "OOP"
         }
       },
+
       "PreferredGamesEasy": {
         "PreferredGamesEasy[game01]": {
           "Yes": "Pong"

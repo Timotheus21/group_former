@@ -26,15 +26,19 @@ class Visualization:
         self.secondary_color = '#d4c9ef'
 
     # Handle pronouns based on the given gender pro member
-    def get_pronouns(self, gender):
+    def get_pronouns(self, gender, gender_other):
         gender = str(gender.lower())
 
         if gender == 'male':
             return 'He/him/his'
         elif gender == 'female':
             return 'She/her/hers'
-        else:
-            return 'They/them/their'
+        elif gender == 'non-binary':
+            return 'They/them/theirs'
+        elif gender == 'prefer not to say':
+            return 'They/them/theirs'
+        elif gender == 'other':
+            return gender_other
 
     # Visualize the teams formed by the Group Former application
     def visualize(self, teams):
@@ -91,7 +95,7 @@ class Visualization:
 
                 # First line: Name, age, pronouns
                 name = self.df.loc[member, 'Name']
-                pronouns = self.get_pronouns(self.df.loc[member, 'Gender'])
+                pronouns = self.get_pronouns(self.df.loc[member, 'Gender'], self.df.loc[member, 'GenderOther'])
                 age = self.df.loc[member, 'Age']
 
                 # Second line: Coding experience, primary language, experience years

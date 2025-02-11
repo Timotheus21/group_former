@@ -33,14 +33,15 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 
 1. When you run the application, a file dialog will prompt you to select a CSV file containing the survey data.
 2. The main window will display various attributes and their weights. You can adjust the weights using the "+" and "-" buttons.
-3. Toggle attributes between homogenous (matching) and heterogenous (diverse) using the "Matched" and "Diverse" buttons.
+3. Toggle attributes between homogenous (matching) and heterogenous (diverse) using the "Match" and "Diverse" buttons.
 4. Emphasize specific attributes using the "Emphasize" button.
-5. Adjust the desired team size, maximum team size, and minimum team size.
-6. Click "Generate Teams" to form teams based on the current configuration. If the teamsizes are invalid they will get adjusted.
-7. Visualize the generated teams by clicking the appearing "Visualize Team" buttons.
-8. Save the current weights to a CSV file or load custom/standard weights CSV file using the respective buttons.
-9. Load in a different survey file with the corresponding button or drag and drop.
-10. View the current configuration by clicking the "Settings" button.
+5. Remove attrbiutes from consideration by unchecking the checkbutton.
+6. Adjust the desired team size, maximum team size, and minimum team size.
+7. Click "Generate" to form teams based on the current configuration. If the teamsizes are invalid they will get adjusted.
+8. Visualize the generated teams by clicking the appearing "Visualize Team" buttons.
+9. Save the current weights to a CSV file or load custNom/standard weights CSV file using the respective buttons.
+10. Load in a different survey file with the corresponding button or drag and drop.
+11. View the current configuration by clicking the "Settings" button.
 
 ## Libraries and Dependencies
 
@@ -179,7 +180,6 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 │ ├── storage/                          # Storage for processed data and configuration files
 │ │ ┌── custom_weights.csv              # will be created on startup when not existing
 │ │ ├── interpreter.json
-│ │ ├── questionnaire_example.csv
 │ │ ├── std_weights.csv                 # will be created on startup when not existing
 │ │ └── transformed_results_survey.csv  # will be created on startup when not existing
 │ ├── surveys/                          # Pre-event survey templates
