@@ -35,7 +35,7 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 2. The main window will display various attributes and their weights. You can adjust the weights using the "+" and "-" buttons.
 3. Toggle attributes between homogenous (matching) and heterogenous (diverse) using the "Match" and "Diverse" buttons.
 4. Emphasize specific attributes using the "Emphasize" button.
-5. Remove attrbiutes from consideration by unchecking the checkbutton.
+5. Remove attributes from consideration by unchecking the checkbutton.
 6. Adjust the desired team size, maximum team size, and minimum team size.
 7. Click "Generate" to form teams based on the current configuration. If the teamsizes are invalid they will get adjusted.
 8. Visualize the generated teams by clicking the appearing "Visualize Team" buttons.
