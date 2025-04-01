@@ -194,7 +194,7 @@ class GUI:
         scrollbar = ttk.Scrollbar(self.scrollable_frame, orient = "vertical", command = self.canvas.yview)
         scrollbar.pack(side = "right", fill = "y")
 
-        self.canvas.configure(yscrollcommand=scrollbar.set)
+        self.canvas.configure(yscrollcommand = scrollbar.set)
 
         # Create a parent frame inside the canvas to hold both weights_frame and settings_frame
         self.inner_frame = ttk.Frame(self.canvas)
@@ -206,8 +206,24 @@ class GUI:
         # Bind the canvas to the scrollbar
         self.inner_frame.bind("<Configure>", lambda e: self.canvas.configure(scrollregion = self.canvas.bbox("all")))
 
+        # Create a variable to hold the state of the select all button
+        self.select_all_var = tk.BooleanVar(value = True)
+
+        # Create a Checkbutton to select or unselect all attributes
+        self.select_all_button = ttk.Checkbutton(
+            self.weights_frame,
+            variable = self.select_all_var,
+            onvalue = True,
+            offvalue = False,
+            command = lambda: self.select_all()
+            )
+        self.select_all_button.grid(row = 0, column = 0, padx = 0, pady = 5, sticky = tk.W)
+        self.tooltip(self.select_all_button, "Select or unselect all attributes.", self.helvetica)
+
         # Add labels and buttons for each weight attribute
         for index, (attribute, weight) in enumerate(self.data_processor.weights.items()):
+            index += 1 # Start from row 1 to leave space for the select all button
+
             display_attribute = self.format_attribute_for_display(attribute)
 
             label = ttk.Label(self.weights_frame, text = display_attribute, font = (self.helvetica, 11))
@@ -250,7 +266,7 @@ class GUI:
 
         # Add labels and buttons for other attributes
         for index, attribute in enumerate(self.data_processor.get_other_attributes()):
-            row = start_row + index
+            row = start_row + index + 1 # Start from the next row after the weights
             display_attribute = self.format_attribute_for_display(attribute)
 
             row_frame = ttk.Frame(self.weights_frame)
@@ -599,6 +615,14 @@ class GUI:
             del self.feedback_labels[entry_widget]
 
         return True
+    
+    # Method to select or unselect all checkboxes
+    def select_all(self):
+        select_all_state = self.select_all_var.get()
+
+        for attribute, checkbox_var in self.remove_checkbox_vars.items():
+            checkbox_var.set(select_all_state)
+            self.handle_remove_toggle(attribute)
 
     # Method to change styles of the matching and diverse buttons and update the data processor
     def handle_checkbox_toggle(self, attribute):
