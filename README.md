@@ -100,7 +100,7 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 
     ```
 
-5. **Run the Application**: Run the application for example via the `main.py` file if your in the project directory.
+5. **Run the Application**: Run the application for example via the `main.py` file if you are in the project directory.
 
     ```bash
 
