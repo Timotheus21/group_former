@@ -69,7 +69,7 @@ In the surveys folder you can find the pre-event-survey that is used to gather t
 
 ### Using Github
 
-1. **Clone the Repository**: Open your terminal and clone the repository using https and git with the following command in the directory u want:
+1. **Clone the Repository**: Open your terminal and clone the repository using https and git with the following command in the directory you want:
 
     ```bash
 
